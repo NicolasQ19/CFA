@@ -1,0 +1,17 @@
+@reference "tailwindcss";
+
+.mensajeExito {
+  @apply rounded-md bg-green-50 px-4 py-2 text-sm font-medium text-green-700;
+}
+
+.contenedor {
+  @apply flex flex-col gap-2;
+}
+
+.boton {
+  @apply self-start rounded-md bg-slate-900 px-5 py-2 text-sm font-semibold text-white disabled:opacity-60;
+}
+
+.error {
+  @apply text-sm text-red-700;
+}

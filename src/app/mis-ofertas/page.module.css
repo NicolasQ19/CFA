@@ -1,0 +1,45 @@
+@reference "tailwindcss";
+
+.main {
+  @apply mx-auto max-w-3xl px-4 py-10;
+}
+
+.encabezado {
+  @apply flex items-center justify-between;
+}
+
+.titulo {
+  @apply text-2xl font-bold text-slate-900;
+}
+
+.botonPublicar {
+  @apply rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white;
+}
+
+.lista {
+  @apply mt-8 flex flex-col gap-3;
+}
+
+.itemVacio {
+  @apply text-sm text-slate-600;
+}
+
+.item {
+  @apply rounded-lg border border-slate-200 p-4;
+}
+
+.itemEncabezado {
+  @apply flex items-center justify-between;
+}
+
+.itemTitulo {
+  @apply font-semibold text-slate-900;
+}
+
+.estado {
+  @apply rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700;
+}
+
+.itemDetalle {
+  @apply mt-1 text-sm text-slate-600;
+}

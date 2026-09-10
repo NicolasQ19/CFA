@@ -1,0 +1,25 @@
+@reference "tailwindcss";
+
+.formulario {
+  @apply flex flex-col gap-4;
+}
+
+.campo {
+  @apply flex flex-col gap-1;
+}
+
+.etiqueta {
+  @apply text-sm font-medium text-slate-700;
+}
+
+.entrada {
+  @apply rounded-md border border-slate-300 px-3 py-2 text-sm;
+}
+
+.error {
+  @apply rounded-md bg-red-50 px-3 py-2 text-sm text-red-700;
+}
+
+.botonEnviar {
+  @apply mt-2 rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60;
+}

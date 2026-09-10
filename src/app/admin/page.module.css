@@ -1,0 +1,45 @@
+@reference "tailwindcss";
+
+.main {
+  @apply mx-auto max-w-3xl px-4 py-10;
+}
+
+.titulo {
+  @apply text-2xl font-bold text-slate-900;
+}
+
+.subtitulo {
+  @apply mt-1 text-sm text-slate-600;
+}
+
+.lista {
+  @apply mt-8 flex flex-col gap-3;
+}
+
+.itemVacio {
+  @apply text-sm text-slate-600;
+}
+
+.item {
+  @apply rounded-lg border border-slate-200 p-4;
+}
+
+.itemEncabezado {
+  @apply flex items-start justify-between gap-4;
+}
+
+.clubNombre {
+  @apply text-xs font-medium uppercase tracking-wide text-slate-500;
+}
+
+.itemTitulo {
+  @apply font-semibold text-slate-900;
+}
+
+.itemDetalle {
+  @apply mt-1 text-sm text-slate-600;
+}
+
+.descripcion {
+  @apply mt-2 whitespace-pre-line text-sm text-slate-800;
+}

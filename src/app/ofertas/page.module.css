@@ -1,0 +1,49 @@
+@reference "tailwindcss";
+
+.main {
+  @apply mx-auto max-w-4xl px-4 py-10;
+}
+
+.titulo {
+  @apply text-2xl font-bold text-slate-900;
+}
+
+.subtitulo {
+  @apply mt-1 text-sm text-slate-600;
+}
+
+.formularioFiltros {
+  @apply mt-6 flex flex-wrap gap-3;
+}
+
+.entradaFiltro {
+  @apply rounded-md border border-slate-300 px-3 py-2 text-sm;
+}
+
+.botonFiltrar {
+  @apply rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white;
+}
+
+.lista {
+  @apply mt-8 flex flex-col gap-4;
+}
+
+.itemVacio {
+  @apply text-sm text-slate-600;
+}
+
+.tarjeta {
+  @apply block rounded-lg border border-slate-200 p-4 hover:border-slate-400;
+}
+
+.clubNombre {
+  @apply text-xs font-medium uppercase tracking-wide text-slate-500;
+}
+
+.ofertaTitulo {
+  @apply text-lg font-semibold text-slate-900;
+}
+
+.ofertaDetalle {
+  @apply mt-1 text-sm text-slate-600;
+}
