@@ -1,0 +1,17 @@
+@reference "tailwindcss";
+
+.main {
+  @apply mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-12;
+}
+
+.titulo {
+  @apply text-2xl font-bold text-slate-900;
+}
+
+.subtitulo {
+  @apply mt-1 text-sm text-slate-600;
+}
+
+.contenido {
+  @apply mt-8;
+}

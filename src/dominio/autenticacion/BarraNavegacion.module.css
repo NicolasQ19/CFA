@@ -1,0 +1,29 @@
+@reference "tailwindcss";
+
+.header {
+  @apply border-b border-slate-200;
+}
+
+.nav {
+  @apply mx-auto flex max-w-4xl items-center justify-between px-4 py-4;
+}
+
+.marca {
+  @apply font-bold text-slate-900;
+}
+
+.acciones {
+  @apply flex items-center gap-4 text-sm;
+}
+
+.enlace {
+  @apply text-slate-700 hover:text-slate-900;
+}
+
+.enlaceRegistro {
+  @apply rounded-md bg-slate-900 px-3 py-1.5 font-semibold text-white;
+}
+
+.botonSalir {
+  @apply text-slate-700 hover:text-slate-900;
+}

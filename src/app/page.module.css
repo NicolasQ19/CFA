@@ -1,0 +1,25 @@
+@reference "tailwindcss";
+
+.main {
+  @apply mx-auto flex max-w-4xl flex-1 flex-col justify-center px-4 py-16 text-center;
+}
+
+.titulo {
+  @apply text-3xl font-bold text-slate-900 sm:text-4xl;
+}
+
+.descripcion {
+  @apply mx-auto mt-4 max-w-xl text-slate-600;
+}
+
+.acciones {
+  @apply mt-8 flex justify-center gap-3;
+}
+
+.botonPrimario {
+  @apply rounded-md bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white;
+}
+
+.botonSecundario {
+  @apply rounded-md border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-900;
+}
