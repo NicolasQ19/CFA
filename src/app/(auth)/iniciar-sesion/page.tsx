@@ -3,6 +3,13 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { iniciarSesion, type ResultadoAccion } from "@/dominio/autenticacion/acciones";
+/*
+iniciarSesion:
+Es la función que contiene la lógica para autenticar al usuario.
+Es decir, recibe los datos del formulario y probablemente verifica si el correo y contraseña son correctos.
+ResultadoAccion:
+Es un tipo de TypeScript que define cómo es el resultado de la acción.
+*/
 
 const ESTADO_INICIAL: ResultadoAccion = { error: null };
 
