@@ -1,0 +1,13 @@
+@reference "tailwindcss";
+
+.contenedor {
+  @apply flex gap-2;
+}
+
+.botonAprobar {
+  @apply rounded-md bg-slate-900 px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-60;
+}
+
+.botonRechazar {
+  @apply rounded-md border border-red-300 px-4 py-1.5 text-sm font-semibold text-red-700 disabled:opacity-60;
+}

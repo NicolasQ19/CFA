@@ -1,0 +1,9 @@
+@reference "tailwindcss";
+
+.html {
+  @apply h-full antialiased;
+}
+
+.body {
+  @apply min-h-full flex flex-col;
+}
