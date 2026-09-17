@@ -4,11 +4,7 @@ import { useTransition } from "react";
 import { moderarOferta } from "@/dominio/ofertas/acciones";
 import styles from "./BotonesModeracion.module.css";
 
-interface Props {
-  ofertaId: string;
-}
-
-export function BotonesModeracion({ ofertaId }: Props) {
+export function BotonesModeracion({ ofertaId }) {
   const [estaEnviando, iniciarTransicion] = useTransition();
 
   function aprobar() {
