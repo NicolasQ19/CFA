@@ -2,15 +2,14 @@
 
 import { useActionState, useState } from "react";
 import { crearOferta } from "@/dominio/ofertas/acciones";
-import type { ResultadoAccion } from "@/dominio/autenticacion/acciones";
-import { ETIQUETAS_PUESTO_PROFESIONAL, ETIQUETAS_TIPO_CONTRATO, type PuestoProfesional } from "@/tipos/dominio";
+import { ETIQUETAS_PUESTO_PROFESIONAL, ETIQUETAS_TIPO_CONTRATO } from "@/tipos/dominio";
 import styles from "./FormularioNuevaOferta.module.css";
 
-const ESTADO_INICIAL: ResultadoAccion = { error: null };
+const ESTADO_INICIAL = { error: null };
 
 export function FormularioNuevaOferta() {
   const [estado, ejecutarCreacion, estaEnviando] = useActionState(crearOferta, ESTADO_INICIAL);
-  const [puestoBuscado, setPuestoBuscado] = useState<PuestoProfesional>("jugador");
+  const [puestoBuscado, setPuestoBuscado] = useState("jugador");
 
   return (
     <form action={ejecutarCreacion} className={styles.formulario}>
@@ -22,7 +21,7 @@ export function FormularioNuevaOferta() {
           id="puestoBuscado"
           name="puestoBuscado"
           value={puestoBuscado}
-          onChange={(evento) => setPuestoBuscado(evento.target.value as PuestoProfesional)}
+          onChange={(evento) => setPuestoBuscado(evento.target.value)}
           className={styles.entrada}
         >
           {Object.entries(ETIQUETAS_PUESTO_PROFESIONAL).map(([clave, texto]) => (

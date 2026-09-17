@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 
-/** RF-12: el club publica una nueva oferta. Queda pendiente de moderación (RF-25). */
+/*El club publica una nueva oferta. Queda pendiente de moderación. */
 export async function crearOferta(
   _estadoPrevio,
   datosFormulario,
@@ -47,7 +47,7 @@ export async function crearOferta(
   redirect("/mis-ofertas");
 }
 
-/** RF-13: el club edita el estado de una oferta propia (pausar, cerrar, reabrir). */
+/*El club edita el estado de una oferta propia (pausar, cerrar, reabrir). */
 export async function cambiarEstadoDeOferta(ofertaId, nuevoEstado) {
   const supabase = await crearClienteServidor();
 
@@ -59,7 +59,7 @@ export async function cambiarEstadoDeOferta(ofertaId, nuevoEstado) {
   revalidatePath("/mis-ofertas");
 }
 
-/** RF-25: el administrador aprueba o rechaza una oferta pendiente de moderación. */
+/*El administrador aprueba o rechaza una oferta pendiente de moderación. */
 export async function moderarOferta(ofertaId, nuevoEstado) {
   const supabase = await crearClienteServidor();
 

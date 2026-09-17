@@ -1,19 +1,7 @@
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
-import type { OfertaLaboral, PerfilClub } from "@/tipos/base-de-datos";
-import type { PuestoProfesional } from "@/tipos/dominio";
-
-export interface FiltrosListadoOfertas {
-  puesto?: PuestoProfesional;
-  provincia?: string;
-  categoria?: string;
-}
-
-export type OfertaConClub = OfertaLaboral & { perfiles_club: Pick<PerfilClub, "nombre_club" | "escudo_url"> };
 
 /** RF-18: listado público de ofertas publicadas, con filtros por puesto, provincia y categoría. */
-export async function listarOfertasPublicadas(
-  filtros: FiltrosListadoOfertas
-): Promise<OfertaConClub[]> {
+export async function listarOfertasPublicadas(filtros) {
   const supabase = await crearClienteServidor();
 
   let consulta = supabase
@@ -27,11 +15,11 @@ export async function listarOfertasPublicadas(
   if (filtros.categoria) consulta = consulta.eq("categoria", filtros.categoria);
 
   const { data } = await consulta;
-  return (data as OfertaConClub[] | null) ?? [];
+  return data ?? [];
 }
 
 /** RF-19: ficha de detalle de una oferta publicada. */
-export async function obtenerOfertaPublicadaPorId(ofertaId: string): Promise<OfertaConClub | null> {
+export async function obtenerOfertaPublicadaPorId(ofertaId) {
   const supabase = await crearClienteServidor();
 
   const { data } = await supabase
@@ -40,11 +28,11 @@ export async function obtenerOfertaPublicadaPorId(ofertaId: string): Promise<Ofe
     .eq("id", ofertaId)
     .single();
 
-  return data as OfertaConClub | null;
+  return data;
 }
 
 /** RF-13: ofertas propias del club (en cualquier estado), para su panel de gestión. */
-export async function listarOfertasDelClub(clubId: string): Promise<OfertaLaboral[]> {
+export async function listarOfertasDelClub(clubId) {
   const supabase = await crearClienteServidor();
 
   const { data } = await supabase
@@ -57,7 +45,7 @@ export async function listarOfertasDelClub(clubId: string): Promise<OfertaLabora
 }
 
 /** RF-25: ofertas pendientes de moderación, para el panel de administración. */
-export async function listarOfertasPendientesDeModeracion(): Promise<OfertaConClub[]> {
+export async function listarOfertasPendientesDeModeracion() {
   const supabase = await crearClienteServidor();
 
   const { data } = await supabase
@@ -66,5 +54,5 @@ export async function listarOfertasPendientesDeModeracion(): Promise<OfertaConCl
     .eq("estado", "pendiente_moderacion")
     .order("creada_en", { ascending: true });
 
-  return (data as OfertaConClub[] | null) ?? [];
+  return data ?? [];
 }

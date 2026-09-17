@@ -3,13 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 
-export interface ResultadoPostulacion {
-  error: string | null;
-  exito: boolean;
-}
-
-/** RF-20: el candidato se postula a una oferta. La restricción "una vez por oferta" la impone la BD (unique). */
-export async function postularseAOferta(ofertaId: string): Promise<ResultadoPostulacion> {
+/*El candidato se postula a una oferta. La restricción "una vez por oferta" la impone la BD (unique). */
+export async function postularseAOferta(ofertaId) {
   const supabase = await crearClienteServidor();
 
   const {

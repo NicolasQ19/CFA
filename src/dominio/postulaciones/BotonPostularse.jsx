@@ -4,14 +4,9 @@ import { useState, useTransition } from "react";
 import { postularseAOferta } from "@/dominio/postulaciones/acciones";
 import styles from "./BotonPostularse.module.css";
 
-interface Props {
-  ofertaId: string;
-  yaPostulado: boolean;
-}
-
-export function BotonPostularse({ ofertaId, yaPostulado: yaPostuladoInicial }: Props) {
+export function BotonPostularse({ ofertaId, yaPostulado: yaPostuladoInicial }) {
   const [yaPostulado, setYaPostulado] = useState(yaPostuladoInicial);
-  const [mensajeError, setMensajeError] = useState<string | null>(null);
+  const [mensajeError, setMensajeError] = useState(null);
   const [estaEnviando, iniciarTransicion] = useTransition();
 
   function manejarClick() {

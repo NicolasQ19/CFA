@@ -7,7 +7,7 @@ import { crearClienteAdmin } from "@/lib/supabase/cliente-admin";
 const ROLES_AUTORREGISTRABLES = ["candidato", "representante", "club"];
 
 /**
- * RF-01: registra un usuario nuevo eligiendo un rol (Candidato, Representante o Club)
+ * Registra un usuario nuevo eligiendo un rol (Candidato, Representante o Club)
  * y crea su fila espejo en la tabla `usuarios`.
  */
 export async function registrarUsuario(_estadoPrevio, datosFormulario) {
@@ -101,7 +101,7 @@ async function crearCuenta(datos) {
   redirect(destinoSegunRol(datos.rol));
 }
 
-/** RF-02: inicio de sesión con correo y contraseña a través de Supabase Auth. */
+/*Inicio de sesión con correo y contraseña a través de Supabase Auth. */
 export async function iniciarSesion(_estadoPrevio, datosFormulario) {
   const correoElectronico = String(datosFormulario.get("correoElectronico") ?? "").trim();
   const contrasena = String(datosFormulario.get("contrasena") ?? "");
@@ -126,7 +126,7 @@ export async function iniciarSesion(_estadoPrevio, datosFormulario) {
   redirect(destinoSegunRol(usuario?.rol ?? "candidato"));
 }
 
-/** RF-02: cierre de sesión. */
+/*Cierre de sesión. */
 export async function cerrarSesion() {
   const supabase = await crearClienteServidor();
   await supabase.auth.signOut();

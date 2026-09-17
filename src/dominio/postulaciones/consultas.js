@@ -1,7 +1,7 @@
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 
 /** Indica si el candidato dado ya se postuló a la oferta dada (para no mostrar el botón dos veces). */
-export async function yaSePostuloAOferta(ofertaId: string, candidatoId: string): Promise<boolean> {
+export async function yaSePostuloAOferta(ofertaId, candidatoId) {
   const supabase = await crearClienteServidor();
 
   const { data } = await supabase
