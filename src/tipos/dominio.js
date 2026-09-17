@@ -24,7 +24,7 @@ export const ETIQUETAS_PUESTO_PROFESIONAL = {
   otro: "Otro puesto vinculado a un club",
 };
 
-/** RF-06: el puesto "jugador" carga datos deportivos; el resto carga datos técnicos (RF-07). */
+/*El puesto "jugador" carga datos deportivos; el resto carga datos técnicos. */
 export function esPuestoDeCuerpoTecnico(puesto) {
   return puesto !== "jugador";
 }
