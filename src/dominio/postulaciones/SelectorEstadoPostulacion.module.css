@@ -1,0 +1,45 @@
+@reference "tailwindcss";
+
+.contenedor {
+  @apply flex min-w-48 flex-col gap-1.5;
+}
+
+.select {
+  @apply w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-800 disabled:opacity-60;
+}
+
+.selectPostulado {
+  @apply border-blue-200 bg-blue-50 text-blue-800;
+}
+
+.selectVisto {
+  @apply border-purple-200 bg-purple-50 text-purple-800;
+}
+
+.selectPreseleccionado {
+  @apply border-amber-200 bg-amber-50 text-amber-800;
+}
+
+.selectRechazado {
+  @apply border-red-200 bg-red-50 text-red-800;
+}
+
+.accionesRapidas {
+  @apply flex flex-wrap gap-1;
+}
+
+.botonRapido {
+  @apply rounded border border-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50;
+}
+
+.botonActivo {
+  @apply border-slate-800 bg-slate-900 text-white hover:bg-slate-900;
+}
+
+.feedback {
+  @apply text-xs font-medium text-emerald-700;
+}
+
+.error {
+  @apply text-xs text-red-600;
+}

@@ -1,0 +1,77 @@
+@reference "tailwindcss";
+
+.main {
+  @apply mx-auto max-w-2xl px-4 py-10;
+}
+
+.encabezado {
+  @apply flex items-center gap-4;
+}
+
+.encabezadoTexto {
+  @apply flex-1;
+}
+
+.foto {
+  @apply size-20 shrink-0 rounded-full object-cover;
+}
+
+.titulo {
+  @apply text-2xl font-bold text-slate-900;
+}
+
+.subtitulo {
+  @apply mt-1 text-sm text-slate-600;
+}
+
+.enlaceEditar {
+  @apply shrink-0 rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50;
+}
+
+.tarjeta {
+  @apply mt-8 flex flex-col gap-6 rounded-lg border border-slate-200 p-6;
+}
+
+.seccion {
+  @apply flex flex-col gap-3;
+}
+
+.leyenda {
+  @apply text-sm font-semibold text-slate-700;
+}
+
+.grilla {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
+}
+
+.dato {
+  @apply flex flex-col gap-1;
+}
+
+.etiqueta {
+  @apply text-xs font-medium uppercase tracking-wide text-slate-500;
+}
+
+.valor {
+  @apply text-sm text-slate-900;
+}
+
+.texto {
+  @apply whitespace-pre-line text-sm text-slate-900;
+}
+
+.listaVideos {
+  @apply flex flex-col gap-4;
+}
+
+.video {
+  @apply aspect-video w-full rounded-md border-0 bg-slate-100;
+}
+
+.enlaceVideo {
+  @apply text-sm text-blue-600 hover:underline;
+}
+
+.vacio {
+  @apply rounded-md bg-slate-50 px-4 py-3 text-sm text-slate-600;
+}

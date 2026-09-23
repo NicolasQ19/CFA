@@ -2,7 +2,12 @@
 
 import { useActionState, useState } from "react";
 import { crearOferta } from "@/dominio/ofertas/acciones";
-import { ETIQUETAS_PUESTO_PROFESIONAL, ETIQUETAS_TIPO_CONTRATO } from "@/tipos/dominio";
+import {
+  ETIQUETAS_PUESTO_PROFESIONAL,
+  ETIQUETAS_TIPO_CONTRATO,
+  POSICIONES_DE_JUEGO,
+  PROVINCIAS_ARGENTINA,
+} from "@/tipos/dominio";
 import styles from "./FormularioNuevaOferta.module.css";
 
 const ESTADO_INICIAL = { error: null };
@@ -37,7 +42,14 @@ export function FormularioNuevaOferta() {
           <label htmlFor="posicionJuego" className={styles.etiqueta}>
             Posición
           </label>
-          <input id="posicionJuego" name="posicionJuego" className={styles.entrada} />
+          <select id="posicionJuego" name="posicionJuego" defaultValue="" className={styles.entrada}>
+            <option value="">Cualquier posición</option>
+            {POSICIONES_DE_JUEGO.map((posicion) => (
+              <option key={posicion} value={posicion}>
+                {posicion}
+              </option>
+            ))}
+          </select>
         </div>
       )}
 
@@ -74,7 +86,16 @@ export function FormularioNuevaOferta() {
         <label htmlFor="provincia" className={styles.etiqueta}>
           Provincia
         </label>
-        <input id="provincia" name="provincia" required className={styles.entrada} />
+        <select id="provincia" name="provincia" required defaultValue="" className={styles.entrada}>
+          <option value="" disabled>
+            Elegí una provincia
+          </option>
+          {PROVINCIAS_ARGENTINA.map((provincia) => (
+            <option key={provincia} value={provincia}>
+              {provincia}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className={styles.campo}>

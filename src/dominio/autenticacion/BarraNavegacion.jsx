@@ -30,9 +30,14 @@ export async function BarraNavegacion() {
           )}
 
           {usuario?.rol === "candidato" && (
-            <Link href="/perfil-publico" className={styles.enlace}>
-              Mi perfil
-            </Link>
+            <>
+              <Link href="/mis-postulaciones" className={styles.enlace}>
+                Mis postulaciones
+              </Link>
+              <Link href="/mi-perfil" className={styles.enlace}>
+                Mi perfil
+              </Link>
+            </>
           )}
 
           {usuario?.rol === "club" && (
@@ -42,6 +47,9 @@ export async function BarraNavegacion() {
               </Link>
               <Link href="/mis-ofertas" className={styles.enlace}>
                 Mis ofertas
+              </Link>
+              <Link href="/buscar-candidatos" className={styles.enlace}>
+                Buscar candidatos
               </Link>
             </>
           )}

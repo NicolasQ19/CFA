@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
-import { obtenerPerfilClub } from "@/dominio/perfiles/consultas-club";
+import { obtenerPerfilClub } from "@/dominio/perfiles/consultas";
 import { FormularioPerfilClub } from "@/dominio/perfiles/FormularioPerfilClub";
 import styles from "./page.module.css";
 

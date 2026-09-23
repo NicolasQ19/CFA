@@ -18,7 +18,7 @@ export async function listarOfertasPublicadas(filtros) {
   return data ?? [];
 }
 
-/** RF-19: ficha de detalle de una oferta publicada. */
+/** RF-19: ficha de detalle de una oferta publicada. Las no publicadas devuelven null (404). */
 export async function obtenerOfertaPublicadaPorId(ofertaId) {
   const supabase = await crearClienteServidor();
 
@@ -26,7 +26,8 @@ export async function obtenerOfertaPublicadaPorId(ofertaId) {
     .from("ofertas_laborales")
     .select("*, perfiles_club(nombre_club, escudo_url)")
     .eq("id", ofertaId)
-    .single();
+    .eq("estado", "publicada")
+    .maybeSingle();
 
   return data;
 }
@@ -39,6 +40,20 @@ export async function listarOfertasDelClub(clubId) {
     .from("ofertas_laborales")
     .select("*")
     .eq("club_id", clubId)
+    .order("creada_en", { ascending: false });
+
+  return data ?? [];
+}
+
+/** Ofertas publicadas de un club, para mostrarlas en su perfil público. */
+export async function listarOfertasPublicadasDelClub(clubId) {
+  const supabase = await crearClienteServidor();
+
+  const { data } = await supabase
+    .from("ofertas_laborales")
+    .select("*")
+    .eq("club_id", clubId)
+    .eq("estado", "publicada")
     .order("creada_en", { ascending: false });
 
   return data ?? [];
