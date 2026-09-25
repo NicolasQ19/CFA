@@ -1,0 +1,86 @@
+@reference "tailwindcss";
+
+.main {
+  @apply mx-auto max-w-5xl px-4 py-10;
+}
+
+.titulo {
+  @apply text-2xl font-bold text-slate-900;
+}
+
+.subtitulo {
+  @apply mt-1 mb-6 text-sm text-slate-600;
+}
+
+.vacio {
+  @apply rounded-lg border border-dashed border-slate-300 p-8 text-center text-sm text-slate-600;
+}
+
+.botonExplorar {
+  @apply mt-3 inline-block rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white;
+}
+
+.tablaContenedor {
+  @apply overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm;
+}
+
+.tabla {
+  @apply min-w-full divide-y divide-slate-200 text-left text-sm text-slate-600;
+}
+
+.tabla thead {
+  @apply bg-slate-50 text-xs font-semibold uppercase;
+}
+
+.tabla th,
+.tabla td {
+  @apply px-4 py-3;
+}
+
+.tabla tbody {
+  @apply divide-y divide-slate-200;
+}
+
+.tabla tbody tr:hover {
+  @apply bg-slate-50;
+}
+
+.columnaAccion {
+  @apply text-right;
+}
+
+.nombreOferta {
+  @apply block font-medium text-slate-900;
+}
+
+.avisoOferta {
+  @apply mt-1 inline-block rounded bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-600;
+}
+
+.fecha {
+  @apply text-slate-500;
+}
+
+.badge {
+  @apply inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 ring-1 ring-inset ring-slate-500/20;
+}
+
+.badgePostulado {
+  @apply bg-blue-50 text-blue-700 ring-blue-600/20;
+}
+
+.badgeVisto {
+  @apply bg-purple-50 text-purple-700 ring-purple-600/20;
+}
+
+.badgePreseleccionado {
+  @apply bg-amber-50 text-amber-700 ring-amber-600/20;
+}
+
+.badgeRechazado {
+  @apply bg-red-50 text-red-700 ring-red-600/20;
+}
+
+.enlace {
+  @apply font-medium text-blue-600 hover:underline;
+}

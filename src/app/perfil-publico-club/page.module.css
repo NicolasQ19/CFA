@@ -43,3 +43,27 @@
 .vacio {
   @apply rounded-md bg-slate-50 px-4 py-3 text-sm text-slate-600;
 }
+
+.seccionOfertas {
+  @apply mt-8;
+}
+
+.tituloSeccion {
+  @apply mb-3 text-lg font-semibold text-slate-900;
+}
+
+.listaOfertas {
+  @apply flex flex-col gap-2;
+}
+
+.oferta {
+  @apply flex flex-col gap-0.5 rounded-lg border border-slate-200 p-4 hover:bg-slate-50;
+}
+
+.ofertaTitulo {
+  @apply font-semibold text-slate-900;
+}
+
+.ofertaDetalle {
+  @apply text-sm text-slate-600;
+}
