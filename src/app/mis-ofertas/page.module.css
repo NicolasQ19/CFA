@@ -43,3 +43,19 @@
 .itemDetalle {
   @apply mt-1 text-sm text-slate-600;
 }
+
+.itemPie {
+  @apply mt-3 flex flex-wrap items-start justify-between gap-3;
+}
+
+.itemAcciones {
+  @apply flex flex-wrap items-start gap-2;
+}
+
+.conteo {
+  @apply text-sm font-medium text-slate-700;
+}
+
+.enlacePostulantes {
+  @apply rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-800 hover:bg-slate-50;
+}

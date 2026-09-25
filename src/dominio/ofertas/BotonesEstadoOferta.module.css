@@ -1,0 +1,29 @@
+@reference "tailwindcss";
+
+.contenedor {
+  @apply flex flex-col gap-1;
+}
+
+.botones {
+  @apply flex flex-wrap gap-2;
+}
+
+.boton {
+  @apply rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50;
+}
+
+.botonPeligro {
+  @apply rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50;
+}
+
+.pregunta {
+  @apply text-sm text-slate-700;
+}
+
+.feedback {
+  @apply text-xs text-slate-500;
+}
+
+.error {
+  @apply text-xs text-red-600;
+}

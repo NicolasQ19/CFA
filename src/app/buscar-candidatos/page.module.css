@@ -1,0 +1,65 @@
+@reference "tailwindcss";
+
+.main {
+  @apply mx-auto max-w-4xl px-4 py-10;
+}
+
+.titulo {
+  @apply text-2xl font-bold text-slate-900;
+}
+
+.subtitulo {
+  @apply mt-1 text-sm text-slate-600;
+}
+
+.formularioFiltros {
+  @apply mt-6 flex flex-wrap gap-3;
+}
+
+.entradaFiltro {
+  @apply rounded-md border border-slate-300 px-3 py-2 text-sm;
+}
+
+.botonFiltrar {
+  @apply rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white;
+}
+
+.resultados {
+  @apply mt-6 text-sm font-medium text-slate-600;
+}
+
+.vacio {
+  @apply mt-3 rounded-lg border border-dashed border-slate-300 p-8 text-center text-sm text-slate-600;
+}
+
+.lista {
+  @apply mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2;
+}
+
+.tarjeta {
+  @apply flex items-center gap-4 rounded-lg border border-slate-200 p-4 hover:border-slate-400;
+}
+
+.foto {
+  @apply size-14 shrink-0 rounded-full object-cover;
+}
+
+.fotoVacia {
+  @apply flex size-14 shrink-0 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-500;
+}
+
+.datos {
+  @apply flex min-w-0 flex-col;
+}
+
+.nombre {
+  @apply truncate font-semibold text-slate-900;
+}
+
+.puesto {
+  @apply text-sm text-slate-700;
+}
+
+.detalle {
+  @apply truncate text-sm text-slate-500;
+}

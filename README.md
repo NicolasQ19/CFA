@@ -80,7 +80,7 @@ Incluye roles diferenciados, un panel de administración con moderación de cont
 
 ## Stack tecnológico
 
-- **Next.js 14** (App Router) + **TypeScript**
+- **Next.js 14** (App Router) + **JavaScript**
 - **Tailwind CSS**
 - **Supabase**
   - Postgres (base de datos relacional)
@@ -96,23 +96,23 @@ cfa/
 ├── app/
 │   ├── (public)/
 │   │   ├── ofertas/
-│   │   │   ├── page.tsx          # Listado público de ofertas
-│   │   │   └── [id]/page.tsx     # Detalle de una oferta
-│   │   └── precios/page.tsx      # Planes de suscripción
+│   │   │   ├── page.jsx          # Listado público de ofertas
+│   │   │   └── [id]/page.jsx     # Detalle de una oferta
+│   │   └── precios/page.jsx      # Planes de suscripción
 │   ├── (auth)/
-│   │   ├── login/page.tsx
-│   │   └── registro/page.tsx
+│   │   ├── login/page.jsx
+│   │   └── registro/page.jsx
 │   ├── (dashboard)/
 │   │   ├── candidato/
-│   │   │   ├── page.tsx
-│   │   │   └── postulaciones/page.tsx
+│   │   │   ├── page.jsx
+│   │   │   └── postulaciones/page.jsx
 │   │   ├── club/
-│   │   │   ├── page.tsx
-│   │   │   └── ofertas/page.tsx
+│   │   │   ├── page.jsx
+│   │   │   └── ofertas/page.jsx
 │   │   ├── representante/
-│   │   │   └── page.tsx
+│   │   │   └── page.jsx
 │   │   └── admin/
-│   │       └── page.tsx
+│   │       └── page.jsx
 │   └── api/
 ├── components/
 │   ├── ofertas/
@@ -120,11 +120,11 @@ cfa/
 │   └── ui/
 ├── lib/
 │   ├── supabase/
-│   │   ├── client.ts
-│   │   └── server.ts
+│   │   ├── client.js
+│   │   └── server.js
 │   └── actions/                  # Server Actions (lógica de negocio)
 ├── types/
-│   └── database.types.ts         # Tipos generados desde el schema de Supabase
+│   └── base-de-datos.js          # Esquema de las tablas documentado con JSDoc
 ├── supabase/
 │   └── schema.sql
 ├── docs/

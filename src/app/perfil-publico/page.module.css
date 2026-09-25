@@ -5,7 +5,15 @@
 }
 
 .encabezado {
-  @apply flex items-center justify-between gap-4;
+  @apply flex items-center gap-4;
+}
+
+.encabezadoTexto {
+  @apply flex-1;
+}
+
+.foto {
+  @apply size-20 shrink-0 rounded-full object-cover;
 }
 
 .titulo {
@@ -53,7 +61,11 @@
 }
 
 .listaVideos {
-  @apply flex flex-col gap-1;
+  @apply flex flex-col gap-4;
+}
+
+.video {
+  @apply aspect-video w-full rounded-md border-0 bg-slate-100;
 }
 
 .enlaceVideo {
