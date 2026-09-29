@@ -1,0 +1,17 @@
+@reference "tailwindcss";
+
+.main {
+  @apply mx-auto w-full max-w-3xl px-4 py-10;
+}
+
+.cabecera {
+  @apply mb-8 flex flex-col gap-1 border-b border-emerald-900/60 pb-6;
+}
+
+.titulo {
+  @apply text-2xl font-bold text-white;
+}
+
+.subtitulo {
+  @apply text-sm text-slate-300;
+}

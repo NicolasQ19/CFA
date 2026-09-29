@@ -67,7 +67,7 @@ export async function listarOfertasPendientesDeModeracion() {
 
   const { data } = await supabase
     .from("ofertas_laborales")
-    .select("*, perfiles_club(nombre_club, escudo_url)")
+    .select("*, perfiles_club(*)")
     .eq("estado", "pendiente_moderacion")
     .order("creada_en", { ascending: true });
 

@@ -40,3 +40,18 @@ Verificación luego de aplicar SQL:
 - Con otro club, candidato y visitante, comprobar que no se puedan leer ni escribir filas en `seguimiento_club` por la API de Supabase, ni gestionar postulaciones ajenas.
 - Revisar el resumen: activas = ofertas publicadas; nuevas = recibidas en las últimas 168 horas; pendientes = etapa Recibido; total = todas las postulaciones propias.
 - Hasta aplicar la migración, el panel indica que no puede cargar el seguimiento o el resumen. La persistencia y las políticas remotas requieren esta comprobación con cuentas reales.
+
+## Gestión directa de representados por agencias
+
+Ejecutar una vez `migrations/20261001_representante_crea_candidatos.sql` en el SQL Editor del proyecto.
+Permite que los usuarios con rol `representante` carguen directamente la ficha deportiva o técnica de sus propios representados (sin necesidad de que el jugador se cree cuenta ni recuerde contraseñas), vinculándolos automáticamente a su cartera y habilitándolos para postularse a ofertas laborales.
+
+## Edición de representados y lectura de nombres
+Ejecutar una vez `migrations/20261002_edicion_y_nombres_representados.sql` en el SQL Editor del proyecto.
+Habilita la edición de la ficha técnica y deportiva de los representados y garantiza la lectura de los nombres de candidatos en la cartera.
+
+## Perfil de representante, datos de contacto, foto y CVs
+Ejecutar una vez `migrations/20261003_perfil_representante_contacto.sql` en el SQL Editor del proyecto.
+Agrega campos de contacto a la agencia (teléfono, email de contacto, nacionalidad, sitio web y foto/logo), actualiza la función RPC `listar_cartera_representante` y otorga permisos de Storage y RLS para subir fotos y currículums (PDF) tanto para la agencia como para los representados.
+
+
