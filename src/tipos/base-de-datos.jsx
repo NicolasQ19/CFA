@@ -19,6 +19,13 @@
  * @property {string} puesto
  * @property {string} provincia
  * @property {string | null} club_actual
+ * @property {string | null} presentacion
+ * @property {"disponible" | "escucho_ofertas" | "no_disponible" | null} disponibilidad
+ * @property {"con_club" | "sin_club" | null} situacion_club
+ * @property {string | null} incorporacion_desde
+ * @property {boolean | null} dispuesto_mudarse
+ * @property {{club: string, categoria: string, temporada: string, descripcion: string}[]} experiencias
+ * @property {string | null} cv_ruta
  * @property {string | null} foto_url
  * @property {string[]} enlaces_video
  * @property {string | null} trayectoria
@@ -39,6 +46,12 @@
  * @typedef {Object} PerfilClub
  * @property {string} usuario_id
  * @property {string} nombre_club
+ * @property {string | null} localidad
+ * @property {string | null} descripcion
+ * @property {string | null} instalaciones
+ * @property {string | null} sitio_web
+ * @property {string | null} instagram
+ * @property {string | null} facebook
  * @property {string | null} escudo_url
  * @property {string} provincia
  * @property {string} categoria
@@ -83,4 +96,12 @@
  * @property {string} estado
  * @property {string} creada_en
  * @property {string} actualizada_en
+ */
+/**
+ * @typedef {Object} SeguimientoClub
+ * @property {string} postulacion_id
+ * @property {string} club_id
+ * @property {"recibido" | "evaluacion" | "contactado" | "seleccionado" | "descartado"} etapa
+ * @property {string} notas
+ * @property {string} actualizado_en
  */

@@ -12,7 +12,7 @@ export function BotonPostularse({ ofertaId, yaPostulado }) {
 
   if (postulado) {
     return (
-      <span className="inline-flex items-center rounded-md bg-emerald-50 px-3 py-1.5 text-sm font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+      <span className="inline-flex items-center rounded-md bg-emerald-950/60 px-3 py-1.5 text-sm font-semibold text-emerald-300 ring-1 ring-inset ring-emerald-600/20">
         ✓ Ya te postulaste
       </span>
     );
@@ -37,12 +37,12 @@ export function BotonPostularse({ ofertaId, yaPostulado }) {
       <button
         onClick={handlePostulacion}
         disabled={isPending}
-        className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+        className="rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 disabled:opacity-50"
       >
         {isPending ? "Enviando postulación..." : "Postularme a esta oferta"}
       </button>
       {errorMsg && (
-        <p className="text-xs text-red-600">
+        <p className="text-xs text-red-300">
           {errorMsg}{" "}
           {faltaPerfil && (
             <Link href="/mi-perfil" className="font-semibold underline">

@@ -1,15 +1,15 @@
 @reference "tailwindcss";
 
 .main {
-  @apply mx-auto max-w-4xl px-4 py-10;
+  @apply mx-auto w-full max-w-4xl px-4 py-10;
 }
 
 .titulo {
-  @apply text-2xl font-bold text-slate-900;
+  @apply text-2xl font-bold text-white;
 }
 
 .subtitulo {
-  @apply mt-1 text-sm text-slate-600;
+  @apply mt-1 text-sm text-slate-300;
 }
 
 .formularioFiltros {
@@ -17,11 +17,11 @@
 }
 
 .entradaFiltro {
-  @apply rounded-md border border-slate-300 px-3 py-2 text-sm;
+  @apply rounded-md border border-emerald-800/70 px-3 py-2 text-sm;
 }
 
 .botonFiltrar {
-  @apply rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white;
+  @apply rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white;
 }
 
 .lista {
@@ -29,21 +29,23 @@
 }
 
 .itemVacio {
-  @apply text-sm text-slate-600;
+  @apply text-sm text-slate-300;
 }
 
 .tarjeta {
-  @apply block rounded-lg border border-slate-200 p-4 hover:border-slate-400;
+  background: var(--surface);
+  box-shadow: 0 12px 32px #00000020;
+  @apply block rounded-lg border border-emerald-900/60 p-4 hover:border-emerald-500;
 }
 
 .clubNombre {
-  @apply text-xs font-medium uppercase tracking-wide text-slate-500;
+  @apply text-xs font-medium uppercase tracking-wide text-slate-400;
 }
 
 .ofertaTitulo {
-  @apply text-lg font-semibold text-slate-900;
+  @apply text-lg font-semibold text-white;
 }
 
 .ofertaDetalle {
-  @apply mt-1 text-sm text-slate-600;
+  @apply mt-1 text-sm text-slate-300;
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
-import { obtenerOfertasConConteoPostulantes } from "@/dominio/postulaciones/consultas-club";
+import { obtenerOfertasConConteoPostulantes, obtenerResumenClub } from "@/dominio/postulaciones/consultas-club";
 import { BotonesEstadoOferta } from "@/dominio/ofertas/BotonesEstadoOferta";
 import { ETIQUETAS_ESTADO_OFERTA, ETIQUETAS_PUESTO_PROFESIONAL } from "@/tipos/dominio";
 import styles from "./page.module.css";
@@ -13,7 +13,7 @@ export default async function PaginaMisOfertas() {
   if (!usuario) redirect("/iniciar-sesion");
   if (usuario.rol !== "club") redirect("/");
 
-  const ofertas = await obtenerOfertasConConteoPostulantes(usuario.id);
+  const [ofertas, actividad] = await Promise.all([obtenerOfertasConConteoPostulantes(usuario.id), obtenerResumenClub(usuario.id)]);
 
   return (
     <main className={styles.main}>
@@ -27,6 +27,11 @@ export default async function PaginaMisOfertas() {
         </Link>
       </div>
 
+      <p className={styles.descripcion}>Gestioná las búsquedas y el seguimiento de tu club.</p>
+      <div className={styles.accesos}><Link href="/perfil-publico-club">Ver perfil del club →</Link><Link href="/mi-club">Editar datos institucionales →</Link></div>
+      {actividad.error ? <p role="status">{actividad.error}</p> : <section className={styles.resumen} aria-label="Resumen de actividad">
+        {[["activas", "Ofertas activas"], ["nuevas", "Postulaciones · últimos 7 días"], ["pendientes", "Sin revisar"], ["total", "Postulaciones totales"]].map(([clave, etiqueta]) => <div key={clave}><strong>{actividad.resumen[clave]}</strong><span>{etiqueta}</span></div>)}
+      </section>}
       <ul className={styles.lista}>
         {ofertas.length === 0 && (
           <li className={styles.itemVacio}>Todavía no publicaste ninguna oferta.</li>

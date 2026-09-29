@@ -113,8 +113,26 @@ export async function iniciarSesion(_estadoPrevio, datosFormulario) {
     password: contrasena,
   });
 
-  if (error || !data.user) {
-    return { error: "Correo o contraseña incorrectos." };
+  if (error) {
+    const mensajes = {
+      invalid_credentials: "Correo o contraseña incorrectos.",
+      email_not_confirmed: "Confirmá tu correo electrónico desde el enlace que recibiste antes de iniciar sesión.",
+      user_banned: "Esta cuenta está suspendida. Contactá al administrador.",
+      over_request_rate_limit: "Hubo demasiados intentos. Esperá unos minutos y volvé a intentar.",
+    };
+
+    // Registrar solo el diagnóstico técnico, nunca las credenciales ni la sesión.
+    console.error("Error al iniciar sesión", { codigo: error.code, estado: error.status });
+
+    return {
+      error: mensajes[error.code] ?? (error.status === 429
+        ? "Hubo demasiados intentos. Esperá unos minutos y volvé a intentar."
+        : "No se pudo iniciar sesión por un problema del servicio. Volvé a intentar en unos minutos."),
+    };
+  }
+
+  if (!data.user) {
+    return { error: "No se pudo completar el inicio de sesión. Volvé a intentar." };
   }
 
   const { data: usuario } = await supabase

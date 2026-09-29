@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import styles from "./page.module.css";
 import { iniciarSesion } from "@/dominio/autenticacion/acciones";
 
 const ESTADO_INICIAL = { error: null };
@@ -13,13 +14,13 @@ export default function PaginaInicioSesion() {
   );
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-12">
-      <h1 className="text-2xl font-bold text-slate-900">Iniciar sesión en CFA</h1>
-      <p className="mt-1 text-sm text-slate-600">Contrataciones de Fútbol Argentino</p>
+    <main className={styles.main}>
+      <h1 className={styles.titulo}>Iniciar sesión en CFA</h1>
+      <p className={styles.subtitulo}>Contrataciones de Fútbol Argentino</p>
 
-      <form action={ejecutarInicioSesion} className="mt-8 flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <label htmlFor="correoElectronico" className="text-sm font-medium text-slate-700">
+      <form action={ejecutarInicioSesion} className={styles.formulario}>
+        <div className={styles.campo}>
+          <label htmlFor="correoElectronico" className={styles.etiqueta}>
             Correo electrónico
           </label>
           <input
@@ -27,12 +28,12 @@ export default function PaginaInicioSesion() {
             name="correoElectronico"
             type="email"
             required
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className={styles.entrada}
           />
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label htmlFor="contrasena" className="text-sm font-medium text-slate-700">
+        <div className={styles.campo}>
+          <label htmlFor="contrasena" className={styles.etiqueta}>
             Contraseña
           </label>
           <input
@@ -40,26 +41,26 @@ export default function PaginaInicioSesion() {
             name="contrasena"
             type="password"
             required
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+            className={styles.entrada}
           />
         </div>
 
         {estado.error && (
-          <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{estado.error}</p>
+          <p className={styles.error}>{estado.error}</p>
         )}
 
         <button
           type="submit"
           disabled={estaEnviando}
-          className="mt-2 rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+          className={styles.botonEnviar}
         >
           {estaEnviando ? "Ingresando..." : "Ingresar"}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-slate-600">
+      <p className={styles.piePagina}>
         ¿No tenés cuenta?{" "}
-        <Link href="/registrarse" className="font-medium text-slate-900 underline">
+        <Link href="/registrarse" className={styles.enlace}>
           Registrarse
         </Link>
       </p>

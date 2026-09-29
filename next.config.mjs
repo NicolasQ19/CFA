@@ -2,8 +2,8 @@
 const nextConfig = {
   experimental: {
     serverActions: {
-      // La foto de perfil viaja en el formulario (máx. 2 MB, más el resto de los campos).
-      bodySizeLimit: "3mb",
+      // CV (5 MB), foto (2 MB) y campos del formulario.
+      bodySizeLimit: "8mb",
     },
   },
 };

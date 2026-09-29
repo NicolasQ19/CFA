@@ -6,6 +6,9 @@ import { crearClienteAdmin } from "@/lib/supabase/cliente-admin";
 import { esPuestoDeCuerpoTecnico } from "@/tipos/dominio";
 import { extraerIdVideoYoutube } from "@/lib/youtube";
 
+import { validarMejorasPerfil } from "@/lib/perfil-candidato";
+import { BUCKET_CV, validarCurriculum } from "@/lib/curriculum";
+
 const BUCKET_FOTOS = "fotos-perfil";
 const TAMANIO_MAXIMO_FOTO = 2_000_000; // igual al límite configurado en el bucket
 const EXTENSIONES_FOTO = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
@@ -47,13 +50,41 @@ export async function guardarPerfilCandidato(_estadoPrevio, datosFormulario) {
     return { error: `"${enlaceInvalido}" no es un enlace de video de YouTube válido.` };
   }
 
+  const mejoras = validarMejorasPerfil(datosFormulario);
+  if (mejoras.error) return { error: mejoras.error };
+
+  const archivoCv = datosFormulario.get("curriculum");
+  const hayCv = archivoCv instanceof File && archivoCv.size > 0;
+  const quitarCv = datosFormulario.get("quitarCv") === "on";
+  const errorCv = await validarCurriculum(archivoCv);
+  if (errorCv) return { error: errorCv };
+  if (hayCv && quitarCv) return { error: "Elegí subir un CV nuevo o quitar el actual, no ambas opciones." };
+
+  let cvAnterior;
+  let cvNuevo;
+  if (hayCv || quitarCv) {
+    const { data: usuario } = await supabase.from("usuarios").select("rol, cuenta_activa").eq("id", user.id).single();
+    if (usuario?.rol !== "candidato" || !usuario.cuenta_activa) return { error: "No tenés permiso para modificar este CV." };
+    const { data: anterior, error: errorConsulta } = await supabase.from("perfiles_candidato").select("cv_ruta").eq("usuario_id", user.id).maybeSingle();
+    if (errorConsulta) return { error: "No se pudo consultar el CV. Verificá la configuración de curriculums en Supabase." };
+    cvAnterior = anterior?.cv_ruta;
+  }
+
   const resultadoFoto = await procesarFoto(user.id, datosFormulario);
   if (resultadoFoto.error) {
     return { error: resultadoFoto.error };
   }
 
+  if (hayCv) {
+    cvNuevo = `${user.id}/${crypto.randomUUID()}.pdf`;
+    const { error: errorSubida } = await supabase.storage.from(BUCKET_CV).upload(cvNuevo, archivoCv, { contentType: "application/pdf", upsert: false });
+    if (errorSubida) return { error: "No se pudo subir el CV. Intentá nuevamente o consultá al administrador." };
+  }
+
   const camposComunes = {
     usuario_id: user.id,
+    ...mejoras.datos,
+    ...(hayCv || quitarCv ? { cv_ruta: cvNuevo ?? null } : {}),
     puesto,
     provincia,
     club_actual: valorOpcional(datosFormulario.get("clubActual")),
@@ -94,7 +125,13 @@ export async function guardarPerfilCandidato(_estadoPrevio, datosFormulario) {
     .upsert({ ...camposComunes, ...camposSegunPuesto });
 
   if (error) {
+    if (cvNuevo) await supabase.storage.from(BUCKET_CV).remove([cvNuevo]);
     return { error: error.message };
+  }
+
+  if ((hayCv || quitarCv) && cvAnterior?.startsWith(`${user.id}/`)) {
+    const { error: errorLimpieza } = await supabase.storage.from(BUCKET_CV).remove([cvAnterior]);
+    if (errorLimpieza) console.error("No se pudo borrar el CV anterior", { codigo: errorLimpieza.statusCode });
   }
 
   await borrarFotos(resultadoFoto.rutasParaBorrar);

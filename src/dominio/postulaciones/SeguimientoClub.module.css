@@ -1,0 +1,6 @@
+.formulario { display: grid; gap: 8px; }
+.formulario label { font-size: .85rem; font-weight: 600; color: #d1fae5; }
+.formulario select, .formulario textarea { padding: 10px; border: 1px solid #286044; width: 100%; }
+.formulario button { justify-self: start; padding: 10px 16px; border-radius: 9px; background: #047857; color: white; font-weight: 600; }
+.formulario button:disabled { opacity: .6; }
+.ayuda { font-size: .75rem; color: #a7b9af; }
