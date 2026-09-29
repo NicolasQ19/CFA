@@ -35,7 +35,23 @@
 .tarjeta {
   background: var(--surface);
   box-shadow: 0 12px 32px #00000020;
-  @apply block rounded-lg border border-emerald-900/60 p-4 hover:border-emerald-500;
+  @apply block rounded-lg border border-emerald-900/60 p-4 transition hover:border-emerald-500 hover:bg-emerald-950/20;
+}
+
+.tarjetaContenido {
+  @apply flex items-center gap-4;
+}
+
+.escudo {
+  @apply h-14 w-14 shrink-0 rounded-full border border-emerald-800/70 bg-emerald-950/60 object-contain p-1;
+}
+
+.escudoFallback {
+  @apply flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-emerald-800/70 bg-emerald-950/60 text-lg font-bold text-emerald-400;
+}
+
+.datosOferta {
+  @apply min-w-0 flex-1;
 }
 
 .clubNombre {
@@ -49,3 +65,4 @@
 .ofertaDetalle {
   @apply mt-1 text-sm text-slate-300;
 }
+

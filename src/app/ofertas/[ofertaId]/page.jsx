@@ -4,6 +4,11 @@ import { obtenerOfertaPublicadaPorId } from "@/dominio/ofertas/consultas";
 import { obtenerPostulacionDelCandidato } from "@/dominio/postulaciones/consultas";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { BotonPostularse } from "@/dominio/postulaciones/BotonPostularse";
+import { PostularRepresentado } from "@/dominio/representantes/PostularRepresentado";
+import {
+  listarCarteraCandidatos,
+  listarPostulacionesDeRepresentante,
+} from "@/dominio/representantes/consultas";
 import {
   ETIQUETAS_ESTADO_POSTULACION,
   ETIQUETAS_PUESTO_PROFESIONAL,
@@ -34,6 +39,18 @@ export default async function PaginaDetalleOferta({ params }) {
     usuario?.rol === "candidato"
       ? await obtenerPostulacionDelCandidato(ofertaId, usuario.id)
       : null;
+
+  const cartera =
+    usuario?.rol === "representante"
+      ? await listarCarteraCandidatos(usuario.id)
+      : [];
+
+  const postulacionesRepresentante =
+    usuario?.rol === "representante"
+      ? (await listarPostulacionesDeRepresentante(usuario.id)).filter(
+          (p) => p.oferta_id === ofertaId
+        )
+      : [];
 
   const club = oferta.perfiles_club;
 
@@ -108,32 +125,40 @@ export default async function PaginaDetalleOferta({ params }) {
       )}
 
       <div className={styles.accion}>
-        {usuario?.rol !== "candidato" ? (
-          <p className={styles.avisoIngreso}>
-            Iniciá sesión como candidato para postularte a esta oferta.
-          </p>
-        ) : postulacion ? (
-          <div className={styles.estadoPostulacion}>
-            <p className={styles.estadoTitulo}>
-              ✓ Ya te postulaste a esta oferta
-            </p>
-            <div className={styles.grilla}>
-              <Dato
-                etiqueta="Estado de tu postulación"
-                valor={ETIQUETAS_ESTADO_POSTULACION[postulacion.estado]}
-              />
-              <Dato
-                etiqueta="Te postulaste el"
-                valor={formatearFecha(postulacion.creada_en)}
-              />
+        {usuario?.rol === "candidato" ? (
+          postulacion ? (
+            <div className={styles.estadoPostulacion}>
+              <p className={styles.estadoTitulo}>
+                ✓ Ya te postulaste a esta oferta
+              </p>
+              <div className={styles.grilla}>
+                <Dato
+                  etiqueta="Estado de tu postulación"
+                  valor={ETIQUETAS_ESTADO_POSTULACION[postulacion.estado]}
+                />
+                <Dato
+                  etiqueta="Te postulaste el"
+                  valor={formatearFecha(postulacion.creada_en)}
+                />
+              </div>
+              <Link href="/mis-postulaciones" className={styles.enlaceClub}>
+                Ver todas mis postulaciones →
+              </Link>
             </div>
-            <Link href="/mis-postulaciones" className={styles.enlaceClub}>
-              Ver todas mis postulaciones →
-            </Link>
-          </div>
-        ) : (
-          <BotonPostularse ofertaId={oferta.id} />
-        )}
+          ) : (
+            <BotonPostularse ofertaId={oferta.id} />
+          )
+        ) : usuario?.rol === "representante" ? (
+          <PostularRepresentado
+            ofertaId={oferta.id}
+            cartera={cartera}
+            postulacionesExistentes={postulacionesRepresentante}
+          />
+        ) : !usuario ? (
+          <p className={styles.avisoIngreso}>
+            Iniciá sesión como candidato o representante para postularte a esta oferta.
+          </p>
+        ) : null}
       </div>
     </main>
   );

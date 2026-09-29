@@ -17,7 +17,7 @@ export default async function PaginaPerfilPublico({ searchParams }) {
 
   const esVistaAjena = Boolean(candidatoId && candidatoId !== usuario.id);
 
-  if (esVistaAjena && usuario.rol !== "club" && usuario.rol !== "administrador") {
+  if (esVistaAjena && usuario.rol !== "club" && usuario.rol !== "administrador" && usuario.rol !== "representante") {
     redirect("/");
   }
 
