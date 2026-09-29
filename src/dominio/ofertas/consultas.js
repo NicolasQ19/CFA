@@ -22,12 +22,14 @@ export async function listarOfertasPublicadas(filtros) {
 export async function obtenerOfertaPublicadaPorId(ofertaId) {
   const supabase = await crearClienteServidor();
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("ofertas_laborales")
-    .select("*, perfiles_club(nombre_club, escudo_url)")
+    .select("*, perfiles_club(*)")
     .eq("id", ofertaId)
     .eq("estado", "publicada")
     .maybeSingle();
+
+  if (error) console.error("Error al obtener la oferta:", error.message);
 
   return data;
 }

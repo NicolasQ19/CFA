@@ -3,18 +3,22 @@
 import { useTransition, useState } from "react";
 import Link from "next/link";
 import { postularseAOferta } from "./acciones";
+import styles from "./BotonPostularse.module.css";
 
-export function BotonPostularse({ ofertaId, yaPostulado }) {
+export function BotonPostularse({ ofertaId }) {
   const [isPending, startTransition] = useTransition();
-  const [postulado, setPostulado] = useState(yaPostulado);
+  const [postulado, setPostulado] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [faltaPerfil, setFaltaPerfil] = useState(false);
 
   if (postulado) {
     return (
-      <span className="inline-flex items-center rounded-md bg-emerald-950/60 px-3 py-1.5 text-sm font-semibold text-emerald-300 ring-1 ring-inset ring-emerald-600/20">
-        ✓ Ya te postulaste
-      </span>
+      <div className={styles.contenedor}>
+        <p className={styles.mensajeExito}>✓ Ya te postulaste</p>
+        <Link href="/mis-postulaciones" className={styles.enlace}>
+          Ver todas mis postulaciones →
+        </Link>
+      </div>
     );
   }
 
@@ -33,19 +37,15 @@ export function BotonPostularse({ ofertaId, yaPostulado }) {
   }
 
   return (
-    <div className="flex flex-col gap-1">
-      <button
-        onClick={handlePostulacion}
-        disabled={isPending}
-        className="rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 disabled:opacity-50"
-      >
+    <div className={styles.contenedor}>
+      <button onClick={handlePostulacion} disabled={isPending} className={styles.boton}>
         {isPending ? "Enviando postulación..." : "Postularme a esta oferta"}
       </button>
       {errorMsg && (
-        <p className="text-xs text-red-300">
+        <p className={styles.error}>
           {errorMsg}{" "}
           {faltaPerfil && (
-            <Link href="/mi-perfil" className="font-semibold underline">
+            <Link href="/mi-perfil" className={styles.enlace}>
               Completar perfil
             </Link>
           )}
