@@ -1,9 +1,5 @@
 @reference "tailwindcss";
 
-.mensajeExito {
-  @apply rounded-md bg-green-950/60 px-4 py-2 text-sm font-medium text-green-300;
-}
-
 .contenedor {
   @apply flex flex-col gap-2;
 }
@@ -14,4 +10,12 @@
 
 .error {
   @apply text-sm text-red-300;
+}
+
+.mensajeExito {
+  @apply self-start rounded-md bg-emerald-950/60 px-4 py-2 text-sm font-semibold text-emerald-300 ring-1 ring-inset ring-emerald-600/20;
+}
+
+.enlace {
+  @apply text-sm font-semibold text-emerald-300 hover:underline;
 }

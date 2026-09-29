@@ -1,43 +1,155 @@
 @reference "tailwindcss";
 
 .main {
-  @apply mx-auto flex max-w-4xl flex-1 flex-col justify-center px-4 py-16 text-center;
+  @apply mx-auto w-full px-4 pb-24;
+  max-width: 1000px;
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+  @apply flex flex-col items-center text-center;
+  padding-block: 88px 72px;
+}
+
+.volanta {
+  color: var(--accent);
+  @apply mb-6 text-xs font-bold uppercase;
+  letter-spacing: 0.2em;
 }
 
 .titulo {
-  @apply text-3xl font-bold text-white sm:text-4xl;
+  @apply font-bold text-white;
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  line-height: 1.06;
+  letter-spacing: -0.055em;
 }
 
 .descripcion {
-  @apply mx-auto mt-4 max-w-xl text-slate-300;
+  @apply mt-7 text-slate-300;
+  font-size: 1.1rem;
+  max-width: 620px;
 }
 
 .acciones {
-  @apply mt-8 flex justify-center gap-3;
+  @apply mt-9 flex flex-wrap justify-center gap-3;
 }
 
 .botonPrimario {
-  @apply rounded-md bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white;
+  @apply rounded-[10px] bg-emerald-700 px-6 py-3.5 text-sm font-semibold text-white;
+  box-shadow: 0 8px 32px #05966930;
+}
+
+.botonPrimario:hover {
+  background: #065f46;
 }
 
 .botonSecundario {
-  @apply rounded-md border border-emerald-800/70 px-5 py-2.5 text-sm font-semibold text-white;
+  @apply rounded-[10px] border border-emerald-800/70 px-6 py-3.5 text-sm font-semibold text-white;
+  background: #12231a;
 }
 
-.main { min-height: calc(100svh - 84px); max-width: 1000px; padding-block: 88px; }
-.main::before {
-  content: "EL PRÓXIMO PASO EN TU CARRERA";
-  color: #6ee7b7;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  margin-bottom: 24px;
+.botonSecundario:hover {
+  border-color: var(--accent);
+  background: #183426;
 }
-.titulo { font-size: clamp(2.5rem, 7vw, 5rem); line-height: 1.06; letter-spacing: -0.055em; }
-.descripcion { margin-top: 28px; font-size: 1.1rem; max-width: 620px; }
-.acciones { margin-top: 36px; flex-wrap: wrap; }
-.botonPrimario, .botonSecundario { padding: 14px 24px; border-radius: 10px; }
-.botonPrimario { box-shadow: 0 8px 32px #05966930; }
-.botonPrimario:hover { background: #065f46; }
-.botonSecundario { background: #12231a; }
-.botonSecundario:hover { border-color: #34d399; background: #183426; }
+
+/* ---------- Secciones ---------- */
+
+.seccion {
+  @apply mt-16 border-t border-emerald-900/50 pt-12;
+}
+
+.encabezadoSeccion {
+  @apply mb-6 flex items-baseline justify-between gap-4;
+}
+
+.tituloSeccion {
+  @apply text-xl font-semibold text-white sm:text-2xl;
+  letter-spacing: -0.02em;
+}
+
+.enlaceSeccion {
+  @apply shrink-0 text-sm font-semibold text-emerald-300 hover:underline;
+}
+
+.enlaceTexto {
+  @apply font-semibold text-emerald-300 hover:underline;
+}
+
+.vacio {
+  @apply text-sm text-slate-300;
+}
+
+/* ---------- Últimas ofertas ---------- */
+
+.grillaOfertas {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3;
+}
+
+.tarjetaOferta {
+  background: var(--surface);
+  @apply flex h-full flex-col gap-2 rounded-lg border border-emerald-900/60 p-5;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.tarjetaOferta:hover {
+  border-color: #34d39966;
+  transform: translateY(-2px);
+}
+
+.clubNombre {
+  @apply text-xs font-medium uppercase tracking-wide text-slate-400;
+}
+
+.ofertaTitulo {
+  @apply text-base font-semibold text-white;
+}
+
+.ofertaDetalle {
+  @apply mt-auto text-sm text-slate-300;
+}
+
+/* ---------- Cómo funciona ---------- */
+
+.grillaPasos {
+  @apply grid grid-cols-1 gap-6 sm:grid-cols-3;
+}
+
+.paso {
+  @apply flex flex-col gap-2;
+}
+
+.pasoNumero {
+  border: 1px solid #34d39955;
+  color: var(--accent);
+  @apply flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold;
+}
+
+.pasoTitulo {
+  @apply text-base font-semibold text-white;
+}
+
+.pasoTexto {
+  @apply text-sm text-slate-300;
+}
+
+/* ---------- Accesos por rol ---------- */
+
+.grillaRoles {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
+}
+
+.tarjetaRol {
+  background: var(--surface);
+  box-shadow: 0 12px 32px #00000020;
+  @apply flex flex-col items-start gap-3 rounded-lg border border-emerald-900/60 p-6;
+}
+
+.rolTitulo {
+  @apply text-lg font-semibold text-white;
+}
+
+.rolTexto {
+  @apply text-sm text-slate-300;
+}
