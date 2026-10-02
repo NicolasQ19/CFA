@@ -6,7 +6,7 @@ export default function PaginaInicio() {
     <main className={styles.main}>
       <h1 className={styles.titulo}>
         Contrataciones de Fútbol Argentino
-      </h1>
+      </h1> 
       <p className={styles.descripcion}>
         La plataforma que conecta candidatos, representantes y clubes de fútbol argentino —
         para jugadores, cuerpo técnico y staff deportivo, en todas las categorías.
