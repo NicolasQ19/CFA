@@ -25,7 +25,7 @@ export default async function PaginaMiPerfil() {
       </p>
 
       <div className={styles.contenido}>
-        <FormularioPerfilCandidato perfilExistente={perfilExistente} />
+        <FormularioPerfilCandidato perfilExistente={perfilExistente} nombreCandidato={usuario.nombre_completo} />
       </div>
     </main>
   );

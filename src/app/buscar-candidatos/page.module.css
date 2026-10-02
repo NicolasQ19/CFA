@@ -1,15 +1,15 @@
 @reference "tailwindcss";
 
 .main {
-  @apply mx-auto max-w-4xl px-4 py-10;
+  @apply mx-auto w-full max-w-4xl px-4 py-10;
 }
 
 .titulo {
-  @apply text-2xl font-bold text-slate-900;
+  @apply text-2xl font-bold text-white;
 }
 
 .subtitulo {
-  @apply mt-1 text-sm text-slate-600;
+  @apply mt-1 text-sm text-slate-300;
 }
 
 .formularioFiltros {
@@ -17,19 +17,19 @@
 }
 
 .entradaFiltro {
-  @apply rounded-md border border-slate-300 px-3 py-2 text-sm;
+  @apply rounded-md border border-emerald-800/70 px-3 py-2 text-sm;
 }
 
 .botonFiltrar {
-  @apply rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white;
+  @apply rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white;
 }
 
 .resultados {
-  @apply mt-6 text-sm font-medium text-slate-600;
+  @apply mt-6 text-sm font-medium text-slate-300;
 }
 
 .vacio {
-  @apply mt-3 rounded-lg border border-dashed border-slate-300 p-8 text-center text-sm text-slate-600;
+  @apply mt-3 rounded-lg border border-dashed border-emerald-800/70 p-8 text-center text-sm text-slate-300;
 }
 
 .lista {
@@ -37,7 +37,9 @@
 }
 
 .tarjeta {
-  @apply flex items-center gap-4 rounded-lg border border-slate-200 p-4 hover:border-slate-400;
+  background: var(--surface);
+  box-shadow: 0 12px 32px #00000020;
+  @apply flex items-center gap-4 rounded-lg border border-emerald-900/60 p-4 hover:border-emerald-500;
 }
 
 .foto {
@@ -45,7 +47,7 @@
 }
 
 .fotoVacia {
-  @apply flex size-14 shrink-0 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-500;
+  @apply flex size-14 shrink-0 items-center justify-center rounded-full bg-emerald-950/60 text-lg font-semibold text-slate-400;
 }
 
 .datos {
@@ -53,13 +55,13 @@
 }
 
 .nombre {
-  @apply truncate font-semibold text-slate-900;
+  @apply truncate font-semibold text-white;
 }
 
 .puesto {
-  @apply text-sm text-slate-700;
+  @apply text-sm text-slate-200;
 }
 
 .detalle {
-  @apply truncate text-sm text-slate-500;
+  @apply truncate text-sm text-slate-400;
 }

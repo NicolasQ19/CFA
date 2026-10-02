@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { ETIQUETAS_ESTADO_POSTULACION } from "@/tipos/dominio";
 import { actualizarEstadoPostulacion } from "./acciones-club";
 import styles from "./SelectorEstadoPostulacion.module.css";
@@ -16,6 +16,7 @@ const CLASE_SELECT = {
 
 export function SelectorEstadoPostulacion({ postulacionId, ofertaId, estadoInicial }) {
   const [estado, setEstado] = useState(estadoInicial);
+  useEffect(() => setEstado(estadoInicial), [estadoInicial]);
   const [mensaje, setMensaje] = useState(null);
   const [error, setError] = useState(null);
   const [estaEnviando, iniciarTransicion] = useTransition();
@@ -54,6 +55,7 @@ export function SelectorEstadoPostulacion({ postulacionId, ofertaId, estadoInici
         className={`${styles.select} ${CLASE_SELECT[estado] ?? ""}`}
         aria-label="Estado de la postulación"
       >
+        {!ESTADOS_ACCION.includes(estado) && <option value={estado}>{ETIQUETAS_ESTADO_POSTULACION[estado] ?? estado}</option>}
         {ESTADOS_ACCION.map((clave) => (
           <option key={clave} value={clave}>
             {ETIQUETAS_ESTADO_POSTULACION[clave]}

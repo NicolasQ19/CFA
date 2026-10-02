@@ -7,7 +7,10 @@ import styles from "./FormularioRegistroAdmin.module.css";
 const ESTADO_INICIAL = { error: null };
 
 export function FormularioRegistroAdmin({ claveSecreta }) {
-  const [estado, ejecutarRegistro, estaEnviando] = useActionState(registrarAdministrador, ESTADO_INICIAL);
+  const [estado, ejecutarRegistro, estaEnviando] = useActionState(
+    registrarAdministrador,
+    ESTADO_INICIAL
+  );
 
   return (
     <form action={ejecutarRegistro} className={styles.formulario}>
@@ -55,7 +58,11 @@ export function FormularioRegistroAdmin({ claveSecreta }) {
 
       {estado.error && <p className={styles.error}>{estado.error}</p>}
 
-      <button type="submit" disabled={estaEnviando} className={styles.botonEnviar}>
+      <button
+        type="submit"
+        disabled={estaEnviando}
+        className={styles.botonEnviar}
+      >
         {estaEnviando ? "Creando cuenta..." : "Crear cuenta de administrador"}
       </button>
     </form>

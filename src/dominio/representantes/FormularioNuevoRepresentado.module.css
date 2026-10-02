@@ -1,0 +1,87 @@
+@reference "tailwindcss";
+
+.formulario {
+  @apply flex flex-col gap-6;
+}
+
+.seccion {
+  @apply flex flex-col gap-4 rounded-xl border border-emerald-900/60 bg-emerald-950/20 p-5;
+}
+
+.tituloSeccion {
+  @apply text-sm font-bold uppercase tracking-wider text-emerald-400;
+}
+
+.grilla {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
+}
+
+.campo {
+  @apply flex flex-col gap-1.5;
+}
+
+.campoCompleto {
+  @apply sm:col-span-2;
+}
+
+.campoFoto {
+  @apply flex flex-wrap items-center gap-4 sm:col-span-2 pb-2;
+}
+
+.fotoMiniPreview {
+  @apply relative h-20 w-20 overflow-hidden rounded-xl border border-emerald-500/40 bg-emerald-950/70 flex items-center justify-center shrink-0;
+}
+
+.fotoImg {
+  @apply h-full w-full object-cover;
+}
+
+.fotoFallback {
+  @apply flex h-full w-full items-center justify-center text-xl font-bold text-emerald-300;
+}
+
+.entradaArchivo {
+  @apply text-xs text-slate-300 file:mr-3 file:rounded-md file:border-0 file:bg-emerald-900/60 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-emerald-200 file:hover:bg-emerald-800 cursor-pointer;
+}
+
+.casilla {
+  @apply flex items-center gap-2 text-xs text-slate-300 cursor-pointer mt-1;
+}
+
+.enlaceCv {
+  @apply inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 underline mt-1;
+}
+
+.ayuda {
+  @apply text-xs text-slate-400 mt-0.5;
+}
+
+.etiqueta {
+  @apply text-xs font-semibold text-slate-200;
+}
+
+.entrada,
+.select,
+.textarea {
+  @apply rounded-lg border border-emerald-800/80 bg-emerald-950/50 px-3.5 py-2 text-sm text-white placeholder-slate-400 focus:border-emerald-500 focus:outline-none;
+}
+
+.textarea {
+  @apply min-h-[90px] resize-y;
+}
+
+.acciones {
+  @apply flex items-center justify-end gap-3 pt-2;
+}
+
+.botonCancelar {
+  @apply rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-slate-800;
+}
+
+.botonGuardar {
+  @apply rounded-lg bg-emerald-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50;
+}
+
+.error {
+  @apply rounded-lg border border-red-800 bg-red-950/40 p-3 text-xs font-medium text-red-300;
+}

@@ -9,21 +9,25 @@
 }
 
 .etiqueta {
-  @apply text-sm font-medium text-slate-700;
+  @apply text-sm font-medium text-slate-200;
 }
 
 .entrada {
-  @apply rounded-md border border-slate-300 px-3 py-2 text-sm;
+  @apply rounded-md border border-emerald-800/70 px-3 py-2 text-sm;
 }
 
 .error {
-  @apply rounded-md bg-red-50 px-3 py-2 text-sm text-red-700;
+  @apply rounded-md bg-red-950/60 px-3 py-2 text-sm text-red-300;
 }
 
 .exito {
-  @apply rounded-md bg-green-50 px-3 py-2 text-sm text-green-700;
+  @apply rounded-md bg-green-950/60 px-3 py-2 text-sm text-green-300;
 }
 
 .botonEnviar {
-  @apply self-start rounded-md bg-slate-900 px-5 py-2 text-sm font-semibold text-white disabled:opacity-60;
+  @apply self-start rounded-md bg-emerald-700 px-5 py-2 text-sm font-semibold text-white disabled:opacity-60;
 }
+
+.seccion { display: grid; gap: 14px; padding: 20px; border: 1px solid #204532; border-radius: 14px; }
+.seccion legend { padding-inline: 6px; color: #a7f3d0; font-weight: 600; }
+.escudo { width: 96px; height: 96px; object-fit: contain; border-radius: 12px; background: #fff; padding: 8px; }

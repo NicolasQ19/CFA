@@ -79,6 +79,27 @@ export function FormularioPerfilClub({ perfilExistente }) {
         />
       </div>
 
+      <fieldset className={styles.seccion}>
+        <legend>Identidad del club</legend>
+        {perfilExistente?.escudo_url && <img src={perfilExistente.escudo_url} alt="Escudo actual del club" className={styles.escudo} />}
+        <label htmlFor="escudo" className={styles.etiqueta}>Escudo (JPG, PNG o WebP, hasta 2 MB)</label>
+        <input id="escudo" name="escudo" type="file" accept="image/jpeg,image/png,image/webp" className={styles.entrada} />
+        {perfilExistente?.escudo_url && <label><input type="checkbox" name="quitarEscudo" /> Quitar escudo actual</label>}
+        <label htmlFor="localidad" className={styles.etiqueta}>Localidad</label>
+        <input id="localidad" name="localidad" maxLength={120} defaultValue={perfilExistente?.localidad ?? ""} className={styles.entrada} />
+        <label htmlFor="descripcion" className={styles.etiqueta}>Acerca del club</label>
+        <textarea id="descripcion" name="descripcion" maxLength={2000} rows={5} defaultValue={perfilExistente?.descripcion ?? ""} className={styles.entrada} placeholder="Historia, identidad y proyecto deportivo del club." />
+        <label htmlFor="instalaciones" className={styles.etiqueta}>Instalaciones</label>
+        <textarea id="instalaciones" name="instalaciones" maxLength={2000} rows={4} defaultValue={perfilExistente?.instalaciones ?? ""} className={styles.entrada} placeholder="Canchas, gimnasio, vestuarios y otros espacios." />
+      </fieldset>
+      <fieldset className={styles.seccion}>
+        <legend>Sitio web y redes</legend>
+        {[["sitioWeb", "sitio_web", "Sitio web"], ["instagram", "instagram", "Instagram"], ["facebook", "facebook", "Facebook"]].map(([campo, clave, etiqueta]) => <div key={campo} className={styles.campo}>
+          <label htmlFor={campo} className={styles.etiqueta}>{etiqueta}</label>
+          <input id={campo} name={campo} type="url" maxLength={500} placeholder="https://…" defaultValue={perfilExistente?.[clave] ?? ""} className={styles.entrada} />
+        </div>)}
+      </fieldset>
+
       {estado.error && <p className={styles.error}>{estado.error}</p>}
 
       {mostrarExito && <p className={styles.exito}>Guardado con éxito</p>}

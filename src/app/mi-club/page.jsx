@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
-import { obtenerPerfilClub } from "@/dominio/perfiles/consultas-club";
+import { obtenerPerfilClub } from "@/dominio/perfiles/consultas";
 import { FormularioPerfilClub } from "@/dominio/perfiles/FormularioPerfilClub";
 import styles from "./page.module.css";
 
-/** RF-11: datos institucionales del club. Requisito previo para publicar ofertas. */
+/*Datos institucionales del club. Requisito previo para publicar ofertas. */
 export default async function PaginaMiClub() {
   const usuario = await obtenerUsuarioActual();
 

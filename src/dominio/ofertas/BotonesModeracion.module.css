@@ -5,9 +5,9 @@
 }
 
 .botonAprobar {
-  @apply rounded-md bg-slate-900 px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-60;
+  @apply rounded-md bg-emerald-700 px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-60;
 }
 
 .botonRechazar {
-  @apply rounded-md border border-red-300 px-4 py-1.5 text-sm font-semibold text-red-700 disabled:opacity-60;
+  @apply rounded-md border border-red-800 px-4 py-1.5 text-sm font-semibold text-red-300 disabled:opacity-60;
 }

@@ -1,0 +1,65 @@
+@reference "tailwindcss";
+
+.formulario {
+  @apply flex flex-col gap-6;
+}
+
+.seccionFoto {
+  @apply flex flex-wrap items-center gap-5 pb-4 border-b border-emerald-900/40;
+}
+
+.fotoContenedor {
+  @apply relative h-24 w-24 overflow-hidden rounded-2xl border-2 border-emerald-500/30 bg-emerald-950/60 shadow-inner flex items-center justify-center shrink-0;
+}
+
+.foto {
+  @apply h-full w-full object-cover;
+}
+
+.fotoVacia {
+  @apply flex flex-col items-center justify-center text-xs font-medium text-slate-400 text-center p-2;
+}
+
+.fotoAcciones {
+  @apply flex flex-col gap-2;
+}
+
+.grillaCampos {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+}
+
+.campo {
+  @apply flex flex-col gap-1.5;
+}
+
+.campoCompleto {
+  @apply md:col-span-2;
+}
+
+.etiqueta {
+  @apply text-sm font-semibold text-white;
+}
+
+.entrada {
+  @apply rounded-lg border border-emerald-800/70 bg-emerald-950/40 px-3.5 py-2 text-sm text-white placeholder-slate-400 focus:border-emerald-500 focus:outline-none;
+}
+
+.entradaArchivo {
+  @apply text-xs text-slate-300 file:mr-3 file:rounded-md file:border-0 file:bg-emerald-900/60 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-emerald-200 file:hover:bg-emerald-800 cursor-pointer;
+}
+
+.casilla {
+  @apply flex items-center gap-2 text-xs text-slate-300 cursor-pointer mt-1;
+}
+
+.botonGuardar {
+  @apply rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500 disabled:opacity-50 self-start shadow-md;
+}
+
+.error {
+  @apply text-xs font-medium text-red-400 bg-red-950/30 border border-red-800/50 p-3 rounded-lg;
+}
+
+.exito {
+  @apply text-xs font-medium text-emerald-400 bg-emerald-950/40 border border-emerald-800/50 p-3 rounded-lg;
+}

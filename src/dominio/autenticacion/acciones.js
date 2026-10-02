@@ -7,16 +7,10 @@ import { crearClienteAdmin } from "@/lib/supabase/cliente-admin";
 const ROLES_AUTORREGISTRABLES = ["candidato", "representante", "club"];
 
 /**
- * RF-01: registra un usuario nuevo eligiendo un rol (Candidato, Representante o Club)
+ * Registra un usuario nuevo eligiendo un rol (Candidato, Representante o Club)
  * y crea su fila espejo en la tabla `usuarios`.
- * El rol "administrador" está excluido a propósito: no es autorregistrable desde
- * este formulario público, solo a través de /admin/registrarse con la clave secreta
- * (ver `registrarAdministrador`).
  */
-export async function registrarUsuario(
-  _estadoPrevio,
-  datosFormulario
-) {
+export async function registrarUsuario(_estadoPrevio, datosFormulario) {
   const nombreCompleto = String(datosFormulario.get("nombreCompleto") ?? "").trim();
   const correoElectronico = String(datosFormulario.get("correoElectronico") ?? "").trim();
   const contrasena = String(datosFormulario.get("contrasena") ?? "");
@@ -34,14 +28,9 @@ export async function registrarUsuario(
 }
 
 /**
- * Registro de administradores: solo accesible desde /admin/registrarse, una ruta
- * no enlazada desde ningún lado de la UI y protegida con una clave secreta que
- * se valida acá, del lado del servidor (nunca confiando en el formulario).
+ * Registro de administradores: solo accesible desde /admin/registrarse.
  */
-export async function registrarAdministrador(
-  _estadoPrevio,
-  datosFormulario
-) {
+export async function registrarAdministrador(_estadoPrevio, datosFormulario) {
   const claveSecreta = String(datosFormulario.get("claveSecreta") ?? "");
   const claveEsperada = process.env.ADMIN_REGISTRO_SECRETO;
 
@@ -57,9 +46,6 @@ export async function registrarAdministrador(
     return { error: "Completá todos los campos obligatorios." };
   }
 
-  // Usa la service_role key: crea el usuario ya confirmado (sin depender del
-  // envío de email) y salta la RLS que bloquea insertar rol = 'administrador'
-  // desde el cliente normal.
   const supabaseAdmin = crearClienteAdmin();
 
   const { data: datosRegistro, error: errorRegistro } = await supabaseAdmin.auth.admin.createUser({
@@ -83,7 +69,6 @@ export async function registrarAdministrador(
     return { error: errorPerfil.message };
   }
 
-  // Inicia sesión con el cliente normal para dejar la cookie de sesión puesta.
   const supabase = await crearClienteServidor();
   await supabase.auth.signInWithPassword({ email: correoElectronico, password: contrasena });
 
@@ -116,11 +101,8 @@ async function crearCuenta(datos) {
   redirect(destinoSegunRol(datos.rol));
 }
 
-/** RF-02: inicio de sesión con correo y contraseña a través de Supabase Auth. */
-export async function iniciarSesion(
-  _estadoPrevio,
-  datosFormulario
-) {
+/*Inicio de sesión con correo y contraseña a través de Supabase Auth. */
+export async function iniciarSesion(_estadoPrevio, datosFormulario) {
   const correoElectronico = String(datosFormulario.get("correoElectronico") ?? "").trim();
   const contrasena = String(datosFormulario.get("contrasena") ?? "");
 
@@ -131,8 +113,26 @@ export async function iniciarSesion(
     password: contrasena,
   });
 
-  if (error || !data.user) {
-    return { error: "Correo o contraseña incorrectos." };
+  if (error) {
+    const mensajes = {
+      invalid_credentials: "Correo o contraseña incorrectos.",
+      email_not_confirmed: "Confirmá tu correo electrónico desde el enlace que recibiste antes de iniciar sesión.",
+      user_banned: "Esta cuenta está suspendida. Contactá al administrador.",
+      over_request_rate_limit: "Hubo demasiados intentos. Esperá unos minutos y volvé a intentar.",
+    };
+
+    // Registrar solo el diagnóstico técnico, nunca las credenciales ni la sesión.
+    console.error("Error al iniciar sesión", { codigo: error.code, estado: error.status });
+
+    return {
+      error: mensajes[error.code] ?? (error.status === 429
+        ? "Hubo demasiados intentos. Esperá unos minutos y volvé a intentar."
+        : "No se pudo iniciar sesión por un problema del servicio. Volvé a intentar en unos minutos."),
+    };
+  }
+
+  if (!data.user) {
+    return { error: "No se pudo completar el inicio de sesión. Volvé a intentar." };
   }
 
   const { data: usuario } = await supabase
@@ -144,7 +144,7 @@ export async function iniciarSesion(
   redirect(destinoSegunRol(usuario?.rol ?? "candidato"));
 }
 
-/** RF-02: cierre de sesión. */
+/*Cierre de sesión. */
 export async function cerrarSesion() {
   const supabase = await crearClienteServidor();
   await supabase.auth.signOut();

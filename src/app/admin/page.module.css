@@ -1,45 +1,127 @@
 @reference "tailwindcss";
 
 .main {
-  @apply mx-auto max-w-3xl px-4 py-10;
+  @apply mx-auto w-full max-w-4xl px-4 py-10;
+}
+
+.cabecera {
+  @apply flex flex-wrap items-center justify-between gap-4 border-b border-emerald-900/60 pb-6;
 }
 
 .titulo {
-  @apply text-2xl font-bold text-slate-900;
+  @apply text-2xl font-bold text-white;
 }
 
 .subtitulo {
-  @apply mt-1 text-sm text-slate-600;
+  @apply mt-1 text-sm text-slate-300;
+}
+
+.insigniaConteo {
+  @apply rounded-full border border-amber-600/50 bg-amber-950/40 px-3 py-1 text-xs font-semibold text-amber-300;
 }
 
 .lista {
-  @apply mt-8 flex flex-col gap-3;
+  @apply mt-8 flex flex-col gap-6;
 }
 
 .itemVacio {
-  @apply text-sm text-slate-600;
+  @apply rounded-lg border border-dashed border-emerald-900/60 p-10 text-center;
+}
+
+.textoVacio {
+  @apply text-base font-semibold text-slate-200;
+}
+
+.subtextoVacio {
+  @apply mt-1 text-sm text-slate-400;
 }
 
 .item {
-  @apply rounded-lg border border-slate-200 p-4;
+  background: var(--surface);
+  box-shadow: 0 12px 32px #00000030;
+  @apply rounded-xl border border-emerald-900/60 p-6;
 }
 
 .itemEncabezado {
-  @apply flex items-start justify-between gap-4;
+  @apply flex flex-wrap items-start justify-between gap-4 border-b border-emerald-900/40 pb-5;
+}
+
+.infoClub {
+  @apply flex items-start gap-4;
+}
+
+.escudo {
+  @apply h-16 w-16 shrink-0 rounded-full border border-emerald-700/60 bg-emerald-950/80 object-contain p-1.5 shadow-md;
+}
+
+.escudoFallback {
+  @apply flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-emerald-700/60 bg-emerald-950/80 text-2xl font-bold text-emerald-400 shadow-md;
+}
+
+.lineaClub {
+  @apply flex flex-wrap items-center gap-2;
 }
 
 .clubNombre {
-  @apply text-xs font-medium uppercase tracking-wide text-slate-500;
+  @apply text-xs font-semibold uppercase tracking-wider text-emerald-400;
+}
+
+.enlacePerfilClub {
+  @apply text-xs text-slate-400 hover:text-emerald-300 hover:underline;
 }
 
 .itemTitulo {
-  @apply font-semibold text-slate-900;
+  @apply mt-0.5 text-xl font-bold text-white;
 }
 
-.itemDetalle {
-  @apply mt-1 text-sm text-slate-600;
+.etiquetaPendiente {
+  @apply mt-2 inline-block rounded-md border border-amber-500/40 bg-amber-950/50 px-2 py-0.5 text-xs font-medium text-amber-300;
+}
+
+.accionesModeracion {
+  @apply shrink-0;
+}
+
+.seccionDetalle {
+  @apply mt-5 rounded-lg border border-emerald-900/40 bg-emerald-950/30 p-4;
+}
+
+.subtituloSeccion {
+  @apply text-xs font-semibold uppercase tracking-wider text-slate-400;
+}
+
+.grillaDatos {
+  @apply mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3;
+}
+
+.dato {
+  @apply flex flex-col;
+}
+
+.datoEtiqueta {
+  @apply text-xs text-slate-400;
+}
+
+.datoValor {
+  @apply text-sm font-medium text-slate-100;
+}
+
+.seccionDescripcion {
+  @apply mt-5;
 }
 
 .descripcion {
-  @apply mt-2 whitespace-pre-line text-sm text-slate-800;
+  @apply mt-2 whitespace-pre-line rounded-lg border border-emerald-900/30 bg-emerald-950/20 p-4 text-sm leading-relaxed text-slate-200;
+}
+
+.seccionClub {
+  @apply mt-5 border-t border-emerald-900/40 pt-4 text-xs text-slate-300;
+}
+
+.datoClub {
+  @apply mt-1 text-slate-300;
+}
+
+.enlaceExterno {
+  @apply text-emerald-400 hover:underline;
 }

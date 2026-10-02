@@ -54,6 +54,12 @@ export async function BarraNavegacion() {
             </>
           )}
 
+          {usuario?.rol === "representante" && (
+            <Link href="/mi-cartera" className={styles.enlace}>
+              Mi cartera
+            </Link>
+          )}
+
           {usuario?.rol === "administrador" && (
             <Link href="/admin" className={styles.enlace}>
               Moderación
