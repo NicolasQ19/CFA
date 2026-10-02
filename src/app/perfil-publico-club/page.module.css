@@ -1,7 +1,7 @@
 @reference "tailwindcss";
 
 .main {
-  @apply mx-auto max-w-2xl px-4 py-10;
+  @apply mx-auto w-full max-w-2xl px-4 py-10;
 }
 
 .encabezado {
@@ -9,19 +9,21 @@
 }
 
 .titulo {
-  @apply text-2xl font-bold text-slate-900;
+  @apply text-2xl font-bold text-white;
 }
 
 .subtitulo {
-  @apply mt-1 text-sm text-slate-600;
+  @apply mt-1 text-sm text-slate-300;
 }
 
 .enlaceEditar {
-  @apply shrink-0 rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50;
+  @apply shrink-0 rounded-md border border-emerald-800/70 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-emerald-950/40;
 }
 
 .tarjeta {
-  @apply mt-8 flex flex-col gap-4 rounded-lg border border-slate-200 p-6;
+  background: var(--surface);
+  box-shadow: 0 12px 32px #00000020;
+  @apply mt-8 flex flex-col gap-4 rounded-lg border border-emerald-900/60 p-6;
 }
 
 .grilla {
@@ -33,15 +35,15 @@
 }
 
 .etiqueta {
-  @apply text-xs font-medium uppercase tracking-wide text-slate-500;
+  @apply text-xs font-medium uppercase tracking-wide text-slate-400;
 }
 
 .valor {
-  @apply text-sm text-slate-900;
+  @apply text-sm text-white;
 }
 
 .vacio {
-  @apply rounded-md bg-slate-50 px-4 py-3 text-sm text-slate-600;
+  @apply rounded-md bg-emerald-950/40 px-4 py-3 text-sm text-slate-300;
 }
 
 .seccionOfertas {
@@ -49,7 +51,7 @@
 }
 
 .tituloSeccion {
-  @apply mb-3 text-lg font-semibold text-slate-900;
+  @apply mb-3 text-lg font-semibold text-white;
 }
 
 .listaOfertas {
@@ -57,13 +59,19 @@
 }
 
 .oferta {
-  @apply flex flex-col gap-0.5 rounded-lg border border-slate-200 p-4 hover:bg-slate-50;
+  @apply flex flex-col gap-0.5 rounded-lg border border-emerald-900/60 p-4 hover:bg-emerald-950/40;
 }
 
 .ofertaTitulo {
-  @apply font-semibold text-slate-900;
+  @apply font-semibold text-white;
 }
 
 .ofertaDetalle {
-  @apply text-sm text-slate-600;
+  @apply text-sm text-slate-300;
 }
+
+.encabezado { flex-wrap: wrap; padding: 24px; border: 1px solid #204532; border-radius: 18px; background: linear-gradient(135deg, #153d28, #101c16); }
+.escudo { width: 88px; height: 88px; object-fit: contain; background: #fff; border-radius: 14px; padding: 8px; }
+.texto { white-space: pre-line; overflow-wrap: anywhere; color: #d5e6dc; }
+.redes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.llamada { color: #6ee7b7; font-size: .85rem; margin-top: 10px; }

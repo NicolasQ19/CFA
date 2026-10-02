@@ -2,8 +2,8 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 
 /**
- * Refresca la sesión de Supabase en cada request y la propaga en las cookies
- * de la respuesta. Debe ejecutarse desde src/proxy.js.
+ * Refresca la sesión de Supabase en cada request y la propaga en las cookies.
+ * Se ejecuta desde src/middleware.js.
  */
 export async function actualizarSesion(peticion) {
   let respuesta = NextResponse.next({ request: peticion });
@@ -29,7 +29,6 @@ export async function actualizarSesion(peticion) {
     }
   );
 
-  // Importante: dispara la renovación del token si hace falta.
   await supabase.auth.getUser();
 
   return respuesta;

@@ -1,3 +1,4 @@
+import { urlPublica } from "@/lib/club";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
@@ -33,9 +34,10 @@ export default async function PaginaPerfilPublicoClub({ searchParams }) {
   return (
     <main className={styles.main}>
       <div className={styles.encabezado}>
+        {perfil?.escudo_url && <img src={perfil.escudo_url} alt={`Escudo de ${perfil.nombre_club}`} className={styles.escudo} />}
         <div>
           <h1 className={styles.titulo}>
-            {esVistaPropia ? "Perfil público del club" : perfil.nombre_club}
+            {perfil?.nombre_club ?? "Perfil público del club"}
           </h1>
           <p className={styles.subtitulo}>
             {esVistaPropia
@@ -60,13 +62,19 @@ export default async function PaginaPerfilPublicoClub({ searchParams }) {
           <div className={styles.tarjeta}>
             <div className={styles.grilla}>
               <Dato etiqueta="Nombre del club" valor={perfil.nombre_club} />
+              <Dato etiqueta="Localidad" valor={perfil.localidad} />
               <Dato etiqueta="Provincia" valor={perfil.provincia} />
               <Dato etiqueta="Categoría" valor={perfil.categoria} />
             </div>
           </div>
 
-          <section className={styles.seccionOfertas}>
-            <h2 className={styles.tituloSeccion}>Ofertas activas</h2>
+          {perfil.descripcion && <section className={styles.tarjeta}><h2 className={styles.tituloSeccion}>Acerca del club</h2><p className={styles.texto}>{perfil.descripcion}</p></section>}
+          {perfil.instalaciones && <section className={styles.tarjeta}><h2 className={styles.tituloSeccion}>Instalaciones</h2><p className={styles.texto}>{perfil.instalaciones}</p></section>}
+          <div className={styles.redes}>
+            {[["sitio_web", "Sitio web"], ["instagram", "Instagram"], ["facebook", "Facebook"]].map(([campo, etiqueta]) => urlPublica(perfil[campo]) && <a key={campo} href={urlPublica(perfil[campo])} target="_blank" rel="noopener noreferrer" className={styles.enlaceEditar}>{etiqueta} ↗</a>)}
+          </div>
+          <section className={styles.seccionOfertas} id="ofertas">
+            <h2 className={styles.tituloSeccion}>Ofertas activas ({ofertas.length})</h2>
             {ofertas.length === 0 ? (
               <p className={styles.vacio}>Este club no tiene ofertas publicadas en este momento.</p>
             ) : (
@@ -82,6 +90,7 @@ export default async function PaginaPerfilPublicoClub({ searchParams }) {
                         {oferta.categoria} · {oferta.provincia} ·{" "}
                         {ETIQUETAS_TIPO_CONTRATO[oferta.tipo_contrato]}
                       </span>
+                      <span className={styles.llamada}>Ver oferta y postularme →</span>
                     </Link>
                   </li>
                 ))}

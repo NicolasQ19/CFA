@@ -1,35 +1,35 @@
 @reference "tailwindcss";
 
 .main {
-  @apply mx-auto max-w-5xl px-4 py-10;
+  @apply mx-auto w-full max-w-5xl px-4 py-10;
 }
 
 .titulo {
-  @apply text-2xl font-bold text-slate-900;
+  @apply text-2xl font-bold text-white;
 }
 
 .subtitulo {
-  @apply mt-1 mb-6 text-sm text-slate-600;
+  @apply mt-1 mb-6 text-sm text-slate-300;
 }
 
 .vacio {
-  @apply rounded-lg border border-dashed border-slate-300 p-8 text-center text-sm text-slate-600;
+  @apply rounded-lg border border-dashed border-emerald-800/70 p-8 text-center text-sm text-slate-300;
 }
 
 .botonExplorar {
-  @apply mt-3 inline-block rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white;
+  @apply mt-3 inline-block rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white;
 }
 
 .tablaContenedor {
-  @apply overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm;
+  @apply overflow-x-auto rounded-lg border border-emerald-900/60 bg-zinc-950 shadow-sm;
 }
 
 .tabla {
-  @apply min-w-full divide-y divide-slate-200 text-left text-sm text-slate-600;
+  @apply min-w-full divide-y divide-emerald-900/60 text-left text-sm text-slate-300;
 }
 
 .tabla thead {
-  @apply bg-slate-50 text-xs font-semibold uppercase;
+  @apply bg-emerald-950/40 text-xs font-semibold uppercase;
 }
 
 .tabla th,
@@ -38,11 +38,11 @@
 }
 
 .tabla tbody {
-  @apply divide-y divide-slate-200;
+  @apply divide-y divide-emerald-900/60;
 }
 
 .tabla tbody tr:hover {
-  @apply bg-slate-50;
+  @apply bg-emerald-950/40;
 }
 
 .columnaAccion {
@@ -50,37 +50,37 @@
 }
 
 .nombreOferta {
-  @apply block font-medium text-slate-900;
+  @apply block font-medium text-white;
 }
 
 .avisoOferta {
-  @apply mt-1 inline-block rounded bg-slate-100 px-1.5 py-0.5 text-xs font-medium text-slate-600;
+  @apply mt-1 inline-block rounded bg-emerald-950/60 px-1.5 py-0.5 text-xs font-medium text-slate-300;
 }
 
 .fecha {
-  @apply text-slate-500;
+  @apply text-slate-400;
 }
 
 .badge {
-  @apply inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 ring-1 ring-inset ring-slate-500/20;
+  @apply inline-flex items-center rounded-md bg-emerald-950/60 px-2 py-1 text-xs font-medium text-slate-200 ring-1 ring-inset ring-slate-500/20;
 }
 
 .badgePostulado {
-  @apply bg-blue-50 text-blue-700 ring-blue-600/20;
+  @apply bg-blue-950/60 text-blue-300 ring-blue-600/20;
 }
 
 .badgeVisto {
-  @apply bg-purple-50 text-purple-700 ring-purple-600/20;
+  @apply bg-purple-950/60 text-purple-300 ring-purple-600/20;
 }
 
 .badgePreseleccionado {
-  @apply bg-amber-50 text-amber-700 ring-amber-600/20;
+  @apply bg-amber-950/60 text-amber-300 ring-amber-600/20;
 }
 
 .badgeRechazado {
-  @apply bg-red-50 text-red-700 ring-red-600/20;
+  @apply bg-red-950/60 text-red-300 ring-red-600/20;
 }
 
 .enlace {
-  @apply font-medium text-blue-600 hover:underline;
+  @apply font-medium text-emerald-400 hover:underline;
 }

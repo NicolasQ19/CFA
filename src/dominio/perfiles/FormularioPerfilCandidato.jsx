@@ -11,12 +11,47 @@ import {
   esPuestoDeCuerpoTecnico,
   opcionesConValorActual,
 } from "@/tipos/dominio";
+import { PerfilCandidato } from "./PerfilCandidato";
+import { DISPONIBILIDADES, SITUACIONES, completitudPerfil } from "@/lib/perfil-candidato";
 import styles from "./FormularioPerfilCandidato.module.css";
 
 const ESTADO_INICIAL = { error: null };
 
-export function FormularioPerfilCandidato({ perfilExistente }) {
+export function FormularioPerfilCandidato({ perfilExistente, nombreCandidato }) {
   const router = useRouter();
+  const formularioRef = useRef(null);
+  const dialogoRef = useRef(null);
+  const urlsRef = useRef([]);
+  const [experiencias, setExperiencias] = useState(() => (perfilExistente?.experiencias ?? []).map((e, i) => ({ ...e, clave: `existente-${i}` })));
+  const [borrador, setBorrador] = useState(perfilExistente ?? { puesto: "jugador" });
+  const [vistaPrevia, setVistaPrevia] = useState(null);
+  useEffect(() => () => urlsRef.current.forEach(url => URL.revokeObjectURL(url)), []);
+
+  function leerBorrador() {
+    const datos = new FormData(formularioRef.current);
+    const campos = { puesto: "puesto", provincia: "provincia", club_actual: "clubActual", trayectoria: "trayectoria", formacion_academica: "formacionAcademica", presentacion: "presentacion", disponibilidad: "disponibilidad", situacion_club: "situacionClub", incorporacion_desde: "incorporacionDesde", posicion_juego: "posicionJuego", pierna_habil: "piernaHabil", altura_cm: "alturaCm", peso_kg: "pesoKg", titulo_o_matricula: "tituloOMatricula", licencia: "licencia", anios_experiencia: "aniosExperiencia", especialidad: "especialidad" };
+    const perfil = { ...perfilExistente, experiencias };
+    for (const [clave, campo] of Object.entries(campos)) perfil[clave] = String(datos.get(campo) ?? "").trim();
+    perfil.dispuesto_mudarse = datos.get("dispuestoMudarse") === "" ? null : datos.get("dispuestoMudarse") === "si";
+    perfil.enlaces_video = [1, 2, 3].map(n => String(datos.get(`enlaceVideo${n}`) ?? "").trim()).filter(Boolean);
+    const foto = datos.get("foto"), cv = datos.get("curriculum");
+    perfil.foto_url = datos.get("quitarFoto") && !foto?.size ? null : foto?.size ? "seleccionada" : perfilExistente?.foto_url;
+    perfil.cv_ruta = datos.get("quitarCv") ? null : cv?.size ? "seleccionado" : perfilExistente?.cv_ruta;
+    return { perfil, foto, cv };
+  }
+
+  function abrirVistaPrevia() {
+    urlsRef.current.forEach(url => URL.revokeObjectURL(url));
+    urlsRef.current = [];
+    const { perfil, foto, cv } = leerBorrador();
+    const crearUrl = archivo => { const url = URL.createObjectURL(archivo); urlsRef.current.push(url); return url; };
+    if (foto?.size) perfil.foto_url = foto.type.startsWith("image/") ? crearUrl(foto) : null;
+    const cvUrl = cv?.size && (cv.type === "application/pdf" || (!cv.type && cv.name.toLowerCase().endsWith(".pdf"))) ? crearUrl(cv) : undefined;
+    if (cv?.size && !cvUrl) perfil.cv_ruta = null;
+    setVistaPrevia({ perfil, cvUrl });
+    dialogoRef.current.showModal();
+  }
+  const avance = completitudPerfil({ ...borrador, experiencias });
   const [estado, ejecutarGuardado, estaGuardando] = useActionState(
     guardarPerfilCandidato,
     ESTADO_INICIAL
@@ -41,8 +76,33 @@ export function FormularioPerfilCandidato({ perfilExistente }) {
   const esCuerpoTecnico = esPuestoDeCuerpoTecnico(puestoSeleccionado);
 
   return (
-    <form action={ejecutarGuardado} className={styles.formulario}>
+    <>
+    <section className={styles.progreso} aria-label="Completitud del perfil">
+      <div><strong>Tu perfil, paso a paso</strong><span>{avance.porcentaje}%</span></div>
+      <progress max="100" value={avance.porcentaje} aria-label="Perfil completo" />
+      <p className={styles.ayuda}>{avance.faltantes.length ? `Podés sumar: ${avance.faltantes.join(", ")}.` : "¡Tu perfil tiene toda la información sugerida!"} Estos campos son opcionales, salvo puesto y provincia.</p>
+    </section>
+    <form ref={formularioRef} action={ejecutarGuardado} className={styles.formulario} onChange={() => { setMostrarExito(false); setBorrador(leerBorrador().perfil); }}>
+      <input type="hidden" name="experiencias" value={JSON.stringify(experiencias.map(({ clave, ...e }) => e))} />
+      <button type="button" className={styles.botonSecundario} onClick={abrirVistaPrevia}>Vista previa sin guardar</button>
       <CampoFoto fotoActual={perfilExistente?.foto_url} />
+
+      <fieldset className={styles.fieldset}>
+        <legend className={styles.leyenda}>Curriculum vitae</legend>
+        <label htmlFor="curriculum" className={styles.etiqueta}>Subir CV en PDF (hasta 5 MB)</label>
+        <input id="curriculum" name="curriculum" type="file" accept=".pdf,application/pdf"
+          aria-describedby="ayuda-cv" className={styles.entradaArchivo}
+          onChange={(evento) => {
+            const archivo = evento.target.files?.[0];
+            evento.target.setCustomValidity(archivo && archivo.size > 5_000_000 ? "El CV no puede pesar más de 5 MB." : "");
+            evento.target.reportValidity();
+          }} />
+        <p id="ayuda-cv" className={styles.ayuda}>Los clubes que puedan ver tu perfil también podrán descargar tu CV. Al subir otro PDF, reemplazás el anterior.</p>
+        {perfilExistente?.cv_ruta && <>
+          <a href={`/api/candidatos/${perfilExistente.usuario_id}/cv`} className={styles.enlaceCv}>Descargar CV actual</a>
+          <label className={styles.casilla}><input type="checkbox" name="quitarCv" /> Quitar CV actual</label>
+        </>}
+      </fieldset>
 
       <CampoSelect
         id="puesto"
@@ -64,6 +124,17 @@ export function FormularioPerfilCandidato({ perfilExistente }) {
         etiqueta="Club actual"
         valorInicial={perfilExistente?.club_actual ?? ""}
       />
+
+      <fieldset className={styles.fieldset}>
+        <legend className={styles.leyenda}>Presentación y disponibilidad</legend>
+        <label className={styles.etiqueta} htmlFor="presentacion">Sobre mí</label>
+        <textarea id="presentacion" name="presentacion" maxLength={600} rows={4} defaultValue={perfilExistente?.presentacion ?? ""} className={styles.entrada} placeholder="Contá qué buscás y qué podés aportar al equipo." aria-describedby="presentacion-ayuda" />
+        <p id="presentacion-ayuda" className={styles.ayuda}>Hasta 600 caracteres.</p>
+        <CampoLista id="disponibilidad" etiqueta="Disponibilidad para ofertas" opciones={Object.keys(DISPONIBILIDADES)} etiquetas={DISPONIBILIDADES} valorInicial={perfilExistente?.disponibilidad ?? ""} />
+        <CampoLista id="situacionClub" etiqueta="Situación actual" opciones={Object.keys(SITUACIONES)} etiquetas={SITUACIONES} valorInicial={perfilExistente?.situacion_club ?? ""} />
+        <CampoTexto id="incorporacionDesde" etiqueta="Podría incorporarme desde" tipo="date" valorInicial={perfilExistente?.incorporacion_desde ?? ""} />
+        <CampoLista id="dispuestoMudarse" etiqueta="¿Estás dispuesto a mudarte?" opciones={["si", "no"]} etiquetas={{ si: "Sí", no: "No" }} valorInicial={perfilExistente?.dispuesto_mudarse == null ? "" : perfilExistente.dispuesto_mudarse ? "si" : "no"} />
+      </fieldset>
 
       {esCuerpoTecnico ? (
         <fieldset className={styles.fieldset}>
@@ -122,9 +193,23 @@ export function FormularioPerfilCandidato({ perfilExistente }) {
         </fieldset>
       )}
 
+      <fieldset className={styles.fieldset}>
+        <legend className={styles.leyenda}>Experiencia en clubes</legend>
+        <p className={styles.ayuda}>Agregá primero las experiencias más recientes. Podés cargar hasta 20.</p>
+        {experiencias.map((experiencia, indice) => <div key={experiencia.clave} className={styles.experiencia}>
+          <h3>Experiencia {indice + 1}</h3>
+          {[["club", "Club", 120], ["categoria", "Categoría", 100], ["temporada", "Temporada (por ejemplo, 2024–2025)", 40], ["descripcion", "Descripción", 600]].map(([campo, etiqueta, limite]) => <div className={styles.campo} key={campo}>
+            <label htmlFor={`${experiencia.clave}-${campo}`} className={styles.etiqueta}>{etiqueta}</label>
+            <input id={`${experiencia.clave}-${campo}`} value={experiencia[campo] ?? ""} maxLength={limite} className={styles.entrada}
+              onChange={evento => setExperiencias(actuales => actuales.map(e => e.clave === experiencia.clave ? { ...e, [campo]: evento.target.value } : e))} />
+          </div>)}
+          <button type="button" className={styles.botonSecundario} onClick={() => setExperiencias(actuales => actuales.filter(e => e.clave !== experiencia.clave))} aria-label={`Quitar experiencia ${indice + 1}`}>Quitar experiencia</button>
+        </div>)}
+        <button type="button" disabled={experiencias.length >= 20} className={styles.botonSecundario} onClick={() => setExperiencias(actuales => [...actuales, { clave: crypto.randomUUID(), club: "", categoria: "", temporada: "", descripcion: "" }])}>Agregar experiencia</button>
+      </fieldset>
       <CampoTextoLargo
         id="trayectoria"
-        etiqueta="Trayectoria"
+        etiqueta="Otros antecedentes / trayectoria anterior"
         valorInicial={perfilExistente?.trayectoria ?? ""}
       />
       <CampoTextoLargo
@@ -180,6 +265,14 @@ export function FormularioPerfilCandidato({ perfilExistente }) {
         {estaGuardando ? "Guardando..." : "Guardar perfil"}
       </button>
     </form>
+    <dialog ref={dialogoRef} className={styles.dialogo} aria-labelledby="titulo-vista-previa">
+      <div className={styles.barraVistaPrevia}>
+        <div><h2 id="titulo-vista-previa">Vista previa del perfil</h2><p className={styles.ayuda}>Estos cambios todavía no se guardaron.</p></div>
+        <button type="button" autoFocus className={styles.botonSecundario} onClick={() => dialogoRef.current.close()}>Volver a editar</button>
+      </div>
+      {vistaPrevia && <PerfilCandidato perfil={vistaPrevia.perfil} nombreCandidato={nombreCandidato} idPerfil={perfilExistente?.usuario_id} cvUrl={vistaPrevia.cvUrl} />}
+    </dialog>
+    </>
   );
 }
 
@@ -264,7 +357,7 @@ function CampoFoto({ fotoActual }) {
 }
 
 /** Select no controlado de una lista de textos; incluye el valor guardado aunque no esté en la lista. */
-function CampoLista({ id, etiqueta, opciones, valorInicial, requerido = false }) {
+function CampoLista({ id, etiqueta, opciones, etiquetas, valorInicial, requerido = false }) {
   return (
     <div className={styles.campo}>
       <label htmlFor={id} className={styles.etiqueta}>
@@ -280,7 +373,7 @@ function CampoLista({ id, etiqueta, opciones, valorInicial, requerido = false })
         <option value="">Elegí una opción</option>
         {opcionesConValorActual(opciones, valorInicial).map((opcion) => (
           <option key={opcion} value={opcion}>
-            {opcion}
+            {etiquetas?.[opcion] ?? opcion}
           </option>
         ))}
       </select>
