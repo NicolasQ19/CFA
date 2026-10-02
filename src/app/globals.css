@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+  --background: #080d0b;
+  --foreground: #f4faf6;
+  --surface: #101c16;
+  --accent: #34d399;
 }
 
 @theme inline {
@@ -12,8 +15,43 @@
   --font-mono: var(--font-geist-mono);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  body {
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 85% 0%, #12402b66, transparent 55%), var(--background);
+    color: var(--foreground);
+    font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  }
+
+  main { width: 100%; }
+  h1, h2, h3 { letter-spacing: -0.035em; text-wrap: balance; }
+  h1 { line-height: 1.2; }
+  p { line-height: 1.7; }
+  ::selection { background: #065f46; color: #fff; }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea {
+    background: #0b1510;
+    color: var(--foreground);
+    min-height: 44px;
+    max-width: 100%;
+    border-radius: 10px;
+  }
+  input::placeholder, textarea::placeholder { color: #8b9e93; opacity: 1; }
+  input[type="checkbox"], input[type="radio"] { accent-color: #10b981; }
+  option { background: #101c16; color: #f4faf6; }
+  button, a, input, select, textarea { transition: background-color 160ms, border-color 160ms, color 160ms, box-shadow 160ms; }
+  button:not(:disabled), select { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  :where(a, button, input, select, textarea):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+  fieldset { background: var(--surface); }
+  table { width: 100%; }
+  th { color: #b9d2c3; }
+  td, th { border-color: #204532; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
 }

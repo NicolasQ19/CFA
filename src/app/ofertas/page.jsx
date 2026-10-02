@@ -56,25 +56,43 @@ export default async function PaginaListadoOfertas({ searchParams }) {
         {ofertas.length === 0 && (
           <li className={styles.itemVacio}>No hay ofertas publicadas con esos filtros.</li>
         )}
-        {ofertas.map((oferta) => (
-          <li key={oferta.id}>
-            <Link
-              href={`/ofertas/${oferta.id}`}
-              className={styles.tarjeta}
-            >
-              <p className={styles.clubNombre}>
-                {oferta.perfiles_club?.nombre_club}
-              </p>
-              <h2 className={styles.ofertaTitulo}>
-                {ETIQUETAS_PUESTO_PROFESIONAL[oferta.puesto_buscado]}
-                {oferta.posicion_juego ? ` — ${oferta.posicion_juego}` : ""}
-              </h2>
-              <p className={styles.ofertaDetalle}>
-                {oferta.categoria} · {oferta.provincia} · {ETIQUETAS_TIPO_CONTRATO[oferta.tipo_contrato]}
-              </p>
-            </Link>
-          </li>
-        ))}
+        {ofertas.map((oferta) => {
+          const club = oferta.perfiles_club;
+          return (
+            <li key={oferta.id}>
+              <Link
+                href={`/ofertas/${oferta.id}`}
+                className={styles.tarjeta}
+              >
+                <div className={styles.tarjetaContenido}>
+                  {club?.escudo_url ? (
+                    <img
+                      src={club.escudo_url}
+                      alt={`Escudo de ${club.nombre_club ?? "club"}`}
+                      className={styles.escudo}
+                    />
+                  ) : (
+                    <div className={styles.escudoFallback}>
+                      {club?.nombre_club ? club.nombre_club.charAt(0).toUpperCase() : "⚽"}
+                    </div>
+                  )}
+                  <div className={styles.datosOferta}>
+                    <p className={styles.clubNombre}>
+                      {club?.nombre_club ?? "Club"}
+                    </p>
+                    <h2 className={styles.ofertaTitulo}>
+                      {ETIQUETAS_PUESTO_PROFESIONAL[oferta.puesto_buscado] ?? oferta.puesto_buscado}
+                      {oferta.posicion_juego ? ` — ${oferta.posicion_juego}` : ""}
+                    </h2>
+                    <p className={styles.ofertaDetalle}>
+                      {oferta.categoria} · {oferta.provincia} · {ETIQUETAS_TIPO_CONTRATO[oferta.tipo_contrato] ?? oferta.tipo_contrato}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </main>
   );
