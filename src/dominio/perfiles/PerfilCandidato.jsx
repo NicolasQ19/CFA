@@ -1,3 +1,4 @@
+import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
 import Link from "next/link";
 import { extraerIdVideoYoutube } from "@/lib/youtube";
 import { DISPONIBILIDADES, SITUACIONES } from "@/lib/perfil-candidato";
@@ -11,7 +12,7 @@ export function PerfilCandidato({ perfil, nombreCandidato, idPerfil, editable = 
       <div className={styles.encabezado}>
         {perfil?.foto_url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={perfil.foto_url} alt={`Foto de ${nombreCandidato}`} className={styles.foto} />
+          <ImagenAmpliable src={perfil.foto_url} alt={`Foto de ${nombreCandidato}`} className={styles.foto} />
         ) : <div className={styles.avatar} aria-hidden="true">{nombreCandidato?.trim().split(/\s+/).slice(0, 2).map(p => p[0]).join("") || "C"}</div>}
         <div className={styles.encabezadoTexto}>
           <h1 className={styles.titulo}>
@@ -30,11 +31,14 @@ export function PerfilCandidato({ perfil, nombreCandidato, idPerfil, editable = 
             {perfil.disponibilidad && <span>{DISPONIBILIDADES[perfil.disponibilidad]}</span>}
           </div>}
         </div>
+        <div className={styles.accionesPerfil}>
+        {perfil?.cv_ruta && <a href={cvUrl ?? `/api/candidatos/${idPerfil}/cv`} className={styles.enlaceCv} download="curriculum.pdf">Descargar CV en PDF</a>}
         {editable && (
           <Link href="/mi-perfil" className={styles.enlaceEditar}>
             Editar perfil
           </Link>
         )}
+        </div>
       </div>
 
       {!perfil ? (
@@ -50,37 +54,14 @@ export function PerfilCandidato({ perfil, nombreCandidato, idPerfil, editable = 
         </p>
       ) : (
         <div className={styles.tarjeta}>
-          {perfil.cv_ruta && (
-            <div className={styles.seccion}>
-              <span className={styles.leyenda}>Curriculum vitae</span>
-              <a href={cvUrl ?? `/api/candidatos/${idPerfil}/cv`} className={styles.enlaceCv} download="curriculum.pdf">Descargar CV en PDF</a>
+          <section className={styles.seccion}>
+            <h2 className={styles.leyenda}>Información profesional</h2>
+            <div className={styles.grilla}>
+              <Dato etiqueta="Puesto profesional" valor={ETIQUETAS_PUESTO_PROFESIONAL[perfil.puesto]} />
+              <Dato etiqueta="Provincia" valor={perfil.provincia} />
+              <Dato etiqueta="Club actual" valor={perfil.club_actual} />
             </div>
-          )}
-
-          {perfil.enlaces_video?.length > 0 && (
-            <div className={styles.seccion}>
-              <span className={styles.leyenda}>Videos</span>
-              <div className={styles.listaVideos}>
-                {perfil.enlaces_video.map((enlace) => {
-                  const idVideo = extraerIdVideoYoutube(enlace);
-                  return idVideo ? (
-                    <iframe
-                      key={enlace}
-                      src={`https://www.youtube-nocookie.com/embed/${idVideo}`}
-                      title={`Video de ${nombreCandidato}`}
-                      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      loading="lazy"
-                      className={styles.video}
-                    />
-                  ) : (
-                    <p key={enlace} className={styles.subtitulo}>Revisá este enlace de YouTube: {enlace}</p>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-          {perfil.presentacion && <section className={styles.seccion}><h2 className={styles.leyenda}>Sobre mí</h2><p className={styles.texto}>{perfil.presentacion}</p></section>}
+          </section>
           <section className={styles.seccion}>
             <h2 className={styles.leyenda}>Disponibilidad laboral</h2>
             <div className={styles.grilla}>
@@ -90,12 +71,6 @@ export function PerfilCandidato({ perfil, nombreCandidato, idPerfil, editable = 
             </div>
             {!perfil.situacion_club && !perfil.incorporacion_desde && perfil.dispuesto_mudarse == null && <p className={styles.subtitulo}>Sin información adicional.</p>}
           </section>
-          <div className={styles.grilla}>
-            <Dato etiqueta="Puesto profesional" valor={ETIQUETAS_PUESTO_PROFESIONAL[perfil.puesto]} />
-            <Dato etiqueta="Provincia" valor={perfil.provincia} />
-            <Dato etiqueta="Club actual" valor={perfil.club_actual} />
-          </div>
-
           {esPuestoDeCuerpoTecnico(perfil.puesto) ? (
             <div className={styles.seccion}>
               <span className={styles.leyenda}>Datos técnicos</span>
@@ -118,7 +93,9 @@ export function PerfilCandidato({ perfil, nombreCandidato, idPerfil, editable = 
             </div>
           )}
 
-          {perfil.experiencias?.length > 0 && <section className={styles.seccion}>
+          {perfil.presentacion && <section className={styles.seccion}><h2 className={styles.leyenda}>Sobre mí</h2><p className={styles.texto}>{perfil.presentacion}</p></section>}
+
+          {perfil.experiencias?.length > 0 && <section className={`${styles.seccion} ${styles.seccionAncha}`}>
             <h2 className={styles.leyenda}>Experiencia en clubes</h2>
             <ol className={styles.experiencias}>{perfil.experiencias.map((experiencia, indice) => <li key={indice}>
               <h3>{experiencia.club}</h3><p className={styles.subtitulo}>{experiencia.categoria} · {experiencia.temporada}</p>
@@ -138,6 +115,16 @@ export function PerfilCandidato({ perfil, nombreCandidato, idPerfil, editable = 
               <p className={styles.texto}>{perfil.formacion_academica}</p>
             </div>
           )}
+
+          {perfil.enlaces_video?.length > 0 && <section className={`${styles.seccion} ${styles.seccionAncha}`}>
+            <h2 className={styles.leyenda}>Videos</h2>
+            <div className={styles.listaVideos}>
+              {[...new Set(perfil.enlaces_video)].map(enlace => {
+                const idVideo = extraerIdVideoYoutube(enlace);
+                return idVideo ? <iframe key={enlace} src={`https://www.youtube-nocookie.com/embed/${idVideo}`} title={`Video de ${nombreCandidato}`} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen loading="lazy" className={styles.video} /> : <p key={enlace} className={styles.subtitulo}>Revisá este enlace de YouTube: {enlace}</p>;
+              })}
+            </div>
+          </section>}
 
 
         </div>

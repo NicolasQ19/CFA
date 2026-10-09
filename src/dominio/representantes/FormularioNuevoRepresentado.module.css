@@ -71,8 +71,29 @@
 }
 
 .acciones {
-  @apply flex items-center justify-end gap-3 pt-2;
+  @apply flex flex-wrap items-center justify-end gap-3 pt-2;
 }
+
+.cabeceraPrevia {
+  @apply flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-800/60 bg-emerald-950/30 p-4;
+}
+
+.dialogo {
+  @apply rounded-2xl border border-emerald-800 bg-slate-950 text-white;
+  width: min(64rem, calc(100% - 2rem));
+  max-height: 90vh;
+  margin: auto;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.dialogo::backdrop { background: rgb(2 6 23 / 80%); }
+
+.cabeceraDialogo {
+  @apply sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-emerald-900 bg-slate-950 p-4;
+}
+
+.tituloDialogo { @apply text-base font-semibold text-white; }
 
 .botonCancelar {
   @apply rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-slate-800;

@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import styles from "./layout.module.css";
 import { BarraNavegacion } from "@/dominio/autenticacion/BarraNavegacion";
+import { PiePagina } from "@/componentes/PiePagina";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,7 +27,8 @@ export default function RootLayout({ children }) {
     >
       <body className={styles.body}>
         <BarraNavegacion />
-        {children}
+        <div className={styles.contenido}>{children}</div>
+        <PiePagina />
       </body>
     </html>
   );

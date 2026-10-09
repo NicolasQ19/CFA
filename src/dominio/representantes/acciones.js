@@ -4,6 +4,10 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 import { BUCKET_CV, validarCurriculum } from "@/lib/curriculum";
+import { validarPresentacionRepresentante } from "@/lib/perfil-representante";
+import { puestoCompatible, validarDatosPersonalesRepresentado } from "@/lib/postulacion-cartera";
+import { retirarPostulacionDeCartera } from "@/lib/cancelar-postulacion";
+import { urlPublica } from "@/lib/club";
 
 const BUCKET_FOTOS = "fotos-perfil";
 const TAMANIO_MAXIMO_FOTO = 2_000_000;
@@ -35,7 +39,7 @@ function normalizarUrl(url) {
 
 /**
  * Guarda o actualiza los datos del perfil de representante:
- * nombre de agencia, foto/logo, teléfono, correo de contacto, nacionalidad y sitio web.
+ * identidad, contacto, presentación, especialización y zona de trabajo.
  */
 export async function guardarPerfilRepresentante(_estadoPrevio, datosFormulario) {
   const supabase = await crearClienteServidor();
@@ -47,12 +51,27 @@ export async function guardarPerfilRepresentante(_estadoPrevio, datosFormulario)
     return { error: "Tenés que iniciar sesión para editar tu perfil." };
   }
 
+  const { data: usuario } = await supabase.from("usuarios")
+    .select("rol, cuenta_activa").eq("id", user.id).maybeSingle();
+  if (usuario?.rol !== "representante" || !usuario.cuenta_activa) {
+    return { error: "Solo un representante con cuenta activa puede editar este perfil." };
+  }
+
+  const informacionProfesional = validarPresentacionRepresentante(datosFormulario);
+  if (informacionProfesional.error) return { error: informacionProfesional.error };
+
   const nombreAgencia = String(datosFormulario.get("nombreAgencia") ?? "").trim();
   const telefono = String(datosFormulario.get("telefono") ?? "").trim() || null;
   const correoContacto = String(datosFormulario.get("correoContacto") ?? "").trim() || null;
   const nacionalidad = String(datosFormulario.get("nacionalidad") ?? "").trim() || null;
   const sitioWebBruto = String(datosFormulario.get("sitioWeb") ?? "").trim();
   const sitioWeb = normalizarUrl(sitioWebBruto);
+  if (sitioWeb && !urlPublica(sitioWeb)) {
+    return { error: "Ingresá un sitio web válido con http:// o https://, sin credenciales." };
+  }
+  if (correoContacto && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correoContacto)) {
+    return { error: "Ingresá un correo de contacto válido." };
+  }
 
   if (!nombreAgencia) {
     return { error: "El nombre de la agencia no puede estar vacío." };
@@ -104,6 +123,7 @@ export async function guardarPerfilRepresentante(_estadoPrevio, datosFormulario)
     correo_contacto: correoContacto,
     nacionalidad,
     sitio_web: sitioWeb,
+    ...informacionProfesional.datos,
     actualizado_en: new Date().toISOString(),
   };
 
@@ -117,10 +137,13 @@ export async function guardarPerfilRepresentante(_estadoPrevio, datosFormulario)
   );
 
   if (error) {
-    return { error: error.message };
+    console.error("Error al guardar perfil de representante:", error.code);
+    return { error: "No se pudo guardar el perfil. Volvé a intentar en unos minutos." };
   }
 
   revalidatePath("/mi-cartera");
+  revalidatePath("/mi-perfil");
+  revalidatePath("/perfil-publico-representante");
   return { exito: true };
 }
 
@@ -139,7 +162,9 @@ export async function crearCandidatoRepresentado(_estadoPrevio, datosFormulario)
     return { error: "Tenés que iniciar sesión como representante." };
   }
 
-  const nombreCompleto = String(datosFormulario.get("nombreCompleto") ?? "").trim();
+  const personales = validarDatosPersonalesRepresentado(datosFormulario);
+  if (personales.error) return { error: personales.error };
+  const { nombreCompleto } = personales;
   const puesto = String(datosFormulario.get("puesto") ?? "");
   const provincia = String(datosFormulario.get("provincia") ?? "").trim();
   const clubActual = String(datosFormulario.get("clubActual") ?? "").trim() || null;
@@ -204,7 +229,10 @@ export async function crearCandidatoRepresentado(_estadoPrevio, datosFormulario)
   );
 
   // 2. Crear candidato con foto_url inicial directamente en la base de datos
-  const { data: nuevoCandidatoId, error } = await supabase.rpc("crear_candidato_representado", {
+  const { data: nuevoCandidatoId, error } = await supabase.rpc("crear_candidato_representado_con_datos", {
+    p_nombres: personales.datos.nombres,
+    p_apellidos: personales.datos.apellidos,
+    p_fecha_nacimiento: personales.datos.fecha_nacimiento,
     p_nombre_completo: nombreCompleto,
     p_puesto: puesto,
     p_provincia: provincia,
@@ -300,7 +328,9 @@ export async function actualizarCandidatoRepresentado(candidatoId, _estadoPrevio
   }
 
   // 1. Validar campos de texto obligatorios
-  const nombreCompleto = String(datosFormulario.get("nombreCompleto") ?? "").trim();
+  const personales = validarDatosPersonalesRepresentado(datosFormulario);
+  if (personales.error) return { error: personales.error };
+  const { nombreCompleto } = personales;
   const puesto = String(datosFormulario.get("puesto") ?? "");
   const provincia = String(datosFormulario.get("provincia") ?? "").trim();
   const clubActual = String(datosFormulario.get("clubActual") ?? "").trim() || null;
@@ -392,7 +422,10 @@ export async function actualizarCandidatoRepresentado(candidatoId, _estadoPrevio
   }
 
   // 6. Actualizar datos en base de datos mediante RPC con SECURITY DEFINER
-  const { error: errorRpc } = await supabase.rpc("actualizar_candidato_representado", {
+  const { error: errorRpc } = await supabase.rpc("actualizar_candidato_representado_con_datos", {
+    p_nombres: personales.datos.nombres,
+    p_apellidos: personales.datos.apellidos,
+    p_fecha_nacimiento: personales.datos.fecha_nacimiento,
     p_candidato_id: candidatoId,
     p_nombre_completo: nombreCompleto,
     p_puesto: puesto,
@@ -415,26 +448,7 @@ export async function actualizarCandidatoRepresentado(candidatoId, _estadoPrevio
   });
 
   if (errorRpc) {
-    // Fallback directo si no se ejecutó la RPC con los nuevos parámetros
-    await supabase.from("usuarios").update({ nombre_completo: nombreCompleto }).eq("id", candidatoId);
-    const camposActualizar = {
-      puesto,
-      provincia,
-      club_actual: clubActual,
-      posicion_juego: posicionJuego,
-      pierna_habil: piernaHabil,
-      altura_cm: alturaCm,
-      peso_kg: pesoKg,
-      trayectoria,
-      titulo_o_matricula: tituloOMatricula,
-      licencia,
-      anios_experiencia: aniosExperiencia,
-      especialidad,
-      enlaces_video: enlacesVideo,
-    };
-    if (actualizarFoto) camposActualizar.foto_url = fotoActualizacion;
-    if (actualizarCv) camposActualizar.cv_ruta = cvActualizacion;
-    await supabase.from("perfiles_candidato").update(camposActualizar).eq("usuario_id", candidatoId);
+    return { error: "No se pudo guardar la ficha. Verificá que la migración de datos personales esté aplicada y volvé a intentar." };
   }
 
   revalidatePath("/mi-cartera");
@@ -445,6 +459,17 @@ export async function actualizarCandidatoRepresentado(candidatoId, _estadoPrevio
 /**
  * Postula a un candidato de la cartera a una oferta laboral publicada.
  */
+export async function cancelarPostulacionRepresentado(postulacionId) {
+  const supabase = await crearClienteServidor();
+  const resultado = await retirarPostulacionDeCartera(supabase, postulacionId);
+  if (resultado.error) return resultado;
+  revalidatePath(`/ofertas/${resultado.ofertaId}`);
+  revalidatePath("/mi-cartera");
+  revalidatePath("/mis-postulaciones");
+  revalidatePath(`/mis-ofertas/${resultado.ofertaId}/postulantes`);
+  return { exito: true };
+}
+
 export async function postularCandidatoRepresentado(ofertaId, candidatoId) {
   const supabase = await crearClienteServidor();
   const {
@@ -453,6 +478,12 @@ export async function postularCandidatoRepresentado(ofertaId, candidatoId) {
 
   if (!user) {
     return { error: "Tenés que iniciar sesión como representante para postular candidatos." };
+  }
+
+  const { data: usuario } = await supabase.from("usuarios")
+    .select("rol, cuenta_activa").eq("id", user.id).maybeSingle();
+  if (usuario?.rol !== "representante" || !usuario.cuenta_activa) {
+    return { error: "Solo un representante con cuenta activa puede postular candidatos de su cartera." };
   }
 
   // 1. Verificar que el candidato pertenezca a su cartera
@@ -470,12 +501,18 @@ export async function postularCandidatoRepresentado(ofertaId, candidatoId) {
   // 2. Verificar que la oferta esté publicada
   const { data: oferta } = await supabase
     .from("ofertas_laborales")
-    .select("id, estado")
+    .select("id, estado, puesto_buscado")
     .eq("id", ofertaId)
     .maybeSingle();
 
   if (!oferta || oferta.estado !== "publicada") {
     return { error: "Esta oferta no está disponible para postulaciones." };
+  }
+
+  const { data: perfil } = await supabase.from("perfiles_candidato")
+    .select("puesto").eq("usuario_id", candidatoId).maybeSingle();
+  if (!puestoCompatible(perfil?.puesto, oferta.puesto_buscado)) {
+    return { error: "El puesto del candidato debe coincidir con el puesto solicitado en la oferta." };
   }
 
   // 3. Verificar que no exista postulación previa

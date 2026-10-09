@@ -1,0 +1,29 @@
+@reference "tailwindcss";
+
+.main { @apply w-full px-4 py-10 sm:px-6 xl:px-10; }
+.avisoPropio { @apply mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-800/50 bg-emerald-950/30 p-4 text-xs text-slate-300; }
+.avisoPropio a, .nota a { @apply font-semibold text-emerald-300 hover:underline; }
+.hero { @apply flex flex-wrap items-center gap-5 rounded-3xl border border-emerald-800/50 p-6 sm:p-8; background: radial-gradient(ellipse at right top, #226c4544, transparent 60%), var(--surface); }
+.hero > div:last-child { @apply min-w-0 flex-1; }
+.hero h1 { @apply text-2xl font-semibold text-white sm:text-3xl; overflow-wrap: anywhere; }
+.foto, .avatar { @apply h-24 w-24 shrink-0 rounded-2xl border border-emerald-700/40 bg-emerald-950/60; }
+.foto { @apply object-cover; }
+.avatar { @apply flex items-center justify-center text-3xl font-semibold text-emerald-300; }
+.volanta { @apply mb-2 text-xs font-semibold tracking-widest text-emerald-300; }
+.insignias { @apply mt-4 flex flex-wrap gap-2; }
+.insignias span { @apply rounded-lg bg-emerald-900/40 px-3 py-1 text-xs text-emerald-200; overflow-wrap: anywhere; }
+.distribucion { @apply mt-6 grid items-start gap-5 md:grid-cols-[minmax(0,1fr)_300px]; }
+.informacion { @apply flex min-w-0 flex-col gap-5; }
+.tarjeta { @apply flex min-w-0 flex-col gap-4 rounded-2xl border border-emerald-900/60 p-6; background: var(--surface); }
+.tarjeta h2 { @apply text-lg font-semibold text-white; }
+.tarjeta > p { @apply text-sm leading-relaxed text-slate-300; white-space: pre-line; overflow-wrap: anywhere; }
+.datos { @apply grid gap-5; }
+.datos div { @apply flex flex-col gap-1; }
+.datos dt, .contacto span { @apply text-xs text-slate-400; }
+.datos dd { @apply text-sm text-white; white-space: pre-line; overflow-wrap: anywhere; }
+.contacto { @apply flex flex-col gap-1 border-t border-emerald-900/50 pt-3; }
+.contacto a { @apply text-sm text-emerald-300 hover:underline; overflow-wrap: anywhere; }
+.contacto p { @apply text-sm text-slate-300; overflow-wrap: anywhere; }
+.tarjeta .ayuda { @apply text-xs text-slate-400; }
+.botonSitio { @apply inline-flex min-h-11 items-center justify-center rounded-xl border border-emerald-700/50 px-4 py-3 text-sm font-semibold text-emerald-300 hover:bg-emerald-900/30; }
+.nota { @apply mt-6 text-xs text-slate-400; }

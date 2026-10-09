@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerPostulacionesCandidato } from "@/dominio/postulaciones/consultas";
+import { CancelarMiPostulacion } from "@/dominio/postulaciones/CancelarMiPostulacion";
 import { ETIQUETAS_PUESTO_PROFESIONAL } from "@/tipos/dominio";
 import styles from "./page.module.css";
 
@@ -66,7 +67,7 @@ export default async function PaginaMisPostulaciones() {
                 <th>Provincia</th>
                 <th>Fecha</th>
                 <th>Estado</th>
-                <th className={styles.columnaAccion}>Acción</th>
+                <th className={styles.columnaAccion}>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -93,12 +94,15 @@ export default async function PaginaMisPostulaciones() {
                       </span>
                     </td>
                     <td className={styles.columnaAccion}>
+                      <div className={styles.acciones}>
                       {/* El detalle solo existe para ofertas publicadas (las demás dan 404). */}
                       {oferta?.estado === "publicada" && (
                         <Link href={`/ofertas/${oferta.id}`} className={styles.enlace}>
                           Ver oferta
                         </Link>
                       )}
+                      <CancelarMiPostulacion postulacionId={postulacion.id} nombreOferta={oferta ? tituloDeOferta(oferta) : undefined} />
+                      </div>
                     </td>
                   </tr>
                 );

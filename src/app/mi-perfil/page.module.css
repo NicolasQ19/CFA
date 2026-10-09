@@ -1,17 +1,22 @@
 @reference "tailwindcss";
 
 .main {
-  @apply mx-auto w-full max-w-2xl px-4 py-10;
+  @apply w-full px-4 py-8 sm:px-6 xl:px-10;
 }
 
 .titulo {
-  @apply text-2xl font-bold text-white;
+  @apply text-2xl font-semibold text-white sm:text-3xl;
 }
 
 .subtitulo {
-  @apply mt-1 text-sm text-slate-300;
+  @apply mt-3 max-w-2xl text-sm text-slate-300;
 }
 
 .contenido {
-  @apply mt-8;
+  @apply mt-6;
 }
+
+.volanta { @apply mb-3 text-xs font-semibold tracking-widest text-emerald-300; }
+.accesos { @apply flex flex-wrap gap-4; }
+.cabecera { @apply flex flex-wrap items-center justify-between gap-5 rounded-2xl border border-emerald-800/50 p-5 sm:p-6; background: linear-gradient(130deg, #173c29, #101c16); }
+.enlace { @apply inline-flex min-h-11 items-center text-sm font-semibold text-emerald-300 hover:underline; }

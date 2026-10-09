@@ -1,93 +1,40 @@
-@reference "tailwindcss";
+﻿@reference "tailwindcss";
 
-.main {
-  @apply mx-auto w-full max-w-2xl px-4 py-10;
+.main { @apply w-full px-4 py-8 sm:px-6 xl:px-10; container-type: inline-size; container-name: perfil; }
+.encabezado { @apply flex flex-wrap items-center gap-5 rounded-2xl border border-emerald-800/50 p-5 sm:p-6; background: linear-gradient(135deg, #153d28, #101c16); }
+.encabezadoTexto { @apply min-w-0; flex: 1 1 240px; }
+.foto, .avatar { @apply h-20 w-20 shrink-0 rounded-2xl; }
+.foto { @apply object-cover; }
+.avatar { @apply flex items-center justify-center bg-emerald-900 text-2xl font-semibold text-emerald-100; }
+.titulo { @apply text-2xl font-semibold text-white sm:text-3xl; overflow-wrap: anywhere; }
+.subtitulo { @apply mt-1 text-sm text-slate-400; overflow-wrap: anywhere; }
+.accionesPerfil { @apply flex flex-wrap gap-3; }
+.enlaceEditar, .enlaceCv { @apply inline-flex min-h-11 items-center justify-center rounded-xl border border-emerald-700/60 px-4 py-2 text-sm font-semibold text-emerald-300 hover:bg-emerald-950/40; }
+.insignias { @apply mt-3 flex flex-wrap gap-2; }
+.insignias span { @apply rounded-full border border-emerald-700/50 bg-emerald-950/50 px-3 py-1 text-xs text-emerald-200; }
+.tarjeta { @apply mt-5 grid grid-cols-1 items-start gap-5; }
+.seccion { @apply flex min-w-0 flex-col gap-4 rounded-2xl border border-emerald-900/60 p-5 sm:p-6; background: var(--surface); }
+.leyenda { @apply text-base font-semibold text-white; }
+.grilla { @apply grid grid-cols-1 gap-4; }
+.dato { @apply flex min-w-0 flex-col gap-1; }
+.etiqueta { @apply text-xs text-slate-400; }
+.valor { @apply text-sm font-medium text-slate-200; overflow-wrap: anywhere; }
+.texto { @apply whitespace-pre-line text-sm leading-relaxed text-slate-300; overflow-wrap: anywhere; }
+.listaVideos { @apply grid grid-cols-1 gap-4; }
+.video { @apply aspect-video w-full rounded-xl border-0 bg-emerald-950/60; }
+.experiencias { @apply grid grid-cols-1 gap-4; }
+.experiencias li { @apply min-w-0 border-l-2 border-emerald-700/60 pl-4; }
+.experiencias h3 { @apply text-sm font-semibold text-white; overflow-wrap: anywhere; }
+.experiencias .texto { @apply mt-2; }
+.vacio { @apply mt-5 rounded-xl border border-emerald-900/60 p-5 text-sm text-slate-300; }
+.vacio a { @apply text-emerald-300 underline; }
+@container perfil (min-width: 620px) {
+  .tarjeta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .seccionAncha { grid-column: 1 / -1; }
+  .listaVideos, .experiencias { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-
-.encabezado {
-  @apply flex items-center gap-4;
+@container perfil (min-width: 1100px) {
+  .tarjeta { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grilla { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .listaVideos, .experiencias { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
-
-.encabezadoTexto {
-  @apply flex-1;
-}
-
-.foto {
-  @apply size-20 shrink-0 rounded-full object-cover;
-}
-
-.titulo {
-  @apply text-2xl font-bold text-white;
-}
-
-.subtitulo {
-  @apply mt-1 text-sm text-slate-300;
-}
-
-.enlaceEditar {
-  @apply shrink-0 rounded-md border border-emerald-800/70 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-emerald-950/40;
-}
-
-.tarjeta {
-  background: var(--surface);
-  box-shadow: 0 12px 32px #00000020;
-  @apply mt-8 flex flex-col gap-6 rounded-lg border border-emerald-900/60 p-6;
-}
-
-.seccion {
-  @apply flex flex-col gap-3;
-}
-
-.leyenda {
-  @apply text-sm font-semibold text-slate-200;
-}
-
-.grilla {
-  @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
-}
-
-.dato {
-  @apply flex flex-col gap-1;
-}
-
-.etiqueta {
-  @apply text-xs font-medium uppercase tracking-wide text-slate-400;
-}
-
-.valor {
-  @apply text-sm text-white;
-}
-
-.texto {
-  @apply whitespace-pre-line text-sm text-white;
-}
-
-.listaVideos {
-  @apply flex flex-col gap-4;
-}
-
-.video {
-  @apply aspect-video w-full rounded-md border-0 bg-emerald-950/60;
-}
-
-.enlaceVideo {
-  @apply text-sm text-emerald-400 hover:underline;
-}
-
-.vacio {
-  @apply rounded-md bg-emerald-950/40 px-4 py-3 text-sm text-slate-300;
-}
-
-.enlaceCv {
-  @apply self-start rounded-md border border-emerald-800 px-4 py-2 text-sm font-semibold text-emerald-300 hover:bg-emerald-950;
-}
-
-.encabezado { flex-wrap: wrap; padding: 24px; border: 1px solid #204532; border-radius: 18px; background: linear-gradient(135deg, #153d28, #101c16); }
-.encabezadoTexto { min-width: 180px; }
-.insignias { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-.insignias span { padding: 5px 10px; background: #082919; color: #a7f3d0; border: 1px solid #28754c; border-radius: 20px; font-size: .75rem; }
-.experiencias { display: grid; gap: 20px; border-left: 2px solid #28754c; padding-left: 20px; }
-.experiencias h3 { font-weight: 600; color: #fff; }
-.texto { overflow-wrap: anywhere; }
-
-.avatar { width: 80px; height: 80px; flex-shrink: 0; display: grid; place-items: center; border-radius: 50%; background: #065f46; color: #d1fae5; font-size: 1.5rem; font-weight: 700; }

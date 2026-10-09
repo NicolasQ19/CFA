@@ -49,6 +49,8 @@
   @apply text-right;
 }
 
+.acciones { @apply flex flex-col items-end gap-2; }
+
 .nombreOferta {
   @apply block font-medium text-white;
 }

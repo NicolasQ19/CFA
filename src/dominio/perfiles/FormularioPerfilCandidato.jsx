@@ -1,5 +1,6 @@
 "use client";
 
+import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { guardarPerfilCandidato } from "@/dominio/perfiles/acciones";
@@ -84,8 +85,10 @@ export function FormularioPerfilCandidato({ perfilExistente, nombreCandidato }) 
     </section>
     <form ref={formularioRef} action={ejecutarGuardado} className={styles.formulario} onChange={() => { setMostrarExito(false); setBorrador(leerBorrador().perfil); }}>
       <input type="hidden" name="experiencias" value={JSON.stringify(experiencias.map(({ clave, ...e }) => e))} />
-      <button type="button" className={styles.botonSecundario} onClick={abrirVistaPrevia}>Vista previa sin guardar</button>
+      <fieldset className={styles.fieldset}>
+        <legend className={styles.leyenda}>Foto de perfil</legend>
       <CampoFoto fotoActual={perfilExistente?.foto_url} />
+      </fieldset>
 
       <fieldset className={styles.fieldset}>
         <legend className={styles.leyenda}>Curriculum vitae</legend>
@@ -104,6 +107,9 @@ export function FormularioPerfilCandidato({ perfilExistente, nombreCandidato }) 
         </>}
       </fieldset>
 
+      <fieldset className={styles.fieldset}>
+      <legend className={styles.leyenda}>Datos básicos</legend>
+      <p className={styles.ayuda}>Tu puesto define los datos profesionales que podés completar.</p>
       <CampoSelect
         id="puesto"
         etiqueta="Puesto profesional"
@@ -124,16 +130,22 @@ export function FormularioPerfilCandidato({ perfilExistente, nombreCandidato }) 
         etiqueta="Club actual"
         valorInicial={perfilExistente?.club_actual ?? ""}
       />
+      </fieldset>
 
       <fieldset className={styles.fieldset}>
-        <legend className={styles.leyenda}>Presentación y disponibilidad</legend>
+        <legend className={styles.leyenda}>Presentación profesional</legend>
         <label className={styles.etiqueta} htmlFor="presentacion">Sobre mí</label>
         <textarea id="presentacion" name="presentacion" maxLength={600} rows={4} defaultValue={perfilExistente?.presentacion ?? ""} className={styles.entrada} placeholder="Contá qué buscás y qué podés aportar al equipo." aria-describedby="presentacion-ayuda" />
         <p id="presentacion-ayuda" className={styles.ayuda}>Hasta 600 caracteres.</p>
+      </fieldset>
+      <fieldset className={styles.fieldset}>
+        <legend className={styles.leyenda}>Disponibilidad laboral</legend>
+        <div className={styles.camposDobles}>
         <CampoLista id="disponibilidad" etiqueta="Disponibilidad para ofertas" opciones={Object.keys(DISPONIBILIDADES)} etiquetas={DISPONIBILIDADES} valorInicial={perfilExistente?.disponibilidad ?? ""} />
         <CampoLista id="situacionClub" etiqueta="Situación actual" opciones={Object.keys(SITUACIONES)} etiquetas={SITUACIONES} valorInicial={perfilExistente?.situacion_club ?? ""} />
         <CampoTexto id="incorporacionDesde" etiqueta="Podría incorporarme desde" tipo="date" valorInicial={perfilExistente?.incorporacion_desde ?? ""} />
         <CampoLista id="dispuestoMudarse" etiqueta="¿Estás dispuesto a mudarte?" opciones={["si", "no"]} etiquetas={{ si: "Sí", no: "No" }} valorInicial={perfilExistente?.dispuesto_mudarse == null ? "" : perfilExistente.dispuesto_mudarse ? "si" : "no"} />
+        </div>
       </fieldset>
 
       {esCuerpoTecnico ? (
@@ -141,6 +153,7 @@ export function FormularioPerfilCandidato({ perfilExistente, nombreCandidato }) 
           <legend className={styles.leyenda}>
             Datos técnicos ({ETIQUETAS_PUESTO_PROFESIONAL[puestoSeleccionado]})
           </legend>
+          <div className={styles.camposDobles}>
           <CampoTexto
             id="tituloOMatricula"
             etiqueta="Título / matrícula"
@@ -162,10 +175,12 @@ export function FormularioPerfilCandidato({ perfilExistente, nombreCandidato }) 
             etiqueta="Especialidad"
             valorInicial={perfilExistente?.especialidad ?? ""}
           />
+          </div>
         </fieldset>
       ) : (
         <fieldset className={styles.fieldset}>
           <legend className={styles.leyenda}>Datos deportivos</legend>
+          <div className={styles.camposDobles}>
           <CampoLista
             id="posicionJuego"
             etiqueta="Posición"
@@ -190,12 +205,14 @@ export function FormularioPerfilCandidato({ perfilExistente, nombreCandidato }) 
             tipo="number"
             valorInicial={perfilExistente?.peso_kg?.toString() ?? ""}
           />
+          </div>
         </fieldset>
       )}
 
-      <fieldset className={styles.fieldset}>
+      <fieldset className={`${styles.fieldset} ${styles.anchoCompleto}`}>
         <legend className={styles.leyenda}>Experiencia en clubes</legend>
         <p className={styles.ayuda}>Agregá primero las experiencias más recientes. Podés cargar hasta 20.</p>
+        <div className={styles.listaExperiencias}>
         {experiencias.map((experiencia, indice) => <div key={experiencia.clave} className={styles.experiencia}>
           <h3>Experiencia {indice + 1}</h3>
           {[["club", "Club", 120], ["categoria", "Categoría", 100], ["temporada", "Temporada (por ejemplo, 2024–2025)", 40], ["descripcion", "Descripción", 600]].map(([campo, etiqueta, limite]) => <div className={styles.campo} key={campo}>
@@ -205,18 +222,25 @@ export function FormularioPerfilCandidato({ perfilExistente, nombreCandidato }) 
           </div>)}
           <button type="button" className={styles.botonSecundario} onClick={() => setExperiencias(actuales => actuales.filter(e => e.clave !== experiencia.clave))} aria-label={`Quitar experiencia ${indice + 1}`}>Quitar experiencia</button>
         </div>)}
+        </div>
         <button type="button" disabled={experiencias.length >= 20} className={styles.botonSecundario} onClick={() => setExperiencias(actuales => [...actuales, { clave: crypto.randomUUID(), club: "", categoria: "", temporada: "", descripcion: "" }])}>Agregar experiencia</button>
       </fieldset>
+      <fieldset className={styles.fieldset}>
+        <legend className={styles.leyenda}>Trayectoria</legend>
       <CampoTextoLargo
         id="trayectoria"
         etiqueta="Otros antecedentes / trayectoria anterior"
         valorInicial={perfilExistente?.trayectoria ?? ""}
       />
+      </fieldset>
+      <fieldset className={styles.fieldset}>
+        <legend className={styles.leyenda}>Formación</legend>
       <CampoTextoLargo
         id="formacionAcademica"
         etiqueta="Formación académica"
         valorInicial={perfilExistente?.formacion_academica ?? ""}
       />
+      </fieldset>
 
       <fieldset className={styles.fieldset}>
         <legend className={styles.leyenda}>
@@ -239,6 +263,8 @@ export function FormularioPerfilCandidato({ perfilExistente, nombreCandidato }) 
         />
       </fieldset>
 
+      <fieldset className={styles.fieldset}>
+      <legend className={styles.leyenda}>Visibilidad del perfil</legend>
       <label className={styles.casilla}>
         <input
           type="checkbox"
@@ -252,11 +278,16 @@ export function FormularioPerfilCandidato({ perfilExistente, nombreCandidato }) 
           </span>
         </span>
       </label>
+      </fieldset>
 
-      {estado.error && <p className={styles.error}>{estado.error}</p>}
+      {estado.error && <p role="alert" className={`${styles.error} ${styles.anchoCompleto}`}>{estado.error}</p>}
 
-      {mostrarExito && <p className={styles.exito}>Guardado con éxito</p>}
+      {mostrarExito && <p role="status" className={`${styles.exito} ${styles.anchoCompleto}`}>Guardado con éxito</p>}
 
+      <div className={styles.barraAcciones}>
+      <p className={styles.ayuda}>Guardá para actualizar tu perfil público.</p>
+      <div>
+      <button type="button" disabled={estaGuardando} className={styles.botonSecundario} onClick={abrirVistaPrevia}>Vista previa sin guardar</button>
       <button
         type="submit"
         disabled={estaGuardando}
@@ -264,6 +295,8 @@ export function FormularioPerfilCandidato({ perfilExistente, nombreCandidato }) 
       >
         {estaGuardando ? "Guardando..." : "Guardar perfil"}
       </button>
+      </div>
+      </div>
     </form>
     <dialog ref={dialogoRef} className={styles.dialogo} aria-labelledby="titulo-vista-previa">
       <div className={styles.barraVistaPrevia}>
@@ -329,7 +362,7 @@ function CampoFoto({ fotoActual }) {
     <div className={styles.campoFoto}>
       {vistaPrevia ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={vistaPrevia} alt="Foto de perfil" className={styles.foto} />
+        <ImagenAmpliable src={vistaPrevia} alt="Foto de perfil" className={styles.foto} />
       ) : (
         <div className={styles.fotoVacia}>Sin foto</div>
       )}

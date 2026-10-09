@@ -1,78 +1,39 @@
-@reference "tailwindcss";
+﻿@reference "tailwindcss";
 
-.main {
-  @apply mx-auto w-full max-w-2xl px-4 py-10;
-}
-
-.encabezado {
-  @apply flex items-start gap-4;
-}
-
-.escudo {
-  @apply h-16 w-16 shrink-0 rounded-md object-contain;
-}
-
-.clubNombre {
-  @apply text-xs font-medium uppercase tracking-wide text-slate-400 hover:text-white hover:underline;
-}
-
-.titulo {
-  @apply text-2xl font-bold text-white;
-}
-
-.subtitulo {
-  @apply mt-1 text-sm text-slate-300;
-}
-
-.tarjeta {
-  background: var(--surface);
-  box-shadow: 0 12px 32px #00000020;
-  @apply mt-8 flex flex-col gap-4 rounded-lg border border-emerald-900/60 p-6;
-}
-
-.tituloSeccion {
-  @apply text-lg font-semibold text-white;
-}
-
-.grilla {
-  @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
-}
-
-.dato {
-  @apply flex flex-col gap-1;
-}
-
-.etiqueta {
-  @apply text-xs font-medium uppercase tracking-wide text-slate-400;
-}
-
-.valor {
-  @apply text-sm text-white;
-}
-
-.texto {
-  white-space: pre-line;
-  overflow-wrap: anywhere;
-  color: #d5e6dc;
-}
-
-.enlaceClub {
-  @apply self-start text-sm font-semibold text-emerald-300 hover:underline;
-}
-
-.accion {
-  @apply mt-8;
-}
-
-.estadoPostulacion {
-  background: var(--surface);
-  @apply flex flex-col gap-4 rounded-lg border border-emerald-700/50 p-6;
-}
-
-.estadoTitulo {
-  @apply text-sm font-semibold text-emerald-300;
-}
-
-.avisoIngreso {
-  @apply text-sm text-slate-300;
-}
+.main { @apply mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10; }
+.navegacion { @apply mb-6 flex flex-wrap items-center gap-3 text-xs text-slate-500; }
+.navegacion a { @apply text-slate-300 hover:text-emerald-300; }
+.hero { @apply rounded-3xl border border-emerald-800/40 p-6 sm:p-8; background: radial-gradient(ellipse at right top, #1c624344, transparent 65%), #111e17; }
+.lineaEstado { @apply mb-6 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400; }
+.insigniaAbierta { @apply inline-flex items-center gap-2 rounded-full border border-emerald-700/50 bg-emerald-900/30 px-3 py-1 text-xs font-medium text-emerald-300; }
+.insigniaAbierta > span { @apply h-1.5 w-1.5 rounded-full bg-emerald-400; }
+.encabezado { @apply flex items-start gap-4 sm:gap-5; }
+.escudo, .escudoFallback { @apply h-16 w-16 shrink-0 rounded-2xl border border-emerald-800/60 bg-emerald-950/60 sm:h-20 sm:w-20; }
+.escudo { @apply object-contain p-2; }
+.escudoFallback { @apply flex items-center justify-center text-2xl font-semibold text-emerald-300; }
+.encabezado > div:last-child { min-width: 0; }
+.clubNombre { @apply text-sm font-medium text-emerald-300 hover:underline; }
+.titulo { @apply mt-2 text-2xl font-semibold text-white sm:text-3xl; overflow-wrap: anywhere; }
+.subtitulo { @apply mt-3 text-sm text-slate-300; }
+.tipoContrato { @apply mt-3 inline-block rounded-md bg-slate-800/60 px-3 py-1 text-xs font-medium text-slate-300; }
+.distribucion { @apply mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]; }
+.contenido { @apply flex min-w-0 flex-col gap-6; }
+.tarjeta, .resumen, .panelPostulacion, .estadoPostulacion { @apply flex min-w-0 flex-col gap-4 rounded-2xl border border-emerald-900/60 p-6; background: var(--surface); }
+.sobretitulo { @apply text-xs font-semibold tracking-widest text-emerald-300; }
+.tituloSeccion { @apply text-lg font-semibold text-white; }
+.grilla { @apply grid grid-cols-1 gap-4 sm:grid-cols-2; }
+.datosResumen { @apply flex flex-col gap-4; }
+.datosResumen .dato { @apply border-b border-emerald-900/50 pb-3; }
+.dato { @apply flex min-w-0 flex-col gap-1; }
+.etiqueta { @apply text-xs font-medium text-slate-400; }
+.valor { @apply text-sm font-medium text-white; overflow-wrap: anywhere; }
+.texto { @apply text-sm leading-7 text-slate-300; white-space: pre-line; overflow-wrap: anywhere; }
+.enlaceClub { @apply inline-flex min-h-11 items-center self-start text-sm font-semibold text-emerald-300 hover:underline; }
+.botonAccion { @apply mt-2 inline-flex min-h-11 items-center justify-between gap-3 rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-emerald-950 hover:bg-emerald-400; }
+.ayuda { @apply text-xs leading-relaxed text-slate-400; }
+.accion { @apply mt-6; scroll-margin-top: 1.5rem; }
+.accion:empty { display: none; }
+.estadoTitulo { @apply text-base font-semibold text-emerald-300; }
+.avisoIngreso { @apply text-sm text-slate-300; }
+@media (min-width: 1024px) { .resumen { position: sticky; top: 1.5rem; } }
+@media (max-width: 639px) { .resumen { padding: 1.25rem; } }

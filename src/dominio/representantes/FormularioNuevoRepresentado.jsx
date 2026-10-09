@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
+import { useActionState, useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   crearCandidatoRepresentado,
@@ -14,10 +15,57 @@ import {
   esPuestoDeCuerpoTecnico,
 } from "@/tipos/dominio";
 import styles from "./FormularioNuevoRepresentado.module.css";
+import { PerfilCandidato } from "@/dominio/perfiles/PerfilCandidato";
+import { prepararVistaPreviaRepresentado } from "@/lib/vista-previa-representado";
+import { validarCurriculum } from "@/lib/curriculum";
 
 const ESTADO_INICIAL = { error: null };
 
 export function FormularioNuevoRepresentado({ candidatoExistente = null }) {
+  const formularioRef = useRef(null);
+  const dialogoRef = useRef(null);
+  const urlsRef = useRef([]);
+  const [vistaPrevia, setVistaPrevia] = useState(null);
+  const [errorVistaPrevia, setErrorVistaPrevia] = useState(null);
+
+  useEffect(() => () => urlsRef.current.forEach(url => URL.revokeObjectURL(url)), []);
+
+  function cerrarVistaPrevia() {
+    urlsRef.current.forEach(url => URL.revokeObjectURL(url));
+    urlsRef.current = [];
+    setVistaPrevia(null);
+  }
+
+  async function abrirVistaPrevia() {
+    setErrorVistaPrevia(null);
+    const datos = new FormData(formularioRef.current);
+    const foto = datos.get("foto"), cv = datos.get("curriculum");
+    if ((foto?.size && datos.get("quitarFoto")) || (cv?.size && datos.get("quitarCv"))) {
+      setErrorVistaPrevia("Elegí reemplazar el archivo o quitar el actual, no ambas opciones.");
+      return;
+    }
+    if (foto?.size && (! ["image/jpeg", "image/png", "image/webp"].includes(foto.type) || foto.size > 2_000_000)) {
+      setErrorVistaPrevia("La foto debe ser JPG, PNG o WebP y pesar hasta 2 MB.");
+      return;
+    }
+    const errorCv = await validarCurriculum(cv);
+    if (errorCv) { setErrorVistaPrevia(errorCv); return; }
+    const previa = prepararVistaPreviaRepresentado(datos, candidatoExistente);
+    urlsRef.current.forEach(url => URL.revokeObjectURL(url));
+    urlsRef.current = [];
+    const crearUrl = archivo => {
+      const url = URL.createObjectURL(archivo);
+      urlsRef.current.push(url);
+      return url;
+    };
+    if (foto?.size) previa.perfil.foto_url = crearUrl(foto);
+    if (cv?.size) {
+      previa.perfil.cv_ruta = "seleccionado";
+      previa.cvUrl = crearUrl(cv);
+    }
+    setVistaPrevia(previa);
+    dialogoRef.current.showModal();
+  }
   const accion = candidatoExistente
     ? actualizarCandidatoRepresentado.bind(null, candidatoExistente.usuario_id)
     : crearCandidatoRepresentado;
@@ -32,6 +80,10 @@ export function FormularioNuevoRepresentado({ candidatoExistente = null }) {
 
   const fotoInicial = candidatoExistente?.foto_url ?? null;
   const [vistaPreviaFoto, setVistaPreviaFoto] = useState(fotoInicial);
+  useEffect(() => {
+    if (!vistaPreviaFoto?.startsWith("blob:")) return;
+    return () => URL.revokeObjectURL(vistaPreviaFoto);
+  }, [vistaPreviaFoto]);
 
   const videos = candidatoExistente?.enlaces_video ?? [];
 
@@ -45,7 +97,13 @@ export function FormularioNuevoRepresentado({ candidatoExistente = null }) {
   }
 
   return (
-    <form action={ejecutarAccion} className={styles.formulario}>
+    <>
+    <form ref={formularioRef} action={ejecutarAccion} className={styles.formulario}>
+      <div className={styles.cabeceraPrevia}>
+        <p className={styles.ayuda}>Revisá cómo verán los clubes este perfil, incluyendo los cambios que todavía no guardaste.</p>
+        <button type="button" disabled={estaGuardando} onClick={abrirVistaPrevia} className={styles.botonCancelar}>Vista previa del perfil público</button>
+      </div>
+      {errorVistaPrevia && <p role="alert" className={styles.error}>{errorVistaPrevia}</p>}
       {estado?.error && <div className={styles.error}>{estado.error}</div>}
 
       {/* 1. Información del Talento y Foto */}
@@ -56,7 +114,7 @@ export function FormularioNuevoRepresentado({ candidatoExistente = null }) {
         <div className={styles.campoFoto}>
           <div className={styles.fotoMiniPreview}>
             {vistaPreviaFoto ? (
-              <img
+              <ImagenAmpliable
                 src={vistaPreviaFoto}
                 alt="Foto del talento"
                 className={styles.fotoImg}
@@ -91,19 +149,32 @@ export function FormularioNuevoRepresentado({ candidatoExistente = null }) {
         <div className={styles.grilla}>
           <div className={styles.campo}>
             <label htmlFor="nombreCompleto" className={styles.etiqueta}>
-              Nombre y apellido *
+              Nombres *
             </label>
             <input
               id="nombreCompleto"
-              name="nombreCompleto"
+              name="nombres"
               type="text"
-              defaultValue={candidatoExistente?.nombre_completo ?? ""}
-              placeholder="Ej: Rodrigo De Paul"
+              defaultValue={candidatoExistente?.nombres ?? candidatoExistente?.nombre_completo ?? ""}
+              placeholder="Ej: Rodrigo"
+              maxLength={150}
               required
               className={styles.entrada}
             />
           </div>
 
+          <div className={styles.campo}>
+            <label htmlFor="apellidos" className={styles.etiqueta}>Apellidos</label>
+            <input id="apellidos" name="apellidos" type="text" maxLength={150}
+              defaultValue={candidatoExistente?.apellidos ?? ""} placeholder="Ej: De Paul" className={styles.entrada} />
+            <p className="text-xs text-slate-400">En fichas antiguas, separá aquí el apellido que figura junto al nombre.</p>
+          </div>
+          <div className={styles.campo}>
+            <label htmlFor="fechaNacimiento" className={styles.etiqueta}>Fecha de nacimiento</label>
+            <input id="fechaNacimiento" name="fechaNacimiento" type="date"
+              defaultValue={candidatoExistente?.fecha_nacimiento ?? ""} className={styles.entrada} />
+            <p className="text-xs text-slate-400">Opcional. Permite calcular la edad y filtrar las postulaciones.</p>
+          </div>
           <div className={styles.campo}>
             <label htmlFor="puesto" className={styles.etiqueta}>
               Puesto profesional *
@@ -395,6 +466,7 @@ export function FormularioNuevoRepresentado({ candidatoExistente = null }) {
       </div>
 
       <div className={styles.acciones}>
+        <button type="button" disabled={estaGuardando} onClick={abrirVistaPrevia} className={styles.botonCancelar}>Vista previa</button>
         <Link href="/mi-cartera" className={styles.botonCancelar}>
           Cancelar
         </Link>
@@ -411,5 +483,16 @@ export function FormularioNuevoRepresentado({ candidatoExistente = null }) {
         </button>
       </div>
     </form>
+    <dialog ref={dialogoRef} className={styles.dialogo} aria-labelledby="tituloVistaPrevia" onClose={cerrarVistaPrevia}>
+      <div className={styles.cabeceraDialogo}>
+        <div>
+          <h2 id="tituloVistaPrevia" className={styles.tituloDialogo}>Vista previa del perfil público</h2>
+          <p className={styles.ayuda}>Estos cambios todavía no se guardaron. Cerrá la vista para seguir editando.</p>
+        </div>
+        <button type="button" autoFocus className={styles.botonCancelar} onClick={() => dialogoRef.current.close()}>Volver a editar</button>
+      </div>
+      {vistaPrevia && <PerfilCandidato perfil={vistaPrevia.perfil} nombreCandidato={vistaPrevia.nombreCandidato} idPerfil={candidatoExistente?.usuario_id} cvUrl={vistaPrevia.cvUrl} />}
+    </dialog>
+    </>
   );
 }

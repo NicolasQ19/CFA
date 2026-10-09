@@ -1,5 +1,16 @@
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 
+/** Lectura pública con campos explícitos y solo de representantes activos. */
+export async function obtenerPerfilPublicoRepresentante(usuarioId) {
+  const supabase = await crearClienteServidor();
+  const { data, error } = await supabase.rpc("obtener_perfil_publico_representante", { p_representante_id: usuarioId });
+  if (error) {
+    console.error("Error al leer perfil público del representante:", error.code);
+    throw new Error("No se pudo cargar el perfil público del representante.");
+  }
+  return data?.[0] ?? null;
+}
+
 /** Devuelve el perfil de la agencia o representante (o null si no existe) */
 export async function obtenerPerfilRepresentante(usuarioId) {
   const supabase = await crearClienteServidor();
@@ -26,6 +37,9 @@ export async function listarCarteraCandidatos(representanteId) {
       nombre: fila.nombre_completo,
       perfil: {
         usuario_id: fila.candidato_id,
+        nombres: fila.nombres,
+        apellidos: fila.apellidos,
+        fecha_nacimiento: fila.fecha_nacimiento,
         puesto: fila.puesto,
         provincia: fila.provincia,
         club_actual: fila.club_actual,
@@ -56,6 +70,9 @@ export async function listarCarteraCandidatos(representanteId) {
       creado_en,
       perfiles_candidato (
         usuario_id,
+        nombres,
+        apellidos,
+        fecha_nacimiento,
         puesto,
         provincia,
         club_actual,
@@ -141,6 +158,7 @@ export async function listarPostulacionesDeRepresentante(representanteId) {
       oferta_id,
       ofertas_laborales (
         id,
+        estado,
         puesto_buscado,
         posicion_juego,
         categoria,

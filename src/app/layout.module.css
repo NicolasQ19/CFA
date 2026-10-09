@@ -5,5 +5,7 @@
 }
 
 .body {
-  @apply min-h-full flex flex-col;
+  @apply min-h-screen flex flex-col;
 }
+
+.contenido { @apply flex-1; min-width: 0; }

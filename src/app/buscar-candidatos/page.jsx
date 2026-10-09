@@ -1,3 +1,4 @@
+import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
@@ -91,7 +92,7 @@ export default async function PaginaBuscarCandidatos({ searchParams }) {
               <Link href={`/perfil-publico?id=${candidato.usuario_id}`} className={styles.tarjeta}>
                 {candidato.foto_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={candidato.foto_url} alt="" className={styles.foto} />
+                  <ImagenAmpliable src={candidato.foto_url} alt="" className={styles.foto} />
                 ) : (
                   <div className={styles.fotoVacia}>
                     {candidato.usuarios.nombre_completo.charAt(0).toUpperCase()}

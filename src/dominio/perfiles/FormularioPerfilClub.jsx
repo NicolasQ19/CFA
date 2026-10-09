@@ -1,5 +1,6 @@
 "use client";
 
+import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { guardarPerfilClub } from "@/dominio/perfiles/acciones-club";
@@ -81,7 +82,7 @@ export function FormularioPerfilClub({ perfilExistente }) {
 
       <fieldset className={styles.seccion}>
         <legend>Identidad del club</legend>
-        {perfilExistente?.escudo_url && <img src={perfilExistente.escudo_url} alt="Escudo actual del club" className={styles.escudo} />}
+        {perfilExistente?.escudo_url && <ImagenAmpliable src={perfilExistente.escudo_url} alt="Escudo actual del club" className={styles.escudo} />}
         <label htmlFor="escudo" className={styles.etiqueta}>Escudo (JPG, PNG o WebP, hasta 2 MB)</label>
         <input id="escudo" name="escudo" type="file" accept="image/jpeg,image/png,image/webp" className={styles.entrada} />
         {perfilExistente?.escudo_url && <label><input type="checkbox" name="quitarEscudo" /> Quitar escudo actual</label>}

@@ -15,6 +15,9 @@
 
 /**
  * @typedef {Object} PerfilCandidato
+ * @property {string | null} nombres
+ * @property {string | null} apellidos
+ * @property {string | null} fecha_nacimiento
  * @property {string} usuario_id
  * @property {string} puesto
  * @property {string} provincia
@@ -62,6 +65,9 @@
  * @typedef {Object} PerfilRepresentante
  * @property {string} usuario_id
  * @property {string | null} nombre_agencia
+ * @property {string | null} presentacion
+ * @property {string | null} especializacion
+ * @property {string | null} zona_trabajo
  * @property {string} actualizado_en
  */
 
