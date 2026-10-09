@@ -37,6 +37,9 @@ export async function BarraNavegacion() {
               <Link href="/mi-perfil" className={styles.enlace}>
                 Mi perfil
               </Link>
+              <Link href="/perfil-publico" className={styles.enlace}>
+                Mi perfil público
+              </Link>
             </>
           )}
 
@@ -44,6 +47,9 @@ export async function BarraNavegacion() {
             <>
               <Link href="/mi-club" className={styles.enlace}>
                 Mi club
+              </Link>
+              <Link href="/perfil-publico-club" className={styles.enlace}>
+                Mi perfil público
               </Link>
               <Link href="/mis-ofertas" className={styles.enlace}>
                 Mis ofertas
@@ -55,9 +61,13 @@ export async function BarraNavegacion() {
           )}
 
           {usuario?.rol === "representante" && (
+            <>
+            <Link href="/mi-perfil" className={styles.enlace}>Mi perfil</Link>
+            <Link href={`/perfil-publico-representante?id=${usuario.id}`} className={styles.enlace}>Mi perfil público</Link>
             <Link href="/mi-cartera" className={styles.enlace}>
               Mi cartera
             </Link>
+            </>
           )}
 
           {usuario?.rol === "administrador" && (

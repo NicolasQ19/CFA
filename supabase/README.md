@@ -1,5 +1,35 @@
 # Activar curriculums de candidatos
 
+## Cancelación de postulaciones propias del candidato
+
+Un candidato activo puede cancelar sus propias postulaciones desde la oferta publicada o desde Mis postulaciones, incluso si la oferta ya está pausada o cerrada. Se usa la política RLS existente `candidato_gestiona_sus_propias_postulaciones`; no requiere migración nueva. La cancelación elimina la postulación, actualiza los paneles y permite enviarla de nuevo si la oferta sigue publicada.
+
+Verificar con una cuenta de candidato: enviar una postulación, cancelar la confirmación sin cambios, confirmar la cancelación desde ambos accesos y comprobar que desaparezca de Mis postulaciones y del listado del club. Otra cuenta no debe poder cancelar esa fila, y un fallo del servicio no debe mostrarse como éxito.
+
+## Mi perfil y perfil público del representante
+
+La edición del representante está en `/mi-perfil`; `/mi-cartera` conserva la gestión de candidatos y postulaciones. La navegación incluye Mi perfil, Mi perfil público y Mi cartera. El perfil público se comparte con `/perfil-publico-representante?id=<usuario_id>`.
+
+Después de las migraciones de contacto y presentación del representante, ejecutar `migrations/20261008_perfil_publico_representante.sql`. La función de lectura permite a visitantes y usuarios autenticados consultar solo nombre de agencia, foto, presentación, especialización, zona de trabajo, país y contacto profesional de representantes activos. No publica correo de acceso, cartera, CVs de representados ni postulaciones, y no amplía las políticas RLS de las tablas.
+
+El dueño puede revisar su propia página con los permisos existentes; la lectura de otras cuentas y visitantes requiere aplicar la nueva migración. Comprobar: editar y guardar desde Mi perfil; abrir Mi perfil público; abrir la URL en una sesión anónima; verificar que una cuenta inactiva o un ID inexistente no se muestre. Un visitante no debe poder modificar el perfil por la API.
+
+## Filtros de candidatos y cancelación de postulaciones
+
+Ejecutar `migrations/20261008_datos_personales_representados.sql` después de `20261003_perfil_representante_contacto.sql`. Agrega nombres, apellidos y fecha de nacimiento opcionales; las nuevas funciones guardan estos datos junto con la ficha en una transacción. Mantiene las funciones anteriores y los nombres completos existentes, sin inferir apellidos compuestos. En fichas antiguas, separar manualmente nombres y apellidos desde Editar datos.
+
+En una oferta, comprobar búsqueda por nombre o apellido, orden A–Z/Z–A, edades de menor a mayor o mayor a menor, rango inclusivo y provincia. Quienes no tienen fecha de nacimiento quedan fuera del rango de edad y al final del orden por edad. Solo se ofrecen candidatos del puesto solicitado que todavía no están postulados.
+
+La cancelación usa las políticas RLS existentes: solo un representante activo puede retirar una postulación enviada por él para un candidato de su cartera. Se elimina la postulación y puede enviarse nuevamente mientras la oferta esté publicada. Comprobar desde el detalle de oferta y Mi cartera, incluyendo confirmación, actualización de ambas vistas y rechazo de intentos de otra cuenta. Esta cancelación no requiere una migración nueva.
+
+## Presentación profesional del representante
+
+Ejecutar `migrations/20261008_presentacion_representante.sql` en el SQL Editor del proyecto configurado en `.env.local`, después de las migraciones anteriores. Agrega presentación (2000 caracteres), especialización y zona de trabajo (300 caracteres cada una). Todos son opcionales; no modifica las políticas RLS ni los datos existentes.
+
+Desde Mi perfil, completar los tres campos, guardar y recargar para comprobar persistencia. Borrarlos y guardar debe dejarlos vacíos. Probar también un perfil anterior sin estos datos. El formulario valida los límites y el servidor los comprueba antes de subir archivos. La persistencia remota requiere aplicar esta migración y usar una cuenta de representante activa.
+
+Pruebas locales: `node --test tests/perfil-representante.test.js`.
+
 En el proyecto de Supabase que usa `.env.local`, abrir **SQL Editor**, pegar el contenido de `migrations/20260928_curriculum_candidato.sql` y ejecutarlo una vez.
 
 La migración agrega `perfiles_candidato.cv_ruta`, crea el bucket privado `curriculums` (PDF, hasta 5 MB) y configura permisos: cada candidato activo puede subir su propio CV; su dueño, administradores activos y clubes activos con acceso al perfil pueden descargarlo. No requiere una clave de servicio en la aplicación.

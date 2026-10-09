@@ -2,6 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
+import { puestoCompatible } from "@/lib/postulacion-cartera";
+import { retirarPostulacionPropia } from "@/lib/cancelar-postulacion";
+
+export async function cancelarMiPostulacion(postulacionId) {
+  const supabase = await crearClienteServidor();
+  const resultado = await retirarPostulacionPropia(supabase, postulacionId);
+  if (resultado.error) return resultado;
+  revalidatePath("/mis-postulaciones");
+  revalidatePath(`/ofertas/${resultado.ofertaId}`);
+  revalidatePath(`/mis-ofertas/${resultado.ofertaId}/postulantes`);
+  revalidatePath("/mi-cartera");
+  return { exito: true };
+}
 
 /**
  * El candidato se postula a una oferta publicada. Requiere tener el perfil cargado.
@@ -31,7 +44,7 @@ export async function postularseAOferta(ofertaId) {
 
   const { data: oferta } = await supabase
     .from("ofertas_laborales")
-    .select("id, estado")
+    .select("id, estado, puesto_buscado")
     .eq("id", ofertaId)
     .maybeSingle();
 
@@ -41,12 +54,16 @@ export async function postularseAOferta(ofertaId) {
 
   const { data: perfil } = await supabase
     .from("perfiles_candidato")
-    .select("usuario_id")
+    .select("usuario_id, puesto")
     .eq("usuario_id", user.id)
     .maybeSingle();
 
   if (!perfil) {
     return { error: "Completá tu perfil antes de postularte.", faltaPerfil: true };
+  }
+
+  if (!puestoCompatible(perfil.puesto, oferta.puesto_buscado)) {
+    return { error: "Tu puesto profesional debe coincidir con el solicitado en la oferta." };
   }
 
   const { data: yaExiste } = await supabase
@@ -60,11 +77,11 @@ export async function postularseAOferta(ofertaId) {
     return { error: "Ya te postulaste a esta oferta." };
   }
 
-  const { error } = await supabase.from("postulaciones").insert({
+  const { data: nuevaPostulacion, error } = await supabase.from("postulaciones").insert({
     oferta_id: ofertaId,
     candidato_id: user.id,
     estado: "postulado",
-  });
+  }).select("id").single();
 
   if (error) {
     const yaPostulado = error.code === "23505"; // violación de la restricción unique (oferta_id, candidato_id)
@@ -74,5 +91,5 @@ export async function postularseAOferta(ofertaId) {
   revalidatePath(`/ofertas/${ofertaId}`);
   revalidatePath("/mis-postulaciones");
 
-  return { exito: true };
+  return { exito: true, postulacionId: nuevaPostulacion.id };
 }

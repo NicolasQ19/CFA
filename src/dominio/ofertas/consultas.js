@@ -13,6 +13,7 @@ export async function listarOfertasPublicadas(filtros) {
   if (filtros.puesto) consulta = consulta.eq("puesto_buscado", filtros.puesto);
   if (filtros.provincia) consulta = consulta.eq("provincia", filtros.provincia);
   if (filtros.categoria) consulta = consulta.eq("categoria", filtros.categoria);
+  if (filtros.tipoContrato) consulta = consulta.eq("tipo_contrato", filtros.tipoContrato);
 
   const { data } = await consulta;
   return data ?? [];

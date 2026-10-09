@@ -1,0 +1,14 @@
+@reference "tailwindcss";
+
+.miniatura { cursor: zoom-in; }
+.miniatura:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.dialogo { width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; border: 0; padding: 1rem; background: transparent; color: white; }
+.dialogo[open] { display: grid; place-items: center; }
+.dialogo::backdrop { background: #020604e8; backdrop-filter: blur(6px); }
+.contenido { @apply flex min-w-0 flex-col gap-3; width: min(100%, 1100px); }
+.barra { @apply flex items-center justify-between gap-4; }
+.barra p { @apply min-w-0 truncate text-sm font-medium text-slate-200; }
+.cerrar { @apply inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl border border-slate-600/60 bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800; }
+.cerrar span { @apply text-xl; }
+.imagenGrande { width: 100%; height: min(76svh, 850px); object-fit: contain; border-radius: 12px; }
+.ayuda { @apply text-center text-xs text-slate-400; }

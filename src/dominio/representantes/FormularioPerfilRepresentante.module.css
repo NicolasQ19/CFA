@@ -1,11 +1,77 @@
 @reference "tailwindcss";
 
 .formulario {
-  @apply flex flex-col gap-6;
+  @apply grid grid-cols-1 items-start gap-5 lg:grid-cols-2;
+}
+
+.indicador {
+  @apply flex flex-col gap-3 rounded-xl border border-emerald-800/60 bg-emerald-950/40 p-4;
+  grid-column: 1 / -1;
+}
+
+.encabezadoIndicador {
+  @apply flex flex-wrap items-center justify-between gap-2;
+}
+
+.porcentaje {
+  @apply text-xl font-bold text-emerald-300;
+}
+
+.progreso {
+  @apply h-2 w-full overflow-hidden rounded-full;
+  appearance: none;
+  background: #163b30;
+}
+
+.progreso::-webkit-progress-bar { background: #163b30; }
+.progreso::-webkit-progress-value { background: #34d399; border-radius: 999px; }
+.progreso::-moz-progress-bar { background: #34d399; border-radius: 999px; }
+
+.pendientes {
+  @apply mt-2 flex flex-wrap gap-2;
+}
+
+.pendientes a {
+  @apply inline-block rounded-lg border border-emerald-800/60 px-3 py-1.5 text-xs text-emerald-200 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-emerald-400;
+}
+
+.perfilCompleto {
+  @apply text-sm font-medium text-emerald-300;
+}
+
+.seccionProfesional {
+  @apply min-w-0 rounded-2xl border border-emerald-900/60 p-5;
+  grid-column: 1 / -1;
+}
+
+.tituloSeccion {
+  @apply text-base font-semibold text-white;
+}
+
+.seccionProfesional > .ayuda {
+  @apply mb-4;
+}
+
+.ayuda {
+  @apply text-xs leading-relaxed text-slate-400;
+}
+
+.areaTexto {
+  @apply resize-y;
+  min-height: 5rem;
+}
+
+.pieCampo {
+  @apply flex flex-wrap items-start justify-between gap-2;
+}
+
+.contador {
+  @apply text-xs text-slate-400;
 }
 
 .seccionFoto {
-  @apply flex flex-wrap items-center gap-5 pb-4 border-b border-emerald-900/40;
+  @apply flex flex-wrap items-center gap-5 rounded-2xl border border-emerald-900/60 p-5;
+  background: var(--surface);
 }
 
 .fotoContenedor {
@@ -29,7 +95,7 @@
 }
 
 .campo {
-  @apply flex flex-col gap-1.5;
+  @apply min-w-0 flex flex-col gap-1.5;
 }
 
 .campoCompleto {
@@ -58,8 +124,18 @@
 
 .error {
   @apply text-xs font-medium text-red-400 bg-red-950/30 border border-red-800/50 p-3 rounded-lg;
+  grid-column: 1 / -1;
 }
 
 .exito {
   @apply text-xs font-medium text-emerald-400 bg-emerald-950/40 border border-emerald-800/50 p-3 rounded-lg;
+  grid-column: 1 / -1;
+}
+
+.datosContacto { @apply rounded-2xl border border-emerald-900/60 p-5; background: var(--surface); }
+.barraAcciones { @apply sticky z-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-emerald-700/60 p-4 shadow-xl; grid-column: 1 / -1; bottom: 1rem; background: #101c16f5; backdrop-filter: blur(12px); }
+.barraAcciones .botonGuardar { @apply min-h-11 rounded-xl; }
+@media (min-width: 1100px) {
+  .seccionProfesional .grillaCampos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .seccionProfesional .campoCompleto { grid-column: span 1; }
 }

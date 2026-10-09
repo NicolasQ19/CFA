@@ -1,3 +1,4 @@
+import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
 import { ETAPAS_CLUB } from "@/lib/club";
 import { DISPONIBILIDADES } from "@/lib/perfil-candidato";
 import { SeguimientoClub } from "@/dominio/postulaciones/SeguimientoClub";
@@ -93,7 +94,7 @@ export default async function PaginaPostulantesDeOferta({ params, searchParams }
         <div className={styles.tarjetas}>
           {postulantesVisibles.map(postulante => <article key={postulante.id} className={styles.tarjeta}>
             <div className={styles.candidato}>
-              {postulante.perfil?.foto_url && <img src={postulante.perfil.foto_url} alt={`Foto de ${postulante.nombre}`} className={styles.foto} />}
+              {postulante.perfil?.foto_url && <ImagenAmpliable src={postulante.perfil.foto_url} alt={`Foto de ${postulante.nombre}`} className={styles.foto} />}
               <div><h2 className={styles.nombre}>{postulante.nombre}</h2>
                 <p>{ETIQUETAS_PUESTO_PROFESIONAL[postulante.puesto] ?? "Puesto no informado"} · {postulante.perfil?.provincia ?? "Provincia no informada"}</p>
                 <p className={styles.subtitulo}>{DISPONIBILIDADES[postulante.perfil?.disponibilidad] ?? "Disponibilidad no informada"}</p>

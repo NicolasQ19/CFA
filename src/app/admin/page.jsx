@@ -1,3 +1,4 @@
+import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
@@ -68,7 +69,7 @@ export default async function PaginaAdministracion() {
               <div className={styles.itemEncabezado}>
                 <div className={styles.infoClub}>
                   {club?.escudo_url ? (
-                    <img
+                    <ImagenAmpliable
                       src={club.escudo_url}
                       alt={`Escudo de ${club.nombre_club ?? "club"}`}
                       className={styles.escudo}

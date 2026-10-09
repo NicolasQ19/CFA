@@ -1,155 +1,62 @@
-@reference "tailwindcss";
+﻿@reference "tailwindcss";
 
-.main {
-  @apply mx-auto w-full px-4 pb-24;
-  max-width: 1000px;
-}
-
-/* ---------- Hero ---------- */
-
-.hero {
-  @apply flex flex-col items-center text-center;
-  padding-block: 88px 72px;
-}
-
-.volanta {
-  color: var(--accent);
-  @apply mb-6 text-xs font-bold uppercase;
-  letter-spacing: 0.2em;
-}
-
-.titulo {
-  @apply font-bold text-white;
-  font-size: clamp(2.5rem, 7vw, 5rem);
-  line-height: 1.06;
-  letter-spacing: -0.055em;
-}
-
-.descripcion {
-  @apply mt-7 text-slate-300;
-  font-size: 1.1rem;
-  max-width: 620px;
-}
-
-.acciones {
-  @apply mt-9 flex flex-wrap justify-center gap-3;
-}
-
-.botonPrimario {
-  @apply rounded-[10px] bg-emerald-700 px-6 py-3.5 text-sm font-semibold text-white;
-  box-shadow: 0 8px 32px #05966930;
-}
-
-.botonPrimario:hover {
-  background: #065f46;
-}
-
-.botonSecundario {
-  @apply rounded-[10px] border border-emerald-800/70 px-6 py-3.5 text-sm font-semibold text-white;
-  background: #12231a;
-}
-
-.botonSecundario:hover {
-  border-color: var(--accent);
-  background: #183426;
-}
-
-/* ---------- Secciones ---------- */
-
-.seccion {
-  @apply mt-16 border-t border-emerald-900/50 pt-12;
-}
-
-.encabezadoSeccion {
-  @apply mb-6 flex items-baseline justify-between gap-4;
-}
-
-.tituloSeccion {
-  @apply text-xl font-semibold text-white sm:text-2xl;
-  letter-spacing: -0.02em;
-}
-
-.enlaceSeccion {
-  @apply shrink-0 text-sm font-semibold text-emerald-300 hover:underline;
-}
-
-.enlaceTexto {
-  @apply font-semibold text-emerald-300 hover:underline;
-}
-
-.vacio {
-  @apply text-sm text-slate-300;
-}
-
-/* ---------- Últimas ofertas ---------- */
-
-.grillaOfertas {
-  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3;
-}
-
-.tarjetaOferta {
-  background: var(--surface);
-  @apply flex h-full flex-col gap-2 rounded-lg border border-emerald-900/60 p-5;
-  transition: border-color 0.15s ease, transform 0.15s ease;
-}
-
-.tarjetaOferta:hover {
-  border-color: #34d39966;
-  transform: translateY(-2px);
-}
-
-.clubNombre {
-  @apply text-xs font-medium uppercase tracking-wide text-slate-400;
-}
-
-.ofertaTitulo {
-  @apply text-base font-semibold text-white;
-}
-
-.ofertaDetalle {
-  @apply mt-auto text-sm text-slate-300;
-}
-
-/* ---------- Cómo funciona ---------- */
-
-.grillaPasos {
-  @apply grid grid-cols-1 gap-6 sm:grid-cols-3;
-}
-
-.paso {
-  @apply flex flex-col gap-2;
-}
-
-.pasoNumero {
-  border: 1px solid #34d39955;
-  color: var(--accent);
-  @apply flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold;
-}
-
-.pasoTitulo {
-  @apply text-base font-semibold text-white;
-}
-
-.pasoTexto {
-  @apply text-sm text-slate-300;
-}
-
-/* ---------- Accesos por rol ---------- */
-
-.grillaRoles {
-  @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
-}
-
-.tarjetaRol {
-  background: var(--surface);
-  box-shadow: 0 12px 32px #00000020;
-  @apply flex flex-col items-start gap-3 rounded-lg border border-emerald-900/60 p-6;
-}
-
-.rolTitulo {
-  @apply text-lg font-semibold text-white;
-}
-
-.rolTexto {
-  @apply text-sm text-slate-300;
-}
+.main { @apply mx-auto w-full max-w-6xl px-4 pb-8 sm:px-6; }
+.hero { @apply grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-[1.3fr_1fr] lg:gap-14; }
+.heroTexto { @apply min-w-0; }
+.volanta { @apply mb-4 text-xs font-semibold uppercase tracking-widest text-emerald-300; }
+.titulo { @apply font-semibold text-white; font-size: clamp(2.5rem, 5.2vw, 4.4rem); line-height: 1.08; letter-spacing: -0.055em; }
+.descripcion { @apply mt-6 max-w-xl text-base leading-relaxed text-slate-300; }
+.acciones { @apply mt-8 flex flex-wrap gap-3; }
+.botonPrimario { @apply inline-flex min-h-11 items-center justify-center gap-4 rounded-xl bg-emerald-400 px-6 py-3.5 text-sm font-semibold text-emerald-950 hover:bg-emerald-300; }
+.botonSecundario { @apply inline-flex min-h-11 items-center justify-center rounded-xl border border-emerald-800/70 bg-emerald-950/30 px-6 py-3.5 text-sm font-semibold text-white hover:border-emerald-500; }
+.enlaceComo { @apply mt-5 inline-flex items-center gap-3 py-2 text-xs font-medium text-slate-400 hover:text-emerald-300; }
+.heroPanel { @apply overflow-hidden rounded-3xl border border-emerald-700/40 p-6 sm:p-8; background: radial-gradient(ellipse at 100% 0%, #28765455, transparent 65%), linear-gradient(135deg, #172d21, #0e1913); box-shadow: 0 24px 64px #00000035; }
+.panelCabecera { @apply mb-8 flex items-center justify-between text-xs font-medium tracking-widest text-emerald-300; }
+.punto { @apply h-2 w-2 rounded-full bg-emerald-400; box-shadow: 0 0 0 5px #34d39915; }
+.heroPanel h2 { @apply mb-6 text-2xl font-semibold text-white; }
+.panelFila { @apply flex items-start gap-4 border-t border-emerald-700/30 py-5; }
+.panelNumero { @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-emerald-700/40 text-xs font-medium text-emerald-300; }
+.panelFila h3 { @apply text-sm font-semibold text-white; }
+.panelFila p { @apply mt-1 text-xs text-slate-400; }
+.panelNota { @apply mt-2 text-xs text-emerald-200/70; }
+.sobre { @apply grid gap-6 rounded-2xl border border-emerald-900/60 bg-emerald-950/20 p-6 sm:p-8 lg:grid-cols-2; }
+.sobre > div:last-child { @apply flex flex-col gap-4 text-sm leading-relaxed text-slate-300; }
+.seccion { @apply mt-16 border-t border-emerald-900/50 pt-12; }
+.seccion, .sobre { scroll-margin-top: 2rem; }
+.encabezadoSeccion { @apply mb-6 flex flex-wrap items-baseline justify-between gap-4; }
+.tituloSeccion { @apply text-2xl font-semibold text-white sm:text-3xl; }
+.introduccion { @apply mb-7 mt-3 max-w-2xl text-sm text-slate-400; }
+.enlaceSeccion { @apply py-2 text-sm font-semibold text-emerald-300 hover:underline; }
+.enlaceTexto { @apply font-semibold text-emerald-300 hover:underline; }
+.vacio { @apply rounded-2xl border border-dashed border-emerald-800/60 p-6 text-sm text-slate-300; }
+.grillaOfertas { @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3; }
+.tarjetaOferta { @apply flex h-full min-w-0 flex-col gap-3 rounded-2xl border border-emerald-900/60 p-5 hover:border-emerald-500/60; background: var(--surface); }
+.clubNombre { @apply text-xs font-medium text-slate-400; }
+.ofertaTitulo { @apply text-base font-semibold text-white; overflow-wrap: anywhere; }
+.ofertaDetalle { @apply mt-auto border-t border-emerald-900/50 pt-3 text-xs text-slate-400; overflow-wrap: anywhere; }
+.grillaPasos { @apply mt-7 grid grid-cols-1 gap-6 sm:grid-cols-3; }
+.paso { @apply flex flex-col gap-3 rounded-2xl border border-emerald-900/50 p-5; }
+.pasoNumero { @apply mb-2 flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-600/40 bg-emerald-900/30 text-sm font-semibold text-emerald-300; }
+.pasoTitulo { @apply text-base font-semibold text-white; }
+.pasoTexto { @apply text-sm text-slate-400; }
+.grillaRoles { @apply grid grid-cols-1 gap-4 lg:grid-cols-3; }
+.tarjetaRol { @apply flex min-w-0 flex-col gap-4 rounded-2xl border border-emerald-900/60 p-6; background: var(--surface); }
+.rolNumero { @apply text-xs font-medium tracking-widest text-emerald-300; }
+.rolTitulo { @apply text-xl font-semibold text-white; }
+.rolTexto { @apply text-sm text-slate-400; }
+.beneficios { @apply flex flex-col gap-3 py-2; }
+.beneficios li { @apply flex items-start gap-2 text-xs leading-relaxed text-slate-300; }
+.beneficios span { @apply shrink-0 text-emerald-400; }
+.enlaceRol { @apply mt-auto flex min-h-11 items-center justify-between gap-3 border-t border-emerald-900/50 pt-4 text-sm font-semibold text-emerald-300 hover:text-emerald-200; }
+.puestos { @apply mt-6 flex flex-wrap gap-2; }
+.puestos li { @apply rounded-full border border-emerald-800/60 bg-emerald-950/40 px-4 py-2 text-sm text-slate-300; }
+.preguntas { @apply mt-7 flex flex-col gap-3; }
+.pregunta { @apply rounded-xl border border-emerald-900/60 px-5; background: var(--surface); }
+.pregunta summary { @apply flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-sm font-semibold text-white; }
+.pregunta summary::-webkit-details-marker { display: none; }
+.pregunta summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+.pregunta summary span { @apply text-xl font-normal text-emerald-300; }
+.pregunta[open] summary span { transform: rotate(45deg); }
+.pregunta p { @apply max-w-3xl pb-5 text-sm leading-relaxed text-slate-400; }
+.cierre { @apply mt-16 flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-emerald-700/40 p-6 sm:p-10; background: radial-gradient(ellipse at right, #226c4544, transparent 65%), #13231a; }
+.cierre p:last-child { @apply mt-3 text-sm text-slate-400; }

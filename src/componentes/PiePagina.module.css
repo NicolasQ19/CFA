@@ -1,0 +1,13 @@
+@reference "tailwindcss";
+
+.footer { @apply mt-12 border-t border-emerald-900/60; background: #0a120e; }
+.contenido { @apply mx-auto grid max-w-6xl gap-10 px-5 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-[1.4fr_1fr_1fr]; }
+.marca { @apply sm:col-span-2 lg:col-span-1; }
+.logo { @apply inline-block text-3xl font-bold tracking-tight text-white; }
+.logo span { @apply text-emerald-400; }
+.nombre { @apply mt-3 text-sm font-medium text-slate-200; }
+.descripcion { @apply mt-2 max-w-sm text-sm leading-relaxed text-slate-400; }
+.columna { @apply flex min-w-0 flex-col items-start gap-3; }
+.columna h2 { @apply mb-1 text-sm font-semibold text-white; }
+.columna a { @apply py-1 text-sm text-slate-400 hover:text-emerald-300; }
+.base { @apply mx-auto flex max-w-6xl flex-wrap justify-between gap-3 border-t border-emerald-900/40 px-5 py-6 text-xs text-slate-500 sm:px-6; }
