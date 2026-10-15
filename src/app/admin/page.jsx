@@ -1,6 +1,6 @@
 import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";//comentario
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { listarOfertasPendientesDeModeracion } from "@/dominio/ofertas/consultas";
 import { BotonesModeracion } from "@/dominio/ofertas/BotonesModeracion";
