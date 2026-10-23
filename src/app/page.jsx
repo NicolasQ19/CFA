@@ -187,3 +187,6 @@ export default async function PaginaInicio() {
     </main>
   );
 }
+
+
+

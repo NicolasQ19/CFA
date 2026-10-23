@@ -22,7 +22,7 @@ export function FormularioPerfilClub({ perfilExistente }) {
     if (estabaGuardandoRef.current && !estaGuardando && !estado.error) {
       setMostrarExito(true);
       const temporizador = setTimeout(() => {
-        router.push("/perfil-publico-club");
+        router.refresh();
       }, 1200);
       return () => clearTimeout(temporizador);
     }

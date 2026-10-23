@@ -54,6 +54,7 @@ export default async function PaginaPerfilPublicoClub({ searchParams }) {
             <h1 className={styles.titulo}>{nombreClub}</h1>
             <p className={styles.subtitulo}>Conocé el club, sus espacios y las oportunidades para sumarte a su equipo.</p>
             <div className={styles.insignias}>
+              {perfil?.verificado && <span>✓ Club verificado</span>}
               {ubicacion && <span>{ubicacion}</span>}
               {perfil?.categoria && <span>{perfil.categoria}</span>}
             </div>

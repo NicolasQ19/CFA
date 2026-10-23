@@ -171,6 +171,10 @@ original/
 
 ## Pruebas y validación
 
+Para desarrollo, `npm run dev` usa el puerto 3000 y guarda los archivos generados en `.next-dev`. El puerto fijo evita que un segundo inicio cree otra instancia automáticamente. `npm run build` y `npm start` usan `.next`, separado de desarrollo para evitar que sus compilaciones interfieran entre sí.
+
+Si una pestaña abierta antes de reiniciar el servidor muestra “Failed to find Server Action”, recargá la página para obtener las acciones de la compilación actual.
+
 La suite automatizada cubre validaciones de perfiles y archivos, completitud, filtros de candidatos, cálculo de edad, preparación de vistas previas y autorización de cancelaciones de postulaciones.
 
 ```bash

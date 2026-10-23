@@ -19,5 +19,10 @@ export async function obtenerUsuarioActual() {
     .eq("id", user.id)
     .single();
 
+  if (usuario?.rol === "club") {
+    const { data: verificacion } = await supabase.from("verificaciones_club")
+      .select("*").eq("club_id", usuario.id).maybeSingle();
+    return { ...usuario, verificacion_club: verificacion ?? null };
+  }
   return usuario ?? null;
 }

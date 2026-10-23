@@ -5,6 +5,8 @@ import { obtenerOfertasConConteoPostulantes, obtenerResumenClub } from "@/domini
 import { BotonesEstadoOferta } from "@/dominio/ofertas/BotonesEstadoOferta";
 import { ETIQUETAS_ESTADO_OFERTA, ETIQUETAS_PUESTO_PROFESIONAL } from "@/tipos/dominio";
 import styles from "./page.module.css";
+import { clubEstaVerificado } from "@/lib/verificacion-club";
+import { EstadoVerificacionClub } from "@/dominio/clubes/EstadoVerificacionClub";
 
 /** RF-13: el club ve y gestiona sus ofertas publicadas. */
 export default async function PaginaMisOfertas() {
@@ -12,6 +14,7 @@ export default async function PaginaMisOfertas() {
 
   if (!usuario) redirect("/iniciar-sesion");
   if (usuario.rol !== "club") redirect("/");
+  if (!clubEstaVerificado(usuario)) return <main className={styles.main}><h1 className={styles.titulo}>Mis ofertas</h1><EstadoVerificacionClub verificacion={usuario.verificacion_club} /></main>;
 
   const [ofertas, actividad] = await Promise.all([obtenerOfertasConConteoPostulantes(usuario.id), obtenerResumenClub(usuario.id)]);
 
@@ -37,7 +40,7 @@ export default async function PaginaMisOfertas() {
           <li className={styles.itemVacio}>Todavía no publicaste ninguna oferta.</li>
         )}
         {ofertas.map((oferta) => (
-          <li key={oferta.id} className={styles.item}>
+          <li key={oferta.id} id={`oferta-${oferta.id}`} className={styles.item}>
             <div className={styles.itemEncabezado}>
               <h2 className={styles.itemTitulo}>
                 {ETIQUETAS_PUESTO_PROFESIONAL[oferta.puesto_buscado]}

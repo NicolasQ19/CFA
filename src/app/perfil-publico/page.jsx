@@ -4,6 +4,7 @@ import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerPerfilCandidato } from "@/dominio/perfiles/consultas";
 import { candidatoSePostuloAlClub } from "@/dominio/postulaciones/consultas-club";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
+import { clubEstaVerificado } from "@/lib/verificacion-club";
 
 
 export default async function PaginaPerfilPublico({ searchParams }) {
@@ -16,6 +17,7 @@ export default async function PaginaPerfilPublico({ searchParams }) {
   }
 
   const esVistaAjena = Boolean(candidatoId && candidatoId !== usuario.id);
+  if (usuario.rol === "club" && !clubEstaVerificado(usuario)) redirect("/mi-club#verificacion");
 
   if (esVistaAjena && usuario.rol !== "club" && usuario.rol !== "administrador" && usuario.rol !== "representante") {
     redirect("/");

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { FormularioNuevaOferta } from "@/dominio/ofertas/FormularioNuevaOferta";
 import styles from "./page.module.css";
+import { clubEstaVerificado } from "@/lib/verificacion-club";
 
 /** RF-12: el club publica una nueva oferta laboral. */
 export default async function PaginaNuevaOferta() {
@@ -9,6 +10,7 @@ export default async function PaginaNuevaOferta() {
 
   if (!usuario) redirect("/iniciar-sesion");
   if (usuario.rol !== "club") redirect("/");
+  if (!clubEstaVerificado(usuario)) redirect("/mi-club#verificacion");
 
   return (
     <main className={styles.main}>

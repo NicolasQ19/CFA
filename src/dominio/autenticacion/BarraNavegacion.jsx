@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import { CampanaNotificaciones } from "./CampanaNotificaciones";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { cerrarSesion } from "@/dominio/autenticacion/acciones";
 import styles from "./BarraNavegacion.module.css";
+import { clubEstaVerificado } from "@/lib/verificacion-club";
 
 export async function BarraNavegacion() {
   const usuario = await obtenerUsuarioActual();
@@ -54,9 +57,9 @@ export async function BarraNavegacion() {
               <Link href="/mis-ofertas" className={styles.enlace}>
                 Mis ofertas
               </Link>
-              <Link href="/buscar-candidatos" className={styles.enlace}>
+              {clubEstaVerificado(usuario) && <Link href="/buscar-candidatos" className={styles.enlace}>
                 Buscar candidatos
-              </Link>
+              </Link>}
             </>
           )}
 
@@ -78,7 +81,12 @@ export async function BarraNavegacion() {
             <Link href="/admin/metricas" className={styles.enlace}>
               Métricas
             </Link>
+            <Link href="/admin/clubes" className={styles.enlace}>Verificación de clubes</Link>
             </>
+          )}
+
+          {["administrador", "club", "candidato"].includes(usuario?.rol) && (
+            <Suspense fallback={null}><CampanaNotificaciones key={usuario.id} usuarioId={usuario.id} rol={usuario.rol} /></Suspense>
           )}
 
           {usuario && (

@@ -40,7 +40,8 @@ export default async function PaginaAdministracion({ searchParams }) {
   const parametros = await searchParams;
   const estado = Object.hasOwn(ETIQUETAS_ESTADO_OFERTA, parametros?.estado ?? "") ? parametros.estado : "";
   const pagina = Math.min(100000, Math.max(1, Number.parseInt(parametros?.pagina, 10) || 1));
-  const { ofertas, total, error } = await listarOfertasParaAdministracion(estado, pagina);
+  const ofertaId = typeof parametros?.oferta === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(parametros.oferta) ? parametros.oferta : null;
+  const { ofertas, total, error } = await listarOfertasParaAdministracion(estado, ofertaId ? 1 : pagina, ofertaId);
   const rutaPagina = (numero) => `/admin?estado=${estado}&pagina=${numero}`;
 
   return (
@@ -57,6 +58,7 @@ export default async function PaginaAdministracion({ searchParams }) {
         </span>
       </div>
 
+      {ofertaId && <p className={styles.subtitulo}>Estás viendo la oferta de una notificación. <Link className={styles.enlaceExterno} href="/admin">Volver a todas las ofertas →</Link></p>}
       <nav className={styles.filtros} aria-label="Filtrar ofertas por estado">
         {[["", "Todas"], ...Object.entries(ETIQUETAS_ESTADO_OFERTA)].map(([valor, etiqueta]) => (
           <Link key={valor} href={valor ? `/admin?estado=${valor}` : "/admin"} aria-current={estado === valor ? "page" : undefined} className={styles.filtro}>{etiqueta}</Link>
@@ -74,7 +76,7 @@ export default async function PaginaAdministracion({ searchParams }) {
         {ofertas.map((oferta) => {
           const club = oferta.perfiles_club;
           return (
-            <li key={oferta.id} className={styles.item}>
+            <li key={oferta.id} id={`oferta-${oferta.id}`} className={styles.item}>
               {/* Encabezado con Escudo, Club y Botones */}
               <div className={styles.itemEncabezado}>
                 <div className={styles.infoClub}>

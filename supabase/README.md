@@ -1,5 +1,33 @@
 # Activar curriculums de candidatos
 
+## Verificación manual de clubes
+
+Ejecutar una vez **`migrations/20261023_verificacion_clubes.sql`** en el SQL Editor del proyecto configurado en `.env.local`, después de las migraciones anteriores. No elimina clubes, perfiles, ofertas ni postulaciones. Tanto los clubes existentes como los nuevos quedan pendientes: ninguno se aprueba automáticamente. Hasta aplicar la migración, los accesos del club quedan bloqueados por defecto.
+
+El club completa nombre, provincia y localidad en Mi club, y envía la liga/asociación, solicitante, cargo, correo y teléfono institucionales y URL oficial. El administrador revisa en `/admin/clubes`, busca independientemente un contacto oficial, confirma la autorización de la persona y registra el canal utilizado y una observación. Puede verificar o rechazar, incluso revocar una aprobación previa. El club recibe el resultado en su campana y puede corregir y reenviar una solicitud rechazada.
+
+Solo una cuenta activa con rol administrador puede resolver mediante la función SQL; el club no tiene permisos de escritura directa en la tabla de verificación. La insignia pública se deriva de esta tabla, no de un valor enviado por el formulario. Cambiar nombre, ubicación o canales oficiales, o borrar el perfil, invalida la aprobación y requiere revisión nuevamente. Los datos de contacto de la solicitud y la revisión solo son legibles por el club y administradores; el perfil público muestra únicamente la insignia.
+
+Las comprobaciones de páginas y acciones se refuerzan en PostgreSQL: los clubes sin verificar no publican ni gestionan ofertas, no acceden a perfiles/datos de candidatos, postulaciones o CV. Una oferta de un club que deja de estar verificado sale del listado público hasta recuperar la verificación. También se bloquea que una cuenta se asigne el rol administrador o cambie su propia habilitación. Las notificaciones consultadas con clave de servicio verifican primero el estado del club y no devuelven datos de postulantes a clubes pendientes o rechazados.
+
+Validación local: `node --test tests/*.test.js`. La prueba `tests/verificacion-clubes-db.mjs` aplica la migración y comprueba permisos, solicitudes, revisión, insignia, cambio de identidad y revocación en PostgreSQL aislado con `@electric-sql/pglite`. Para ejecutarla sin agregar dependencias al proyecto, instalar el paquete en un directorio temporal y definir `CFA_PGLITE_MODULE` con la ruta a su `dist/index.js` antes de ejecutar `node tests/verificacion-clubes-db.mjs`.
+
+Después de aplicar SQL, comprobar con sesiones de club y administrador: completar perfil y solicitud; intentar publicar/buscar candidatos antes de aprobar; verificar tras contactar al club; comprobar insignia y permisos; rechazar y verificar el aviso al club; corregir y reenviar; cambiar la identidad y comprobar que vuelve a pendiente. La revisión real de identidad y autorización la realiza el administrador fuera de la aplicación.
+
+## Notificaciones de postulaciones
+
+La campana del navbar está disponible para clubes y candidatos. El club recibe avisos de las postulaciones que siguen en estado `postulado`, con el nombre del candidato y un enlace a su ficha en Postulantes. También incluye las enviadas por representantes. Al cambiar el estado, la postulación sale de los avisos pendientes del club.
+
+El candidato ve el último estado de cada postulación actualizada, con el club, la oferta y la fecha del cambio. No se genera un aviso inicial al postularse, pero sí se muestra si el club vuelve a cambiarla a `postulado`. Los avisos reflejan el estado actual, sin guardar un historial de estados. Las notas y etapas privadas de `seguimiento_club` no generan avisos.
+
+La campana del club incluye además sus ofertas actualmente publicadas o rechazadas, con el puesto, fecha de actualización y enlace a la oferta en Mis ofertas. Comparte el contador con las postulaciones. Refleja el estado actual de cada oferta, sin atribuir autoría ni conservar un historial: una oferta que el club vuelve a publicar también aparece como publicada; si pasa a pausada o cerrada, sale de estos avisos.
+
+En los tres roles, abrir un aviso lo marca como leído y descuenta uno del contador. Reabrirlo no vuelve a descontar. Las lecturas se guardan por cuenta y rol en `localStorage`, persisten al recargar y se sincronizan entre pestañas del mismo navegador; no se sincronizan entre dispositivos. Si cambia la fecha o el mensaje, cuenta como un nuevo aviso sin leer. El desplegable prioriza los no leídos, conserva los leídos identificados como tales y muestra ocho por vez con “Ver más notificaciones”. Los endpoints recorren todas las páginas para contar correctamente aunque haya más de ocho avisos o más de 1000 filas.
+
+Se consulta cada 15 segundos, al abrir la campana o volver a la pestaña. No requiere migraciones nuevas: usa las postulaciones existentes. `/api/notificaciones` valida la sesión y que la cuenta esté activa, limita las consultas al destinatario autenticado y devuelve solo datos del aviso. Usa `SUPABASE_SERVICE_ROLE_KEY` exclusivamente en el servidor para conservar el nombre del club aunque su oferta esté pausada o cerrada.
+
+Pruebas automatizadas: `node --test tests/notificaciones-postulaciones.test.js`. Para comprobar el flujo completo, postularse como candidato; consultar la campana del club; cambiar el estado informado al candidato; consultar su campana. Verificar que las notas privadas no aparezcan y que otra cuenta no reciba esos avisos.
+
 ## Cancelación de postulaciones propias del candidato
 
 Un candidato activo puede cancelar sus propias postulaciones desde la oferta publicada o desde Mis postulaciones, incluso si la oferta ya está pausada o cerrada. Se usa la política RLS existente `candidato_gestiona_sus_propias_postulaciones`; no requiere migración nueva. La cancelación elimina la postulación, actualiza los paneles y permite enviarla de nuevo si la oferta sigue publicada.
@@ -58,6 +86,8 @@ Comprobar con una cuenta de candidato: agregar y quitar experiencias, abrir la v
 Pruebas: `node --test tests/*.test.js`. La persistencia remota requiere aplicar las migraciones y usar una sesión real.
 
 ## Perfil y gestión del club
+
+En Postulantes, la etapa interna, notas y estado informado al candidato comparten el botón **Guardar seguimiento**. Cambiar el desplegable o los botones rápidos solo modifica el borrador local. El estado público se actualiza al enviar el formulario, después de guardar el seguimiento privado; guardar sin cambiarlo no modifica su fecha ni genera otra novedad. Si falla el estado después de guardar las notas, se informa el guardado parcial para que el club revise y reintente. Las notas y la etapa interna siguen siendo privadas e independientes del estado seleccionado.
 
 Ejecutar una vez `migrations/20260930_mejoras_club.sql` en el SQL Editor del proyecto configurado. Agrega los campos institucionales, el bucket público de escudos y la tabla privada `seguimiento_club` con RLS. No modifica los estados existentes de las postulaciones: las cinco etapas son un seguimiento interno independiente. Las notas nunca se incorporan a las consultas de perfiles públicos ni a las postulaciones del candidato.
 

@@ -76,7 +76,7 @@ export default async function PaginaMisPostulaciones() {
                 const avisoOferta = AVISOS_OFERTA[oferta?.estado];
 
                 return (
-                  <tr key={postulacion.id}>
+                  <tr key={postulacion.id} id={`postulacion-${postulacion.id}`}>
                     <td>
                       <span className={styles.nombreOferta}>
                         {oferta ? tituloDeOferta(oferta) : "Oferta no disponible"}

@@ -1,11 +1,14 @@
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 import { BUCKET_CV } from "@/lib/curriculum";
+import { comprobarClubVerificado } from "@/lib/verificacion-club";
 
 export async function GET(_request, { params }) {
   const { id } = await params;
   const supabase = await crearClienteServidor();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Response("Iniciá sesión para descargar el CV.", { status: 401 });
+  const { data: usuario } = await supabase.from("usuarios").select("rol").eq("id", user.id).maybeSingle();
+  if (usuario?.rol === "club" && !(await comprobarClubVerificado(supabase, user.id))) return new Response("El club debe estar verificado para acceder a candidatos.", { status: 403 });
   if (!/^[0-9a-f-]{36}$/i.test(id)) return new Response("No encontrado", { status: 404 });
   const { data: perfil } = await supabase.from("perfiles_candidato")
     .select("cv_ruta").eq("usuario_id", id).maybeSingle();

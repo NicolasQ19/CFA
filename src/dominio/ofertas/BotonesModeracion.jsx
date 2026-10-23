@@ -14,8 +14,15 @@ export function BotonesModeracion({ ofertaId, estado }) {
       try {
         const resultado = await moderarOferta(ofertaId, nuevoEstado);
         setMensaje(resultado.error ? { error: true, texto: resultado.error } : { texto: "Estado actualizado." });
-      } catch {
-        setMensaje({ error: true, texto: "No se pudo actualizar la oferta. Intentá nuevamente." });
+      } catch (error) {
+        const requiereRecarga = /failed to find server action|server action .*was not found on the server/i.test(error?.message ?? "");
+        setMensaje({
+          error: true,
+          requiereRecarga,
+          texto: requiereRecarga
+            ? "La página quedó desactualizada. Recargala para continuar con la moderación."
+            : "No se pudo actualizar la oferta. Intentá nuevamente.",
+        });
       }
     });
   }
@@ -24,7 +31,7 @@ export function BotonesModeracion({ ofertaId, estado }) {
     <div>
       <div className={styles.contenedor}>
         {(TRANSICIONES_OFERTA_DEL_ADMIN[estado] ?? []).map(destino => (
-          <button key={destino} onClick={() => cambiar(destino)} disabled={estaEnviando}
+          <button key={destino} onClick={() => cambiar(destino)} disabled={estaEnviando || mensaje?.requiereRecarga}
             className={destino === "rechazada" ? styles.botonRechazar : destino === "pausada" ? styles.botonPausar : styles.botonAprobar}>
             {etiquetas[destino]}
           </button>
@@ -32,6 +39,7 @@ export function BotonesModeracion({ ofertaId, estado }) {
       </div>
       {estaEnviando && <p role="status" className={styles.mensaje}>Actualizando…</p>}
       {mensaje && <p role={mensaje.error ? "alert" : "status"} className={styles.mensaje}>{mensaje.texto}</p>}
+      {mensaje?.requiereRecarga && <button type="button" className={styles.botonAprobar} onClick={() => window.location.reload()}>Recargar página</button>}
     </div>
   );
 }

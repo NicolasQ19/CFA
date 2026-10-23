@@ -1,0 +1,27 @@
+@reference "tailwindcss";
+
+.contenedor { @apply relative; }
+.campana { @apply relative flex h-10 w-10 items-center justify-center rounded-full border border-emerald-900 text-emerald-200 hover:border-emerald-500 hover:bg-emerald-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400; }
+.contador { @apply absolute -right-1 -top-1 min-w-5 rounded-full bg-amber-400 px-1 text-center text-xs font-bold leading-5 text-emerald-950; }
+.errorIndicador { @apply absolute -bottom-1 right-0 rounded-full bg-red-800 px-1 text-xs text-white; }
+.panel { @apply absolute right-0 top-full z-50 mt-3 w-96 overflow-hidden rounded-xl border border-emerald-800 bg-slate-950 shadow-2xl; max-width: calc(100vw - 32px); }
+.cabecera { @apply flex items-center justify-between gap-3 px-4 pt-4; }
+.cabecera h2 { @apply text-base font-bold text-white; }
+.cabecera span { @apply text-xs text-amber-300; }
+.ayuda { @apply px-4 pb-4 pt-1 text-xs leading-relaxed text-slate-400; }
+.lista { @apply max-h-96 overflow-y-auto border-t border-emerald-900/60; }
+.lista li + li { @apply border-t border-emerald-900/40; }
+.aviso { @apply flex gap-3 px-4 py-4 text-sm leading-relaxed text-slate-300 hover:bg-emerald-950/60 focus-visible:bg-emerald-950; }
+.aviso strong { @apply text-white; }
+.punto { @apply mt-2 h-2 w-2 shrink-0 rounded-full bg-emerald-400; }
+.aviso[data-leida="true"] .punto { @apply bg-slate-600; }
+.aviso[data-leida="true"] strong { @apply font-normal text-slate-300; }
+.estadoLectura { @apply mt-1 block text-xs text-slate-500; }
+.verMas { @apply block w-full border-t border-emerald-900/60 px-4 py-3 text-sm text-slate-300 hover:bg-emerald-950; }
+.puesto { @apply mt-1 block text-xs text-emerald-300; }
+.aviso time { @apply mt-1 block text-xs text-slate-500; }
+.mensaje { @apply px-4 py-6 text-sm leading-relaxed text-slate-300; }
+.verTodas { @apply block border-t border-emerald-900/60 px-4 py-3 text-center text-sm font-semibold text-emerald-300 hover:bg-emerald-950; }
+@media (max-width: 480px) {
+  .panel { position: fixed; top: 112px; left: 16px; right: 16px; width: auto; max-height: calc(100dvh - 140px); overflow-y: auto; }
+}

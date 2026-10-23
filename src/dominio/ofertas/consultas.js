@@ -1,12 +1,13 @@
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 
-export async function listarOfertasParaAdministracion(estado, pagina = 1) {
+export async function listarOfertasParaAdministracion(estado, pagina = 1, ofertaId = null) {
   const supabase = await crearClienteServidor();
   let consulta = supabase.from("ofertas_laborales")
     .select("*, perfiles_club(*)", { count: "exact" })
     .order("creada_en", { ascending: false }).order("id")
     .range((pagina - 1) * 20, pagina * 20 - 1);
   if (estado) consulta = consulta.eq("estado", estado);
+  if (ofertaId) consulta = consulta.eq("id", ofertaId);
   const { data, count, error } = await consulta;
   return { ofertas: data ?? [], total: count, error };
 }

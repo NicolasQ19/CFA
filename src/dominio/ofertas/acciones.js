@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
+import { comprobarClubVerificado } from "@/lib/verificacion-club";
 import { TRANSICIONES_OFERTA_DEL_CLUB, TRANSICIONES_OFERTA_DEL_ADMIN } from "@/tipos/dominio";
 
 /*El club publica una nueva oferta. Queda pendiente de moderación. */
@@ -16,6 +17,7 @@ export async function crearOferta(
   if (usuario?.rol !== "club") {
     return { error: "Tenés que iniciar sesión como club para publicar una oferta." };
   }
+  if (!usuario.cuenta_activa || !(await comprobarClubVerificado(supabase, usuario.id))) return { error: "Verificá tu club desde Mi club antes de publicar ofertas." };
 
   const { data: perfilClub } = await supabase
     .from("perfiles_club")
@@ -63,6 +65,7 @@ export async function cambiarEstadoDeOferta(ofertaId, nuevoEstado) {
   if (usuario?.rol !== "club") {
     return { error: "Solo un club puede cambiar el estado de sus ofertas." };
   }
+  if (!usuario.cuenta_activa || !(await comprobarClubVerificado(supabase, usuario.id))) return { error: "Tu club debe estar verificado para gestionar ofertas." };
 
   const { data: oferta } = await supabase
     .from("ofertas_laborales")
@@ -108,13 +111,14 @@ export async function moderarOferta(ofertaId, nuevoEstado) {
 
   const { data: oferta } = await supabase
     .from("ofertas_laborales")
-    .select("id, estado")
+    .select("id, estado, club_id")
     .eq("id", ofertaId)
     .maybeSingle();
 
   if (!oferta || !TRANSICIONES_OFERTA_DEL_ADMIN[oferta.estado]?.includes(nuevoEstado)) {
     return { error: "No se puede realizar este cambio desde el estado actual de la oferta." };
   }
+  if (nuevoEstado === "publicada" && !(await comprobarClubVerificado(supabase, oferta.club_id))) return { error: "Primero verificá la cuenta del club desde Verificación de clubes." };
 
   const { error } = await supabase
     .from("ofertas_laborales")
@@ -146,7 +150,7 @@ async function obtenerUsuarioConRol(supabase) {
 
   const { data: usuario } = await supabase
     .from("usuarios")
-    .select("id, rol")
+    .select("id, rol, cuenta_activa")
     .eq("id", user.id)
     .maybeSingle();
 

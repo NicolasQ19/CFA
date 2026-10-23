@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { buscarCandidatos } from "@/dominio/perfiles/consultas";
+import { clubEstaVerificado } from "@/lib/verificacion-club";
 import {
   ETIQUETAS_PUESTO_PROFESIONAL,
   POSICIONES_DE_JUEGO,
@@ -17,6 +18,7 @@ export default async function PaginaBuscarCandidatos({ searchParams }) {
 
   if (!usuario) redirect("/iniciar-sesion");
   if (usuario.rol !== "club" && usuario.rol !== "administrador") redirect("/");
+  if (usuario.rol === "club" && !clubEstaVerificado(usuario)) redirect("/mi-club#verificacion");
 
   const filtros = await searchParams;
   const nombre = filtros?.nombre?.trim() || undefined;

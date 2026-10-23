@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
 import { ETIQUETAS_ESTADO_POSTULACION } from "@/tipos/dominio";
-import { actualizarEstadoPostulacion } from "./acciones-club";
 import styles from "./SelectorEstadoPostulacion.module.css";
 
 const ESTADOS_ACCION = ["postulado", "visto", "preseleccionado", "rechazado"];
@@ -14,44 +12,14 @@ const CLASE_SELECT = {
   rechazado: styles.selectRechazado,
 };
 
-export function SelectorEstadoPostulacion({ postulacionId, ofertaId, estadoInicial }) {
-  const [estado, setEstado] = useState(estadoInicial);
-  useEffect(() => setEstado(estadoInicial), [estadoInicial]);
-  const [mensaje, setMensaje] = useState(null);
-  const [error, setError] = useState(null);
-  const [estaEnviando, iniciarTransicion] = useTransition();
-
-  function cambiarEstado(nuevoEstado) {
-    if (nuevoEstado === estado) return;
-
-    const estadoAnterior = estado;
-    setEstado(nuevoEstado);
-    setError(null);
-    setMensaje(null);
-
-    iniciarTransicion(async () => {
-      const resultado = await actualizarEstadoPostulacion({
-        postulacionId,
-        nuevoEstado,
-        ofertaId,
-      });
-
-      if (resultado?.error) {
-        setEstado(estadoAnterior);
-        setError(resultado.error);
-        return;
-      }
-
-      setMensaje("Estado actualizado");
-    });
-  }
-
+export function SelectorEstadoPostulacion({ estado, onChange, disabled }) {
   return (
     <div className={styles.contenedor}>
       <select
+        name="estado"
         value={estado}
-        disabled={estaEnviando}
-        onChange={(evento) => cambiarEstado(evento.target.value)}
+        disabled={disabled}
+        onChange={(evento) => onChange(evento.target.value)}
         className={`${styles.select} ${CLASE_SELECT[estado] ?? ""}`}
         aria-label="Estado de la postulación"
       >
@@ -68,8 +36,8 @@ export function SelectorEstadoPostulacion({ postulacionId, ofertaId, estadoInici
           <button
             key={clave}
             type="button"
-            disabled={estaEnviando}
-            onClick={() => cambiarEstado(clave)}
+            disabled={disabled}
+            onClick={() => onChange(clave)}
             className={`${styles.botonRapido} ${estado === clave ? styles.botonActivo : ""}`}
           >
             {ETIQUETAS_ESTADO_POSTULACION[clave]}
@@ -77,9 +45,7 @@ export function SelectorEstadoPostulacion({ postulacionId, ofertaId, estadoInici
         ))}
       </div>
 
-      {estaEnviando && <p className={styles.feedback}>Guardando...</p>}
-      {!estaEnviando && mensaje && <p className={styles.feedback}>{mensaje}</p>}
-      {error && <p className={styles.error}>{error}</p>}
+      <p className={styles.feedback}>Se aplicará al guardar seguimiento.</p>
     </div>
   );
 }

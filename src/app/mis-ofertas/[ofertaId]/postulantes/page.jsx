@@ -6,9 +6,9 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerPostulantesDeOferta } from "@/dominio/postulaciones/consultas-club";
-import { SelectorEstadoPostulacion } from "@/dominio/postulaciones/SelectorEstadoPostulacion";
 import { ETIQUETAS_PUESTO_PROFESIONAL } from "@/tipos/dominio";
 import styles from "./page.module.css";
+import { clubEstaVerificado } from "@/lib/verificacion-club";
 
 const ESTADOS_FILTRO = Object.keys(ETAPAS_CLUB);
 
@@ -25,6 +25,7 @@ export default async function PaginaPostulantesDeOferta({ params, searchParams }
 
   if (!usuario) redirect("/iniciar-sesion");
   if (usuario.rol !== "club") redirect("/");
+  if (!clubEstaVerificado(usuario)) redirect("/mi-club#verificacion");
 
   const resultado = await obtenerPostulantesDeOferta(ofertaId, usuario.id);
 
@@ -92,7 +93,7 @@ export default async function PaginaPostulantesDeOferta({ params, searchParams }
         </div>
       ) : (
         <div className={styles.tarjetas}>
-          {postulantesVisibles.map(postulante => <article key={postulante.id} className={styles.tarjeta}>
+          {postulantesVisibles.map(postulante => <article key={postulante.id} id={`postulacion-${postulante.id}`} className={styles.tarjeta}>
             <div className={styles.candidato}>
               {postulante.perfil?.foto_url && <ImagenAmpliable src={postulante.perfil.foto_url} alt={`Foto de ${postulante.nombre}`} className={styles.foto} />}
               <div><h2 className={styles.nombre}>{postulante.nombre}</h2>
@@ -106,8 +107,7 @@ export default async function PaginaPostulantesDeOferta({ params, searchParams }
               {postulante.perfil?.cv_ruta && <a href={`/api/candidatos/${postulante.candidato_id}/cv`} className={styles.enlacePerfil}>Descargar CV</a>}
             </div>
             <div className={styles.gestion}>
-              <section><h3>Seguimiento privado</h3><SeguimientoClub postulacionId={postulante.id} etapa={postulante.etapa} notas={postulante.notas} disponible={seguimientoDisponible} /></section>
-              <section><h3>Estado informado al candidato</h3><SelectorEstadoPostulacion postulacionId={postulante.id} ofertaId={oferta.id} estadoInicial={postulante.estado} /></section>
+              <SeguimientoClub postulacionId={postulante.id} etapa={postulante.etapa} notas={postulante.notas} estadoInicial={postulante.estado} disponible={seguimientoDisponible} />
             </div>
           </article>)}
         </div>
