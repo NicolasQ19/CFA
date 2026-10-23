@@ -8,7 +8,7 @@ function tituloOferta(oferta) {
 
 /** Solo usar con un usuario validado en el servidor; cada consulta limita el destinatario. */
 export async function obtenerAvisosPostulaciones(cliente, usuario) {
-  if (!["club", "candidato"].includes(usuario?.rol) || !usuario.id) throw new Error("Destinatario inválido");
+  if (!["club", "candidato", "representante"].includes(usuario?.rol) || !usuario.id) throw new Error("Destinatario inválido");
 
   if (usuario.rol === "club") {
     const verificacion = usuario.verificacion_club;
@@ -59,10 +59,13 @@ export async function obtenerAvisosPostulaciones(cliente, usuario) {
   // Se conserva la última actualización de cada postulación, no un historial de estados.
   let total = 0;
   const notificaciones = [];
+  const esRepresentante = usuario.rol === "representante";
   for (let desde = 0; ; desde += 500) {
     const { data, error } = await cliente.from("postulaciones")
-      .select("id, estado, creada_en, actualizada_en, ofertas_laborales(puesto_buscado, posicion_juego, perfiles_club(nombre_club))")
-      .eq("candidato_id", usuario.id)
+      .select(esRepresentante
+        ? "id, estado, creada_en, actualizada_en, perfiles_candidato(usuarios(nombre_completo)), ofertas_laborales(puesto_buscado, posicion_juego, perfiles_club(nombre_club))"
+        : "id, estado, creada_en, actualizada_en, ofertas_laborales(puesto_buscado, posicion_juego, perfiles_club(nombre_club))")
+      .eq(esRepresentante ? "postulado_por_representante_id" : "candidato_id", usuario.id)
       .order("actualizada_en", { ascending: false }).order("id").range(desde, desde + 499);
     if (error) throw error;
     const filas = data ?? [];
@@ -74,10 +77,12 @@ export async function obtenerAvisosPostulaciones(cliente, usuario) {
       notificaciones.push({
         id: fila.id,
         origen: fila.ofertas_laborales?.perfiles_club?.nombre_club ?? "El club",
-        mensaje: `actualizó tu postulación: ${estado}.`,
+        mensaje: esRepresentante
+          ? `actualizó la postulación de ${fila.perfiles_candidato?.usuarios?.nombre_completo ?? "tu representado"}: ${estado}.`
+          : `actualizó tu postulación: ${estado}.`,
         detalle: tituloOferta(fila.ofertas_laborales),
         fecha: fila.actualizada_en,
-        href: `/mis-postulaciones#postulacion-${fila.id}`,
+        href: `${esRepresentante ? "/mi-cartera" : "/mis-postulaciones"}#postulacion-${fila.id}`,
       });
     }
     if (filas.length < 500) break;
@@ -91,7 +96,7 @@ export async function consultarAvisosPostulaciones(clienteSesion, crearClienteDa
   const { data: usuario, error } = await clienteSesion.from("usuarios")
     .select("id, rol, cuenta_activa").eq("id", user.id).maybeSingle();
   if (error) throw error;
-  if (!usuario?.cuenta_activa || !["club", "candidato"].includes(usuario.rol)) {
+  if (!usuario?.cuenta_activa || !["club", "candidato", "representante"].includes(usuario.rol)) {
     return { status: 403, datos: { error: "No tenés permiso para consultar estos avisos." } };
   }
   if (usuario.rol === "club") {

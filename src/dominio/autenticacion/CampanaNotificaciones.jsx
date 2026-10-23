@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { ETIQUETAS_PUESTO_PROFESIONAL } from "@/tipos/dominio";
-import { claveAlmacenLecturas, interpretarLecturas, estaLeido, marcarAvisoLeido, contarSinLeer } from "@/lib/lectura-notificaciones";
+import { claveAlmacenLecturas, claveAlmacenEliminadas, eliminarAvisos, filtrarAvisosVigentes, interpretarLecturas, estaLeido, marcarAvisoLeido, contarSinLeer } from "@/lib/lectura-notificaciones";
 import styles from "./CampanaNotificaciones.module.css";
 
 export function CampanaNotificaciones({ rol = "administrador", usuarioId }) {
@@ -12,9 +12,11 @@ export function CampanaNotificaciones({ rol = "administrador", usuarioId }) {
   const [datos, setDatos] = useState(null);
   const [error, setError] = useState(false);
   const [lecturas, setLecturas] = useState([]);
-  const [limite, setLimite] = useState(8);
+  const [eliminadas, setEliminadas] = useState([]);
+  const [errorEliminadas, setErrorEliminadas] = useState(false);
   const [errorLecturas, setErrorLecturas] = useState(false);
   const claveAlmacen = claveAlmacenLecturas(usuarioId, rol);
+  const claveEliminadas = claveAlmacenEliminadas(usuarioId, rol);
   const contenedor = useRef(null);
   const boton = useRef(null);
   const pathname = usePathname();
@@ -31,6 +33,29 @@ export function CampanaNotificaciones({ rol = "administrador", usuarioId }) {
     window.addEventListener("storage", sincronizar);
     return () => window.removeEventListener("storage", sincronizar);
   }, [claveAlmacen]);
+
+  useEffect(() => {
+    try { setEliminadas(interpretarLecturas(localStorage.getItem(claveEliminadas))); }
+    catch { setErrorEliminadas(true); }
+    function sincronizar(evento) {
+      if (evento.key === claveEliminadas || evento.key === null) {
+        setEliminadas(interpretarLecturas(evento.key === null ? null : evento.newValue));
+      }
+    }
+    window.addEventListener("storage", sincronizar);
+    return () => window.removeEventListener("storage", sincronizar);
+  }, [claveEliminadas]);
+
+  function eliminarNotificaciones() {
+    let guardadas = [];
+    try { guardadas = interpretarLecturas(localStorage.getItem(claveEliminadas)); } catch { /* Conservar el borrado durante la sesión. */ }
+    const nuevas = eliminarAvisos(avisos, [...eliminadas, ...guardadas]);
+    setEliminadas(nuevas);
+    try {
+      localStorage.setItem(claveEliminadas, JSON.stringify(nuevas));
+      setErrorEliminadas(false);
+    } catch { setErrorEliminadas(true); }
+  }
 
   function abrirAviso(aviso) {
     let guardadas = [];
@@ -101,13 +126,14 @@ export function CampanaNotificaciones({ rol = "administrador", usuarioId }) {
     };
   }, [abierta]);
 
-  const avisos = datos?.notificaciones ?? [];
+  const avisos = filtrarAvisosVigentes(datos?.notificaciones ?? [], eliminadas);
   const total = contarSinLeer(avisos, lecturas);
   const ordenados = [...avisos].sort((a, b) => Number(estaLeido(a, lecturas)) - Number(estaLeido(b, lecturas)));
   const textos = {
     administrador: { contador: "ofertas pendientes", ayuda: "Nuevas ofertas para revisar.", vacio: "No hay ofertas pendientes de revisión.", href: "/admin?estado=pendiente_moderacion", enlace: "Ver todas las ofertas pendientes" },
     club: { contador: "avisos del club", ayuda: "Verificación del club, novedades de ofertas y postulaciones pendientes de revisión.", vacio: "No hay novedades del club.", href: "/mi-club", enlace: "Ver mi club" },
     candidato: { contador: "postulaciones actualizadas", ayuda: "Último estado informado por el club en cada postulación actualizada.", vacio: "Todavía no hay cambios de estado en tus postulaciones.", href: "/mis-postulaciones", enlace: "Ver mis postulaciones" },
+    representante: { contador: "postulaciones de representados actualizadas", ayuda: "Último estado informado por el club en las postulaciones que enviaste para tus representados.", vacio: "Todavía no hay cambios de estado en las postulaciones que enviaste.", href: "/mi-cartera#postulaciones", enlace: "Ver postulaciones de mi cartera" },
   }[rol];
   return (
     <div className={styles.contenedor} ref={contenedor} onBlur={(evento) => {
@@ -131,12 +157,13 @@ export function CampanaNotificaciones({ rol = "administrador", usuarioId }) {
         </div>
         <p className={styles.ayuda}>{textos.ayuda} Se actualiza cada 15 segundos.</p>
         {errorLecturas && <p className={styles.mensaje} role="status">No pudimos guardar las lecturas en este navegador. Se conservarán durante esta sesión.</p>}
+        {errorEliminadas && <p className={styles.mensaje} role="status">No pudimos guardar el borrado en este navegador. Se conservará durante esta sesión.</p>}
         {error && <p className={styles.mensaje} role="alert">No pudimos actualizar los avisos. Volveremos a intentar automáticamente.</p>}
         {!datos && !error && <p className={styles.mensaje} role="status">Cargando notificaciones…</p>}
         {datos && avisos.length === 0 && <p className={styles.mensaje}>{textos.vacio}</p>}
         {datos && avisos.length > 0 && total === 0 && <p className={styles.ayuda}>Estás al día. Ya leíste todas las notificaciones.</p>}
         {datos && avisos.length > 0 && <ul className={styles.lista}>
-          {ordenados.slice(0, limite).map(aviso => <li key={aviso.id}>
+          {ordenados.map(aviso => <li key={aviso.id}>
             <Link href={aviso.href} className={styles.aviso} data-leida={estaLeido(aviso, lecturas)} onClick={() => abrirAviso(aviso)} onAuxClick={evento => { if (evento.button === 1) abrirAviso(aviso); }}>
               <span className={styles.punto} aria-hidden="true" />
               <div>
@@ -148,10 +175,10 @@ export function CampanaNotificaciones({ rol = "administrador", usuarioId }) {
             </Link>
           </li>)}
         </ul>}
-        {avisos.length > limite && <button type="button" className={styles.verMas} onClick={() => setLimite(valor => valor + 8)}>Ver más notificaciones</button>}
-        <Link className={styles.verTodas} href={textos.href} onClick={() => setAbierta(false)}>
+        <button type="button" className={styles.eliminar} onClick={eliminarNotificaciones} disabled={avisos.length === 0}>Eliminar notificaciones</button>
+        {rol !== "club" && <Link className={styles.verTodas} href={textos.href} onClick={() => setAbierta(false)}>
           {textos.enlace} →
-        </Link>
+        </Link>}
       </section>}
     </div>
   );

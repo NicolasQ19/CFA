@@ -1,8 +1,30 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { claveAviso, claveAlmacenLecturas, interpretarLecturas, estaLeido, marcarAvisoLeido, contarSinLeer, listarFilasNotificaciones } from "../src/lib/lectura-notificaciones.js";
+import { claveAviso, claveAlmacenLecturas, claveAlmacenEliminadas, eliminarAvisos, filtrarAvisosVigentes, interpretarLecturas, estaLeido, marcarAvisoLeido, contarSinLeer, listarFilasNotificaciones } from "../src/lib/lectura-notificaciones.js";
 
 const aviso = { id: "oferta-1", fecha: "2026-10-23T13:00:00Z", mensaje: "Fue publicada" };
+
+test("eliminar limpia todos los avisos, incluidos los leídos y los que superan ocho, y persiste al recargar", () => {
+  const avisos = Array.from({ length: 12 }, (_, i) => ({ ...aviso, id: String(i) }));
+  const eliminadas = interpretarLecturas(JSON.stringify(eliminarAvisos(avisos, [])));
+  assert.deepEqual(filtrarAvisosVigentes(avisos, eliminadas), []);
+  assert.equal(contarSinLeer(filtrarAvisosVigentes(avisos, eliminadas), [claveAviso(avisos[0])]), 0);
+  assert.equal(eliminarAvisos(avisos, eliminadas).length, 12);
+});
+
+test("la actualización no restaura avisos eliminados pero los nuevos estados y avisos permanecen visibles", () => {
+  const eliminadas = eliminarAvisos([aviso], []);
+  const actualizado = { ...aviso, fecha: "2026-10-23T14:00:00Z" };
+  const nuevo = { ...aviso, id: "otro" };
+  assert.deepEqual(filtrarAvisosVigentes([aviso, actualizado, nuevo], eliminadas), [actualizado, nuevo]);
+});
+
+test("el borrado queda separado por cuenta y por cada uno de los cuatro roles", () => {
+  const roles = ["administrador", "club", "candidato", "representante"];
+  const claves = roles.flatMap(rol => [claveAlmacenEliminadas("uno", rol), claveAlmacenEliminadas("dos", rol)]);
+  assert.equal(new Set(claves).size, 8);
+  assert.ok(claves.every(clave => clave !== claveAlmacenLecturas("uno", "club")));
+});
 
 test("abrir un aviso descuenta uno y volver a abrirlo no vuelve a descontar", () => {
   const avisos = [aviso, { ...aviso, id: "oferta-2" }];

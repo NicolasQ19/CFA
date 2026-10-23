@@ -85,7 +85,7 @@ export async function BarraNavegacion() {
             </>
           )}
 
-          {["administrador", "club", "candidato"].includes(usuario?.rol) && (
+          {["administrador", "club", "candidato", "representante"].includes(usuario?.rol) && (
             <Suspense fallback={null}><CampanaNotificaciones key={usuario.id} usuarioId={usuario.id} rol={usuario.rol} /></Suspense>
           )}
 

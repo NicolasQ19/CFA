@@ -34,10 +34,52 @@ test("un visitante o una cuenta inactiva no consulta datos privilegiados", async
   const anonimo = clienteFalso([]);
   assert.equal((await consultarAvisosPostulaciones(anonimo, crearDatos)).status, 401);
   assert.equal(anonimo.consultas.length, 0);
-  for (const usuario of [{ rol: "club", cuenta_activa: false }, { rol: "representante", cuenta_activa: true }, null]) {
+  for (const usuario of [{ rol: "club", cuenta_activa: false }, { rol: "representante", cuenta_activa: false }, { rol: "administrador", cuenta_activa: true }, null]) {
     const sesion = clienteFalso([{ data: usuario }], { id: "usuario-1" });
     assert.equal((await consultarAvisosPostulaciones(sesion, crearDatos)).status, 403);
   }
+});
+
+test("el representante recibe cambios con nombre del representado y solo consulta postulaciones que envió", async () => {
+  const cliente = clienteFalso([{ data: [
+    postulacion({ estado: "preseleccionado", actualizada_en: cambio, perfiles_candidato: { usuarios: { nombre_completo: "Juan Pérez" } } }),
+    postulacion({ id: "sin-cambio" }),
+    postulacion({ id: "rechazada", estado: "rechazado", actualizada_en: cambio }),
+    postulacion({ id: "restablecida", actualizada_en: cambio }),
+  ] }]);
+  const resultado = await obtenerAvisosPostulaciones(cliente, { id: "representante-1", rol: "representante" });
+  assert.equal(resultado.total, 3);
+  assert.equal(resultado.notificaciones[0].origen, "Club Uno");
+  assert.match(resultado.notificaciones[0].mensaje, /Juan Pérez: Preseleccionado/);
+  assert.match(resultado.notificaciones[0].detalle, /Arquero/);
+  assert.equal(resultado.notificaciones[0].href, "/mi-cartera#postulacion-postulacion-1");
+  assert.equal(resultado.notificaciones[0].fecha, cambio);
+  assert.match(resultado.notificaciones[1].mensaje, /tu representado: No seleccionado/);
+  assert.match(resultado.notificaciones[2].mensaje, /Postulado/);
+  assert.ok(cliente.consultas[0].some(paso => JSON.stringify(paso) === JSON.stringify(["eq", "postulado_por_representante_id", "representante-1"])));
+  assert.ok(!JSON.stringify(cliente.consultas).includes("seguimiento_club"));
+});
+
+test("los avisos del representante usan la identidad autenticada y propagan errores", async () => {
+  const sesion = clienteFalso([{ data: { id: "otro-id", rol: "representante", cuenta_activa: true } }], { id: "representante-autenticado" });
+  const datos = clienteFalso([{ data: [] }]);
+  const resultado = await consultarAvisosPostulaciones(sesion, () => datos);
+  assert.equal(resultado.status, 200);
+  assert.equal(resultado.datos.total, 0);
+  assert.ok(datos.consultas[0].some(paso => JSON.stringify(paso) === JSON.stringify(["eq", "postulado_por_representante_id", "representante-autenticado"])));
+  await assert.rejects(obtenerAvisosPostulaciones(clienteFalso([{ error: new Error("Sin conexión") }]), { id: "r1", rol: "representante" }), /Sin conexión/);
+});
+
+test("pagina todas las postulaciones del representante manteniendo el filtro de autoría", async () => {
+  const filas = Array.from({ length: 500 }, (_, i) => postulacion({ id: `p${i}`, estado: "visto", actualizada_en: cambio }));
+  const cliente = clienteFalso([{ data: filas }, { data: [postulacion({ id: "ultima", estado: "oferta_cerrada", actualizada_en: cambio })] }]);
+  const resultado = await obtenerAvisosPostulaciones(cliente, { id: "r1", rol: "representante" });
+  assert.equal(resultado.total, 501);
+  assert.match(resultado.notificaciones.at(-1).mensaje, /Oferta cerrada/);
+  for (const consulta of cliente.consultas) {
+    assert.ok(consulta.some(paso => JSON.stringify(paso) === JSON.stringify(["eq", "postulado_por_representante_id", "r1"])));
+  }
+  assert.ok(cliente.consultas[1].some(paso => JSON.stringify(paso) === JSON.stringify(["range", 500, 999])));
 });
 
 test("el club recibe el candidato y oferta, y la consulta se limita a su club y pendientes", async () => {

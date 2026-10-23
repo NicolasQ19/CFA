@@ -7,6 +7,19 @@ export function claveAlmacenLecturas(usuarioId, rol) {
   return `cfa:notificaciones-leidas:v1:${rol}:${usuarioId}`;
 }
 
+export function claveAlmacenEliminadas(usuarioId, rol) {
+  return `cfa:notificaciones-eliminadas:v1:${rol}:${usuarioId}`;
+}
+
+export function eliminarAvisos(avisos, eliminadas) {
+  return [...new Set([...eliminadas, ...avisos.map(claveAviso)])];
+}
+
+export function filtrarAvisosVigentes(avisos, eliminadas) {
+  const descartadas = new Set(eliminadas);
+  return avisos.filter(aviso => !descartadas.has(claveAviso(aviso)));
+}
+
 export function interpretarLecturas(texto) {
   try {
     const datos = JSON.parse(texto);

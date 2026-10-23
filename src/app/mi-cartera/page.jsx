@@ -224,7 +224,7 @@ export default async function PaginaMiCartera({ searchParams }) {
               const inicial = nombreCandidato.charAt(0).toUpperCase();
 
               return (
-                <article key={p.id} className={styles.itemPostulacion}>
+                <article key={p.id} id={`postulacion-${p.id}`} className={styles.itemPostulacion}>
                   <div className={styles.identidadPostulacion}>
                     {fotoCandidato ? (
                       <ImagenAmpliable

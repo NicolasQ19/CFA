@@ -17,7 +17,8 @@
 .aviso[data-leida="true"] .punto { @apply bg-slate-600; }
 .aviso[data-leida="true"] strong { @apply font-normal text-slate-300; }
 .estadoLectura { @apply mt-1 block text-xs text-slate-500; }
-.verMas { @apply block w-full border-t border-emerald-900/60 px-4 py-3 text-sm text-slate-300 hover:bg-emerald-950; }
+.eliminar { @apply block w-full border-t border-emerald-900/60 px-4 py-3 text-sm text-red-300 hover:bg-red-950/40 focus-visible:outline-2 focus-visible:outline-red-300 disabled:cursor-not-allowed disabled:text-slate-500 disabled:hover:bg-transparent; }
+.eliminar:focus-visible { outline-offset: -2px; }
 .puesto { @apply mt-1 block text-xs text-emerald-300; }
 .aviso time { @apply mt-1 block text-xs text-slate-500; }
 .mensaje { @apply px-4 py-6 text-sm leading-relaxed text-slate-300; }
