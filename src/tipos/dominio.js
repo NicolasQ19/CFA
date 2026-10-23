@@ -55,6 +55,14 @@ export const TRANSICIONES_OFERTA_DEL_CLUB = {
   cerrada: ["publicada"],
 };
 
+export const TRANSICIONES_OFERTA_DEL_ADMIN = {
+  pendiente_moderacion: ["publicada", "rechazada"],
+  publicada: ["pausada", "rechazada"],
+  pausada: ["publicada", "rechazada"],
+  cerrada: ["publicada", "rechazada"],
+  rechazada: ["publicada"],
+};
+
 export const ETIQUETAS_TIPO_CONTRATO = {
   profesional: "Profesional",
   amateur: "Amateur",

@@ -2,9 +2,9 @@ import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
 import Link from "next/link";
 import { redirect } from "next/navigation";//comentario
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
-import { listarOfertasPendientesDeModeracion } from "@/dominio/ofertas/consultas";
+import { listarOfertasParaAdministracion } from "@/dominio/ofertas/consultas";
 import { BotonesModeracion } from "@/dominio/ofertas/BotonesModeracion";
-import { ETIQUETAS_PUESTO_PROFESIONAL, ETIQUETAS_TIPO_CONTRATO } from "@/tipos/dominio";
+import { ETIQUETAS_ESTADO_OFERTA, ETIQUETAS_PUESTO_PROFESIONAL, ETIQUETAS_TIPO_CONTRATO } from "@/tipos/dominio";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -31,13 +31,17 @@ function Dato({ etiqueta, valor }) {
 }
 
 /** RF-25: el administrador modera las ofertas pendientes antes de publicarlas. */
-export default async function PaginaAdministracion() {
+export default async function PaginaAdministracion({ searchParams }) {
   const usuario = await obtenerUsuarioActual();
 
   if (!usuario) redirect("/iniciar-sesion");
   if (usuario.rol !== "administrador") redirect("/");
 
-  const ofertas = await listarOfertasPendientesDeModeracion();
+  const parametros = await searchParams;
+  const estado = Object.hasOwn(ETIQUETAS_ESTADO_OFERTA, parametros?.estado ?? "") ? parametros.estado : "";
+  const pagina = Math.min(100000, Math.max(1, Number.parseInt(parametros?.pagina, 10) || 1));
+  const { ofertas, total, error } = await listarOfertasParaAdministracion(estado, pagina);
+  const rutaPagina = (numero) => `/admin?estado=${estado}&pagina=${numero}`;
 
   return (
     <main className={styles.main}>
@@ -45,19 +49,25 @@ export default async function PaginaAdministracion() {
         <div>
           <h1 className={styles.titulo}>Panel de Moderación</h1>
           <p className={styles.subtitulo}>
-            Revisión y aprobación de ofertas laborales publicadas por los clubes.
+            Gestioná todas las búsquedas de los clubes, incluidas las publicadas, pausadas y rechazadas.
           </p>
         </div>
         <span className={styles.insigniaConteo}>
-          {ofertas.length} {ofertas.length === 1 ? "pendiente" : "pendientes"}
+          {total ?? 0} ofertas
         </span>
       </div>
 
+      <nav className={styles.filtros} aria-label="Filtrar ofertas por estado">
+        {[["", "Todas"], ...Object.entries(ETIQUETAS_ESTADO_OFERTA)].map(([valor, etiqueta]) => (
+          <Link key={valor} href={valor ? `/admin?estado=${valor}` : "/admin"} aria-current={estado === valor ? "page" : undefined} className={styles.filtro}>{etiqueta}</Link>
+        ))}
+      </nav>
+      {error && <p role="alert" className={styles.itemVacio}>No se pudieron cargar las ofertas. Intentá nuevamente.</p>}
       <ul className={styles.lista}>
-        {ofertas.length === 0 && (
+        {!error && ofertas.length === 0 && (
           <li className={styles.itemVacio}>
-            <p className={styles.textoVacio}>No hay ofertas pendientes de moderación en este momento.</p>
-            <p className={styles.subtextoVacio}>Las nuevas búsquedas creadas por los clubes aparecerán aquí automáticamente.</p>
+            <p className={styles.textoVacio}>No hay ofertas para mostrar en esta vista.</p>
+            <p className={styles.subtextoVacio}>Las ofertas se conservan al cambiar su estado. Podés consultar también los otros filtros.</p>
           </li>
         )}
 
@@ -98,14 +108,14 @@ export default async function PaginaAdministracion() {
                       {ETIQUETAS_PUESTO_PROFESIONAL[oferta.puesto_buscado] ?? oferta.puesto_buscado}
                       {oferta.posicion_juego ? ` — ${oferta.posicion_juego}` : ""}
                     </h2>
-                    <span className={styles.etiquetaPendiente}>
-                      ⏳ Pendiente de moderación
+                    <span className={styles.etiquetaPendiente} data-estado={oferta.estado}>
+                      {ETIQUETAS_ESTADO_OFERTA[oferta.estado] ?? oferta.estado}
                     </span>
                   </div>
                 </div>
 
                 <div className={styles.accionesModeracion}>
-                  <BotonesModeracion ofertaId={oferta.id} />
+                  <BotonesModeracion ofertaId={oferta.id} estado={oferta.estado} />
                 </div>
               </div>
 
@@ -126,6 +136,10 @@ export default async function PaginaAdministracion() {
                   <Dato etiqueta="Provincia" valor={oferta.provincia} />
                   <Dato etiqueta="Localidad del club" valor={club?.localidad} />
                   <Dato etiqueta="Fecha de creación" valor={formatearFecha(oferta.creada_en)} />
+                  <Dato etiqueta="Última actualización" valor={formatearFecha(oferta.actualizada_en)} />
+                  <Dato etiqueta="Identificador de oferta" valor={oferta.id} />
+                  <Dato etiqueta="Categoría del club" valor={club?.categoria} />
+                  <Dato etiqueta="Provincia del club" valor={club?.provincia} />
                 </dl>
               </div>
 
@@ -136,9 +150,11 @@ export default async function PaginaAdministracion() {
               </div>
 
               {/* Información institucional del club si existe */}
-              {club && (club.descripcion || club.instalaciones || club.sitio_web) && (
+              {club && (club.descripcion || club.instalaciones || club.sitio_web || club.instagram || club.facebook) && (
                 <div className={styles.seccionClub}>
                   <h3 className={styles.subtituloSeccion}>Información del club solicitante</h3>
+                  {club.instagram && <p className={styles.datoClub}><strong>Instagram:</strong> {club.instagram}</p>}
+                  {club.facebook && <p className={styles.datoClub}><strong>Facebook:</strong> {club.facebook}</p>}
                   {club.descripcion && (
                     <p className={styles.datoClub}>
                       <strong>Reseña:</strong> {club.descripcion}
@@ -163,6 +179,11 @@ export default async function PaginaAdministracion() {
           );
         })}
       </ul>
+      {!error && <nav className={styles.filtros} aria-label="Paginación">
+        {pagina > 1 && <Link className={styles.filtro} href={rutaPagina(pagina - 1)}>← Anterior</Link>}
+        <span className={styles.subtitulo}>Página {pagina} · {total} ofertas</span>
+        {pagina * 20 < total && <Link className={styles.filtro} href={rutaPagina(pagina + 1)}>Siguiente →</Link>}
+      </nav>}
     </main>
   );
 }

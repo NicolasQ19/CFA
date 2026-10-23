@@ -1,7 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import styles from "./PiePagina.module.css";
 
 export function PiePagina() {
+  const pathname = usePathname();
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) return null;
+
   return (
     <footer className={styles.footer}>
       <div className={styles.contenido}>

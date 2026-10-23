@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
-import { TRANSICIONES_OFERTA_DEL_CLUB } from "@/tipos/dominio";
+import { TRANSICIONES_OFERTA_DEL_CLUB, TRANSICIONES_OFERTA_DEL_ADMIN } from "@/tipos/dominio";
 
 /*El club publica una nueva oferta. Queda pendiente de moderación. */
 export async function crearOferta(
@@ -95,7 +95,7 @@ export async function cambiarEstadoDeOferta(ofertaId, nuevoEstado) {
 
 /*El administrador aprueba o rechaza una oferta pendiente de moderación. */
 export async function moderarOferta(ofertaId, nuevoEstado) {
-  if (!["publicada", "rechazada"].includes(nuevoEstado)) {
+  if (!["publicada", "rechazada", "pausada"].includes(nuevoEstado)) {
     return { error: "Estado de moderación inválido." };
   }
 
@@ -112,20 +112,27 @@ export async function moderarOferta(ofertaId, nuevoEstado) {
     .eq("id", ofertaId)
     .maybeSingle();
 
-  if (oferta?.estado !== "pendiente_moderacion") {
-    return { error: "Esta oferta ya no está pendiente de moderación." };
+  if (!oferta || !TRANSICIONES_OFERTA_DEL_ADMIN[oferta.estado]?.includes(nuevoEstado)) {
+    return { error: "No se puede realizar este cambio desde el estado actual de la oferta." };
   }
 
   const { error } = await supabase
     .from("ofertas_laborales")
     .update({ estado: nuevoEstado, actualizada_en: new Date().toISOString() })
-    .eq("id", ofertaId);
+    .eq("id", ofertaId)
+    .eq("estado", oferta.estado)
+    .select("id")
+    .single();
 
   if (error) {
     return { error: error.message };
   }
 
   revalidatePath("/admin");
+  revalidatePath("/admin/metricas");
+  revalidatePath("/mis-ofertas");
+  revalidatePath("/perfil-publico-club");
+  revalidatePath(`/ofertas/${ofertaId}`);
   revalidatePath("/ofertas");
   return { exito: true };
 }

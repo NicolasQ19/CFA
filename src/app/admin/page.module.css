@@ -1,7 +1,30 @@
 @reference "tailwindcss";
 
 .main {
-  @apply mx-auto w-full max-w-4xl px-4 py-10;
+  @apply mx-auto w-full max-w-6xl px-4 py-10;
+}
+
+.filtros { @apply mt-6 flex flex-wrap items-center gap-2; }
+.filtro { @apply rounded-lg border border-emerald-900/60 px-3 py-2 text-sm text-slate-300 hover:bg-emerald-950; }
+.filtro[aria-current="page"] { @apply border-emerald-500 bg-emerald-950 text-emerald-300; }
+.seccionMetrica { @apply mt-10; }
+.tablaContenedor { @apply my-5 overflow-x-auto rounded-xl border border-emerald-900/60; }
+.tabla { @apply w-full text-left text-sm text-slate-200; }
+.tabla th, .tabla td { @apply whitespace-nowrap border-b border-emerald-900/40 px-4 py-4; }
+.tabla thead { @apply bg-emerald-950/50 text-xs text-slate-400; }
+.estadosMetricas { @apply mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3; }
+.barra { @apply mt-4 h-2 overflow-hidden rounded-full bg-emerald-950; }
+.barra span { @apply block h-full rounded-full bg-emerald-500; }
+.etiquetaPendiente[data-estado="publicada"] { @apply border-emerald-500/40 bg-emerald-950 text-emerald-300; }
+.etiquetaPendiente[data-estado="rechazada"] { @apply border-red-500/40 bg-red-950/50 text-red-300; }
+.etiquetaPendiente[data-estado="cerrada"] { @apply border-slate-500/40 bg-slate-900 text-slate-300; }
+
+.metricas {
+  @apply mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3;
+}
+
+.valorMetrica {
+  @apply mt-3 text-4xl font-bold text-emerald-400;
 }
 
 .cabecera {
@@ -103,7 +126,7 @@
 }
 
 .datoValor {
-  @apply text-sm font-medium text-slate-100;
+  @apply break-words text-sm font-medium text-slate-100;
 }
 
 .seccionDescripcion {

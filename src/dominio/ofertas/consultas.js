@@ -1,5 +1,16 @@
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 
+export async function listarOfertasParaAdministracion(estado, pagina = 1) {
+  const supabase = await crearClienteServidor();
+  let consulta = supabase.from("ofertas_laborales")
+    .select("*, perfiles_club(*)", { count: "exact" })
+    .order("creada_en", { ascending: false }).order("id")
+    .range((pagina - 1) * 20, pagina * 20 - 1);
+  if (estado) consulta = consulta.eq("estado", estado);
+  const { data, count, error } = await consulta;
+  return { ofertas: data ?? [], total: count, error };
+}
+
 /** RF-18: listado público de ofertas publicadas, con filtros por puesto, provincia y categoría. */
 export async function listarOfertasPublicadas(filtros) {
   const supabase = await crearClienteServidor();

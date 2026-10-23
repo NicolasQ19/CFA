@@ -9,14 +9,14 @@ export async function BarraNavegacion() {
   return (
     <header className={styles.header}>
       <nav className={styles.nav}>
-        <Link href="/" className={styles.marca}>
+        <Link href={usuario?.rol === "administrador" ? "/admin" : "/"} className={styles.marca}>
           CFA
         </Link>
 
         <div className={styles.acciones}>
-          <Link href="/ofertas" className={styles.enlace}>
+          {usuario?.rol !== "administrador" && <Link href="/ofertas" className={styles.enlace}>
             Ofertas
-          </Link>
+          </Link>}
 
           {!usuario && (
             <>
@@ -71,9 +71,14 @@ export async function BarraNavegacion() {
           )}
 
           {usuario?.rol === "administrador" && (
+            <>
             <Link href="/admin" className={styles.enlace}>
               Moderación
             </Link>
+            <Link href="/admin/metricas" className={styles.enlace}>
+              Métricas
+            </Link>
+            </>
           )}
 
           {usuario && (
