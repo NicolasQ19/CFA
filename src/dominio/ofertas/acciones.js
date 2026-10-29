@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
+import { validarDatosOferta } from "@/lib/editar-oferta";
 import { comprobarClubVerificado } from "@/lib/verificacion-club";
 import { TRANSICIONES_OFERTA_DEL_CLUB, TRANSICIONES_OFERTA_DEL_ADMIN } from "@/tipos/dominio";
 
@@ -29,30 +30,80 @@ export async function crearOferta(
     return { error: "Completá los datos del club antes de publicar una oferta." };
   }
 
-  const puestoBuscado = String(datosFormulario.get("puestoBuscado") ?? "");
-  const categoria = String(datosFormulario.get("categoria") ?? "").trim();
-  const tipoContrato = String(datosFormulario.get("tipoContrato") ?? "");
-  const provincia = String(datosFormulario.get("provincia") ?? "").trim();
-  const descripcion = String(datosFormulario.get("descripcion") ?? "").trim();
-  const posicionJuego = String(datosFormulario.get("posicionJuego") ?? "").trim() || null;
-
-  if (!puestoBuscado || !categoria || !tipoContrato || !provincia || !descripcion) {
-    return { error: "Completá todos los campos obligatorios de la oferta." };
+  const validacion = validarDatosOferta(datosFormulario);
+  if (validacion.error) {
+    return { error: validacion.error };
   }
 
   const { error } = await supabase.from("ofertas_laborales").insert({
     club_id: usuario.id,
-    puesto_buscado: puestoBuscado,
-    posicion_juego: posicionJuego,
-    categoria,
-    tipo_contrato: tipoContrato,
-    provincia,
-    descripcion,
+    ...validacion.datos,
   });
 
   if (error) {
     return { error: error.message };
   }
+
+  redirect("/mis-ofertas");
+}
+
+/* El club edita los datos de una oferta propia (descripción, categoría, etc.). */
+export async function editarOferta(
+  _estadoPrevio,
+  datosFormulario,
+) {
+  const supabase = await crearClienteServidor();
+  const usuario = await obtenerUsuarioConRol(supabase);
+
+  if (usuario?.rol !== "club") {
+    return { error: "Tenés que iniciar sesión como club para editar una oferta." };
+  }
+  if (!usuario.cuenta_activa || !(await comprobarClubVerificado(supabase, usuario.id))) {
+    return { error: "Tu club debe estar verificado para gestionar ofertas." };
+  }
+
+  const ofertaId = String(datosFormulario.get("ofertaId") ?? "");
+  if (!ofertaId) {
+    return { error: "Identificador de oferta inválido." };
+  }
+
+  const { data: oferta } = await supabase
+    .from("ofertas_laborales")
+    .select("id, club_id, estado")
+    .eq("id", ofertaId)
+    .maybeSingle();
+
+  if (!oferta || oferta.club_id !== usuario.id) {
+    return { error: "Esta oferta no pertenece a tu club." };
+  }
+
+  const validacion = validarDatosOferta(datosFormulario, oferta.estado);
+  if (validacion.error) {
+    return { error: validacion.error };
+  }
+
+  const { data: actualizada, error } = await supabase
+    .from("ofertas_laborales")
+    .update({
+      ...validacion.datos,
+      actualizada_en: new Date().toISOString(),
+    })
+    .eq("id", ofertaId)
+    .eq("club_id", usuario.id)
+    .select("id")
+    .maybeSingle();
+
+  if (error || !actualizada) {
+    return { error: error?.message ?? "No se pudo actualizar la oferta." };
+  }
+
+  revalidatePath("/mis-ofertas");
+  revalidatePath("/ofertas");
+  revalidatePath(`/ofertas/${ofertaId}`);
+  revalidatePath(`/mis-ofertas/${ofertaId}/editar`);
+  revalidatePath("/perfil-publico-club");
+  revalidatePath("/admin");
+  revalidatePath("/admin/metricas");
 
   redirect("/mis-ofertas");
 }

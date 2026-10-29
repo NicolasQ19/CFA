@@ -1,10 +1,12 @@
-﻿@reference "tailwindcss";
+@reference "tailwindcss";
 
 .main { @apply mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10; }
 .navegacion { @apply mb-6 flex flex-wrap items-center gap-3 text-xs text-slate-500; }
 .navegacion a { @apply text-slate-300 hover:text-emerald-300; }
 .hero { @apply rounded-3xl border border-emerald-800/40 p-6 sm:p-8; background: radial-gradient(ellipse at right top, #1c624344, transparent 65%), #111e17; }
 .lineaEstado { @apply mb-6 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400; }
+.grupoEstado { @apply flex flex-wrap items-center gap-3; }
+.enlaceEditarOferta { @apply inline-flex items-center rounded-lg border border-emerald-700/60 bg-emerald-950/40 px-3 py-1 text-xs font-semibold text-emerald-200 hover:bg-emerald-900/60 hover:text-white transition-colors; }
 .insigniaAbierta { @apply inline-flex items-center gap-2 rounded-full border border-emerald-700/50 bg-emerald-900/30 px-3 py-1 text-xs font-medium text-emerald-300; }
 .insigniaAbierta > span { @apply h-1.5 w-1.5 rounded-full bg-emerald-400; }
 .encabezado { @apply flex items-start gap-4 sm:gap-5; }

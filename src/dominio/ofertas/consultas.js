@@ -60,6 +60,22 @@ export async function listarOfertasDelClub(clubId) {
   return data ?? [];
 }
 
+/** RF-13: oferta propia del club (en cualquier estado), para edición o gestión interna. */
+export async function obtenerOfertaDelClubPorId(ofertaId, clubId) {
+  const supabase = await crearClienteServidor();
+
+  const { data, error } = await supabase
+    .from("ofertas_laborales")
+    .select("*")
+    .eq("id", ofertaId)
+    .eq("club_id", clubId)
+    .maybeSingle();
+
+  if (error) console.error("Error al obtener la oferta del club:", error.message);
+
+  return data;
+}
+
 /** Ofertas publicadas de un club, para mostrarlas en su perfil público. */
 export async function listarOfertasPublicadasDelClub(clubId) {
   const supabase = await crearClienteServidor();

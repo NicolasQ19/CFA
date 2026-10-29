@@ -120,7 +120,7 @@ export default async function PaginaPerfilPublicoClub({ searchParams }) {
               <div className={styles.vacio}><h3>Sin búsquedas abiertas por el momento</h3><p>Este club no tiene ofertas publicadas actualmente. Podés explorar oportunidades en otros clubes.</p><Link href="/ofertas" className={styles.enlaceTexto}>Ver todas las ofertas →</Link>{esVistaPropia && <Link href="/mis-ofertas/nueva" className={styles.enlaceTexto}>Crear una oferta para mi club →</Link>}</div>
             ) : (
               <ul className={styles.listaOfertas}>
-                {ofertas.map(oferta => <li key={oferta.id}>
+                {ofertas.map(oferta => <li key={oferta.id} className={styles.itemOfertaConAcciones}>
                   <Link href={`/ofertas/${oferta.id}`} className={styles.oferta}>
                     <span className={styles.estado}><span aria-hidden="true" />Búsqueda abierta</span>
                     <h3 className={styles.ofertaTitulo}>{ETIQUETAS_PUESTO_PROFESIONAL[oferta.puesto_buscado] ?? oferta.puesto_buscado}{oferta.posicion_juego ? ` — ${oferta.posicion_juego}` : ""}</h3>
@@ -128,6 +128,16 @@ export default async function PaginaPerfilPublicoClub({ searchParams }) {
                     {oferta.descripcion && <p className={styles.resumenOferta}>{oferta.descripcion}</p>}
                     <div className={styles.pieOferta}><span className={styles.contrato}>{ETIQUETAS_TIPO_CONTRATO[oferta.tipo_contrato] ?? oferta.tipo_contrato}</span><span className={styles.llamada}>Ver oferta <span aria-hidden="true">→</span></span></div>
                   </Link>
+                  {esVistaPropia && (
+                    <div className={styles.accionesOfertaPropia}>
+                      <Link href={`/mis-ofertas/${oferta.id}/editar`} className={styles.botonEditarOfertaPropia}>
+                        ✏️ Editar oferta
+                      </Link>
+                      <Link href={`/mis-ofertas/${oferta.id}/postulantes`} className={styles.botonVerPostulantesPropia}>
+                        Ver postulantes
+                      </Link>
+                    </div>
+                  )}
                 </li>)}
               </ul>
             )}

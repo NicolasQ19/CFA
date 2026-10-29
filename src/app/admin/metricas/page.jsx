@@ -22,7 +22,7 @@ export default async function PaginaMetricas() {
       base(), base().eq("cuenta_activa", true),
       base().gte("creado_en", desde(7)), base().gte("creado_en", desde(30)),
     ]);
-    return { etiqueta, valores: consultas.map(r => r.count), error: consultas.some(r => r.error || r.count === null) };
+    return { rol, etiqueta, valores: consultas.map(r => r.count), error: consultas.some(r => r.error || r.count === null) };
   }));
   const estados = await Promise.all(Object.entries(ETIQUETAS_ESTADO_OFERTA).map(async ([estado, etiqueta]) => {
     const { count, error } = await supabase.from("ofertas_laborales").select("id", { count: "exact", head: true }).eq("estado", estado);
@@ -41,6 +41,9 @@ export default async function PaginaMetricas() {
           <h1 className={styles.titulo}>Métricas</h1>
           <p className={styles.subtitulo}>Registros, actividad de las cuentas y estado de las ofertas de la plataforma.</p>
         </div>
+        <Link href="/admin/usuarios" className={styles.filtro}>
+          Gestionar usuarios →
+        </Link>
       </div>
       {hayError ? (
         <p role="alert" className={styles.itemVacio}>No se pudieron cargar las métricas. Intentá nuevamente.</p>
@@ -64,8 +67,12 @@ export default async function PaginaMetricas() {
           <div className={styles.tablaContenedor}>
             <table className={styles.tabla}>
               <thead><tr>{["Tipo de usuario", "Registrados", "Cuentas activas", "Cuentas inactivas", "Altas · 7 días", "Altas · 30 días"].map(t => <th key={t} scope="col">{t}</th>)}</tr></thead>
-              <tbody>{filas.map(({ etiqueta, valores: [total, activos, semana, mes] }) => <tr key={etiqueta}>
-                <th scope="row">{etiqueta}</th>
+              <tbody>{filas.map(({ rol, etiqueta, valores: [total, activos, semana, mes] }) => <tr key={etiqueta}>
+                <th scope="row">
+                  <Link href={`/admin/usuarios?rol=${rol}`} className={styles.enlaceExterno}>
+                    {etiqueta}
+                  </Link>
+                </th>
                 {[total, activos, total - activos, semana, mes].map((n, i) => <td key={i}>{formato.format(n)}</td>)}
               </tr>)}</tbody>
             </table>

@@ -1,0 +1,21 @@
+@reference "tailwindcss";
+
+.main {
+  @apply mx-auto w-full max-w-2xl px-4 py-10;
+}
+
+.navegacion {
+  @apply mb-4 text-sm text-emerald-400 hover:underline;
+}
+
+.titulo {
+  @apply text-2xl font-bold text-white;
+}
+
+.subtitulo {
+  @apply mt-1 text-sm text-slate-300;
+}
+
+.contenido {
+  @apply mt-8;
+}

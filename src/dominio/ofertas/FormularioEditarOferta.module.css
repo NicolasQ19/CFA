@@ -1,0 +1,37 @@
+@reference "tailwindcss";
+
+.formulario {
+  @apply flex flex-col gap-4;
+}
+
+.avisoModeracion {
+  @apply rounded-md border border-amber-700/60 bg-amber-950/40 px-3 py-2 text-sm text-amber-200;
+}
+
+.campo {
+  @apply flex flex-col gap-1;
+}
+
+.etiqueta {
+  @apply text-sm font-medium text-slate-200;
+}
+
+.entrada {
+  @apply rounded-md border border-emerald-800/70 bg-slate-900/60 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none;
+}
+
+.error {
+  @apply rounded-md bg-red-950/60 px-3 py-2 text-sm text-red-300;
+}
+
+.acciones {
+  @apply flex flex-wrap items-center gap-3 pt-3;
+}
+
+.botonEnviar {
+  @apply rounded-md bg-emerald-700 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-600 disabled:opacity-60 transition-colors;
+}
+
+.botonCancelar {
+  @apply rounded-md border border-slate-700 bg-slate-800/60 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors;
+}

@@ -117,3 +117,15 @@ Ejecutar una vez `migrations/20261003_perfil_representante_contacto.sql` en el S
 Agrega campos de contacto a la agencia (teléfono, email de contacto, nacionalidad, sitio web y foto/logo), actualiza la función RPC `listar_cartera_representante` y otorga permisos de Storage y RLS para subir fotos y currículums (PDF) tanto para la agencia como para los representados.
 
 
+
+## Gestión de cuentas de usuarios por administración
+
+Ejecutar una vez **`migrations/20261029_gestion_usuarios_admin.sql`** en el SQL Editor del proyecto configurado en `.env.local` si no está configurada `SUPABASE_SERVICE_ROLE_KEY`. Agrega la política RLS `administradores_actualizan_estado_usuarios` sobre `public.usuarios` y refuerza el trigger `proteger_privilegios_usuario` para impedir que cualquier rol altere el rol asignado o que un administrador desactive su propia cuenta.
+
+Desde `/admin/usuarios`, un administrador activo puede filtrar por rol (`club`, `candidato`, `representante`, `administrador`), estado (`activos`, `inactivos`) o búsqueda por nombre/correo, y activar o desactivar cuentas. Las fichas creadas por representantes (`@cfa.local`) se identifican como “Ficha de cartera” sin acceso de login propio.
+
+## Recuperación de contraseña por correo electrónico
+
+En el panel de Supabase (**Authentication → URL Configuration → Redirect URLs**), agregar la URL de retorno del entorno (`http://localhost:3000/**` en desarrollo local y el dominio productivo con `/**` en despliegue) para que `resetPasswordForEmail` redirija a `/auth/confirmar?next=/restablecer-contrasena`.
+
+No requiere migración SQL adicional: utiliza Supabase Auth (`/recuperar-contrasena`, `/auth/confirmar` y `/restablecer-contrasena`), preserva la no enumeración de cuentas y bloquea el restablecimiento en cuentas suspendidas (`cuenta_activa = false`).

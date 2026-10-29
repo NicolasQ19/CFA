@@ -1,8 +1,14 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 import { crearClienteAdmin } from "@/lib/supabase/cliente-admin";
+import {
+  construirUrlRedireccionRecuperacion,
+  procesarActualizacionContrasena,
+  procesarSolicitudRecuperacion,
+} from "@/lib/recuperar-contrasena";
 
 const ROLES_AUTORREGISTRABLES = ["candidato", "representante", "club"];
 
@@ -137,11 +143,56 @@ export async function iniciarSesion(_estadoPrevio, datosFormulario) {
 
   const { data: usuario } = await supabase
     .from("usuarios")
-    .select("rol")
+    .select("rol, cuenta_activa")
     .eq("id", data.user.id)
     .single();
 
+  if (usuario && !usuario.cuenta_activa) {
+    await supabase.auth.signOut();
+    return { error: "Esta cuenta está suspendida. Contactá al administrador." };
+  }
+
   redirect(destinoSegunRol(usuario?.rol ?? "candidato"));
+}
+
+/** CU-03 / RF-03: solicita envío de correo para restablecer contraseña sin exponer existencia de cuentas. */
+export async function solicitarRecuperacionContrasena(_estadoPrevio, datosFormulario) {
+  const correoElectronico = String(datosFormulario.get("correoElectronico") ?? "");
+  const cabeceras = await headers();
+  const origenCabecera =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    cabeceras.get("origin") ||
+    (cabeceras.get("host")
+      ? `${cabeceras.get("x-forwarded-proto") || "http"}://${cabeceras.get("host")}`
+      : "http://localhost:3000");
+
+  const redirectTo = construirUrlRedireccionRecuperacion(origenCabecera);
+  const supabase = await crearClienteServidor();
+
+  return procesarSolicitudRecuperacion({
+    supabase,
+    correoElectronico,
+    redirectTo,
+  });
+}
+
+/** CU-03 / RF-03: guarda la nueva contraseña para la sesión iniciada desde el enlace de recuperación. */
+export async function actualizarContrasenaRecuperada(_estadoPrevio, datosFormulario) {
+  const contrasena = String(datosFormulario.get("contrasena") ?? "");
+  const confirmarContrasena = String(datosFormulario.get("confirmarContrasena") ?? "");
+
+  const supabase = await crearClienteServidor();
+  const resultado = await procesarActualizacionContrasena({
+    supabase,
+    contrasena,
+    confirmarContrasena,
+  });
+
+  if (resultado.error) {
+    return { error: resultado.error };
+  }
+
+  redirect("/iniciar-sesion?restablecida=1");
 }
 
 /*Cierre de sesión. */

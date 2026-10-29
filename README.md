@@ -1,4 +1,4 @@
-﻿# CFA — Contrataciones de Fútbol Argentino
+# CFA — Contrataciones de Fútbol Argentino
 
 Plataforma web que conecta a candidatos, representantes y clubes del fútbol argentino para gestionar oportunidades laborales, perfiles profesionales y postulaciones.
 
@@ -15,9 +15,9 @@ La plataforma contempla jugadores, directores técnicos, preparadores físicos, 
 | Rol | Herramientas principales |
 | --- | --- |
 | **Candidato** | Crear su perfil profesional, explorar ofertas, postularse, consultar estados y cancelar postulaciones propias. |
-| **Club** | Presentar su institución, publicar búsquedas, consultar candidatos y gestionar postulantes. |
+| **Club** | Presentar su institución, publicar búsquedas, editar ofertas, consultar candidatos y gestionar postulantes. |
 | **Representante** | Publicar su presentación profesional, gestionar representados y enviar o retirar postulaciones de su cartera. |
-| **Administrador** | Revisar las ofertas pendientes y aprobar o rechazar su publicación. |
+| **Administrador** | Revisar ofertas, verificar clubes, consultar métricas y administrar el estado de las cuentas de usuarios. |
 
 ## Funcionalidades
 
@@ -36,7 +36,7 @@ La plataforma contempla jugadores, directores técnicos, preparadores físicos, 
 
 - Listado de ofertas publicadas con filtros por puesto, provincia, categoría y tipo de contrato.
 - Detalle de cada búsqueda y acceso al perfil institucional del club.
-- Creación de ofertas y gestión de sus estados: publicación mediante moderación, pausa, cierre y reapertura.
+- Creación, edición y gestión de estados de ofertas: publicación mediante moderación, pausa, cierre y reapertura.
 - Postulaciones de candidatos y representantes con validación de coincidencia de puesto profesional.
 - Consulta de estados y cancelación desde el detalle de la oferta o el panel correspondiente.
 - Gestión del club con estados de postulación, etapas internas y notas privadas.
@@ -85,15 +85,24 @@ Las operaciones de escritura se realizan mediante Server Actions. El acceso a lo
 El árbol resume las carpetas y archivos principales del repositorio. Los componentes y páginas utilizan archivos `.module.css` para sus estilos.
 
 ```text
-original/
+CFA/
 ├── src/
 │   ├── app/                                  # Rutas de Next.js App Router
 │   │   ├── (auth)/
 │   │   │   ├── iniciar-sesion/
-│   │   │   └── registrarse/
+│   │   │   ├── recuperar-contrasena/
+│   │   │   ├── registrarse/
+│   │   │   └── restablecer-contrasena/
 │   │   ├── admin/
-│   │   │   └── registrarse/
-│   │   ├── api/candidatos/[id]/cv/            # Descarga autorizada de CV
+│   │   │   ├── clubes/
+│   │   │   ├── metricas/
+│   │   │   ├── registrarse/
+│   │   │   └── usuarios/
+│   │   ├── api/
+│   │   │   ├── admin/notificaciones/
+│   │   │   ├── candidatos/[id]/cv/            # Descarga autorizada de CV
+│   │   │   └── notificaciones/
+│   │   ├── auth/confirmar/
 │   │   ├── buscar-candidatos/
 │   │   ├── mi-cartera/
 │   │   │   ├── [candidatoId]/editar/
@@ -101,6 +110,7 @@ original/
 │   │   ├── mi-club/
 │   │   ├── mi-perfil/
 │   │   ├── mis-ofertas/
+│   │   │   ├── [ofertaId]/editar/
 │   │   │   ├── [ofertaId]/postulantes/
 │   │   │   └── nueva/
 │   │   ├── mis-postulaciones/
@@ -117,18 +127,26 @@ original/
 │   │   └── PiePagina.jsx
 │   ├── dominio/
 │   │   ├── autenticacion/
+│   │   ├── clubes/
 │   │   ├── ofertas/
 │   │   ├── perfiles/
 │   │   ├── postulaciones/
-│   │   └── representantes/
+│   │   ├── representantes/
+│   │   └── usuarios/
 │   ├── lib/
 │   │   ├── supabase/                         # Clientes y actualización de sesión
 │   │   ├── cancelar-postulacion.js
 │   │   ├── club.js
 │   │   ├── curriculum.js
+│   │   ├── editar-oferta.js
+│   │   ├── gestion-usuarios.js
+│   │   ├── notificaciones-estado.js
+│   │   ├── notificaciones.js
 │   │   ├── perfil-candidato.js
 │   │   ├── perfil-representante.js
 │   │   ├── postulacion-cartera.js
+│   │   ├── recuperar-contrasena.js
+│   │   ├── verificacion-club.js
 │   │   ├── vista-previa-representado.js
 │   │   └── youtube.js
 │   ├── tipos/                               # Modelos JSDoc y vocabulario del dominio
@@ -140,8 +158,6 @@ original/
 │   └── README.md                            # Documentación de base de datos
 ├── tests/                                   # Pruebas de validación y reglas de negocio
 ├── public/                                  # Recursos estáticos
-├── CFA_BRD.pdf                              # Requerimientos de negocio
-├── AGENTS.md
 ├── eslint.config.mjs
 ├── jsconfig.json
 ├── next.config.mjs
@@ -164,10 +180,13 @@ original/
 | `/perfil-publico-representante` | Presentación y contacto del representante. |
 | `/mi-cartera` | Representados y postulaciones gestionadas por el representante. |
 | `/mis-postulaciones` | Seguimiento y cancelación de postulaciones del candidato. |
-| `/mis-ofertas` | Gestión de búsquedas del club. |
+| `/mis-ofertas` | Gestión y edición de búsquedas del club. |
 | `/mis-ofertas/[ofertaId]/postulantes` | Evaluación y seguimiento de candidatos a una oferta propia. |
-| `/buscar-candidatos` | Búsqueda de perfiles disponibles para clubes y administradores. |
+| `/buscar-candidatos` | Búsqueda de perfiles disponibles para clubes verificados y administradores. |
 | `/admin` | Moderación de ofertas. |
+| `/admin/usuarios` | Listado y gestión de estado de cuentas de usuarios. |
+| `/admin/clubes` | Revisión de solicitudes de verificación institucional. |
+| `/admin/metricas` | Indicadores generales de usuarios y ofertas. |
 
 ## Pruebas y validación
 
@@ -175,7 +194,7 @@ Para desarrollo, `npm run dev` usa el puerto 3000 y guarda los archivos generado
 
 Si una pestaña abierta antes de reiniciar el servidor muestra “Failed to find Server Action”, recargá la página para obtener las acciones de la compilación actual.
 
-La suite automatizada cubre validaciones de perfiles y archivos, completitud, filtros de candidatos, cálculo de edad, preparación de vistas previas y autorización de cancelaciones de postulaciones.
+La suite automatizada cubre validaciones de perfiles y archivos, completitud, filtros de candidatos, cálculo de edad, edición de ofertas, gestión de cuentas, recuperación de contraseña y autorización de cancelaciones de postulaciones.
 
 ```bash
 node --test tests/*.test.js
@@ -185,7 +204,6 @@ La persistencia, las políticas RLS y los flujos de interacción se verifican ta
 
 ## Documentación
 
-- [Documento de requerimientos de negocio](./CFA_BRD.pdf): objetivos, alcance y requisitos del proyecto.
 - [Documentación de Supabase](./supabase/README.md): migraciones y verificaciones de persistencia y permisos.
 - [Migraciones SQL](./supabase/migrations/): evolución versionada de la base de datos.
 - [Pruebas automatizadas](./tests/): validación de utilidades y reglas implementadas.

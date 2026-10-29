@@ -44,6 +44,10 @@
   @apply mt-1 text-sm text-slate-300;
 }
 
+.itemDescripcion {
+  @apply mt-2 text-xs text-slate-400 line-clamp-2;
+}
+
 .itemPie {
   @apply mt-3 flex flex-wrap items-start justify-between gap-3;
 }
@@ -54,6 +58,10 @@
 
 .conteo {
   @apply text-sm font-medium text-slate-200;
+}
+
+.enlaceEditar {
+  @apply rounded-md border border-emerald-700/80 bg-emerald-950/40 px-3 py-1.5 text-sm font-semibold text-emerald-200 hover:bg-emerald-900/60 hover:text-white transition-colors;
 }
 
 .enlacePostulantes {

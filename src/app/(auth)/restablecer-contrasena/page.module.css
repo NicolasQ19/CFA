@@ -1,0 +1,65 @@
+@reference "tailwindcss";
+
+.main {
+  @apply mx-auto flex w-full max-w-md flex-col justify-center px-4 py-12;
+  padding-block: 64px;
+}
+
+.titulo {
+  @apply text-2xl font-bold text-white;
+}
+
+.subtitulo {
+  @apply mt-1 text-sm leading-relaxed text-slate-300;
+}
+
+.tarjeta {
+  background: var(--surface);
+  padding: 24px;
+  border: 1px solid #204532;
+  border-radius: 18px;
+  box-shadow: 0 24px 64px #00000030;
+  @apply mt-8 flex flex-col gap-4;
+}
+
+.campo {
+  @apply flex flex-col gap-1;
+}
+
+.etiqueta {
+  @apply text-sm font-medium text-slate-200;
+}
+
+.ayuda {
+  @apply text-xs text-slate-400;
+}
+
+.entrada {
+  @apply rounded-md border border-emerald-800/70 px-3 py-2 text-sm;
+}
+
+.error {
+  @apply rounded-md bg-red-950/60 px-3 py-2 text-sm text-red-300;
+}
+
+.estadoCarga {
+  @apply text-sm text-slate-300;
+}
+
+.botonEnviar {
+  min-height: 44px;
+  border-radius: 10px;
+  @apply mt-2 flex cursor-pointer items-center justify-center bg-emerald-700 px-4 py-2 text-center text-sm font-semibold text-white disabled:opacity-60;
+}
+
+.botonEnviar:hover:not(:disabled) {
+  background: #065f46;
+}
+
+.piePagina {
+  @apply mt-6 text-center text-sm text-slate-300;
+}
+
+.enlace {
+  @apply font-medium text-white underline;
+}

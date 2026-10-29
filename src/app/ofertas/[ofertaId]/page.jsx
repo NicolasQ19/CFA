@@ -64,7 +64,14 @@ export default async function PaginaDetalleOferta({ params }) {
       </nav>
       <header className={styles.hero}>
       <div className={styles.lineaEstado}>
-        <span className={styles.insigniaAbierta}><span aria-hidden="true" />Búsqueda abierta</span>
+        <div className={styles.grupoEstado}>
+          <span className={styles.insigniaAbierta}><span aria-hidden="true" />Búsqueda abierta</span>
+          {usuario?.id === oferta.club_id && (
+            <Link href={`/mis-ofertas/${oferta.id}/editar`} className={styles.enlaceEditarOferta}>
+              ✏️ Editar oferta
+            </Link>
+          )}
+        </div>
         <span>Creada el {formatearFecha(oferta.creada_en)}</span>
       </div>
       <div className={styles.encabezado}>
@@ -131,6 +138,10 @@ export default async function PaginaDetalleOferta({ params }) {
           <Dato etiqueta="Competencia" valor={oferta.categoria} />
           <Dato etiqueta="Tipo de contrato" valor={ETIQUETAS_TIPO_CONTRATO[oferta.tipo_contrato] ?? oferta.tipo_contrato} />
         </dl>
+        {usuario?.id === oferta.club_id && <>
+          <Link href={`/mis-ofertas/${oferta.id}/editar`} className={styles.botonAccion}>✏️ Editar esta oferta</Link>
+          <Link href={`/mis-ofertas/${oferta.id}/postulantes`} className={styles.enlaceClub}>Ver candidatos postulados ↗</Link>
+        </>}
         {(usuario?.rol === "candidato" || usuario?.rol === "representante") && <>
           <a href="#postulacion" className={styles.botonAccion}>{usuario.rol === "representante" ? "Gestionar candidatos" : postulacion ? "Ver mi postulación" : "Quiero postularme"}<span aria-hidden="true">↓</span></a>
           <p className={styles.ayuda}>El puesto del candidato debe coincidir con el solicitado.</p>

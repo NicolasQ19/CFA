@@ -78,6 +78,9 @@ export async function BarraNavegacion() {
             <Link href="/admin" className={styles.enlace}>
               Moderación
             </Link>
+            <Link href="/admin/usuarios" className={styles.enlace}>
+              Usuarios
+            </Link>
             <Link href="/admin/metricas" className={styles.enlace}>
               Métricas
             </Link>
