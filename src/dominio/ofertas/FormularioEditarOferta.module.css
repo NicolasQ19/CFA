@@ -5,7 +5,35 @@
 }
 
 .avisoModeracion {
-  @apply rounded-md border border-amber-700/60 bg-amber-950/40 px-3 py-2 text-sm text-amber-200;
+  @apply rounded-md border border-amber-700/60 bg-amber-950/40 px-3.5 py-2.5 text-sm leading-relaxed text-amber-200;
+}
+
+.fichaBloqueada {
+  @apply rounded-lg border border-emerald-900/60 bg-emerald-950/30 p-4;
+}
+
+.tituloBloqueado {
+  @apply text-xs font-semibold uppercase tracking-wider text-emerald-400;
+}
+
+.notaBloqueado {
+  @apply mt-1 text-xs leading-relaxed text-slate-300;
+}
+
+.grillaBloqueada {
+  @apply mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2;
+}
+
+.datoBloqueado {
+  @apply flex flex-col gap-0.5 rounded-md border border-emerald-900/40 bg-slate-950/40 px-3 py-2;
+}
+
+.datoBloqueado dt {
+  @apply text-[11px] text-slate-400;
+}
+
+.datoBloqueado dd {
+  @apply text-sm font-medium text-slate-100;
 }
 
 .campo {

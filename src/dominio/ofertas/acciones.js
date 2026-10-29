@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
-import { validarDatosOferta } from "@/lib/editar-oferta";
+import { validarDatosOferta, validarEdicionOferta } from "@/lib/editar-oferta";
 import { comprobarClubVerificado } from "@/lib/verificacion-club";
 import { TRANSICIONES_OFERTA_DEL_CLUB, TRANSICIONES_OFERTA_DEL_ADMIN } from "@/tipos/dominio";
 
@@ -47,7 +47,7 @@ export async function crearOferta(
   redirect("/mis-ofertas");
 }
 
-/* El club edita los datos de una oferta propia (descripción, categoría, etc.). */
+/* El club edita una oferta propia respetando bloqueo de identidad y reenvío a moderación. */
 export async function editarOferta(
   _estadoPrevio,
   datosFormulario,
@@ -67,17 +67,31 @@ export async function editarOferta(
     return { error: "Identificador de oferta inválido." };
   }
 
-  const { data: oferta } = await supabase
-    .from("ofertas_laborales")
-    .select("id, club_id, estado")
-    .eq("id", ofertaId)
-    .maybeSingle();
+  const [{ data: oferta }, { count: totalPostulantes, error: errorConteo }] = await Promise.all([
+    supabase
+      .from("ofertas_laborales")
+      .select("id, club_id, estado, puesto_buscado, posicion_juego, categoria, tipo_contrato, provincia, descripcion")
+      .eq("id", ofertaId)
+      .maybeSingle(),
+    supabase
+      .from("postulaciones")
+      .select("id", { count: "exact", head: true })
+      .eq("oferta_id", ofertaId),
+  ]);
 
   if (!oferta || oferta.club_id !== usuario.id) {
     return { error: "Esta oferta no pertenece a tu club." };
   }
 
-  const validacion = validarDatosOferta(datosFormulario, oferta.estado);
+  if (errorConteo || totalPostulantes === null) {
+    return { error: "No se pudo verificar el estado de postulaciones de la oferta. Intentá nuevamente." };
+  }
+
+  const validacion = validarEdicionOferta({
+    datosFormulario,
+    ofertaActual: oferta,
+    totalPostulantes,
+  });
   if (validacion.error) {
     return { error: validacion.error };
   }
@@ -108,7 +122,7 @@ export async function editarOferta(
   redirect("/mis-ofertas");
 }
 
-/*El club edita el estado de una oferta propia (pausar, cerrar, reabrir). */
+/*El club edita el estado de una oferta propia (pausar, reanudar o cerrar definitivamente). */
 export async function cambiarEstadoDeOferta(ofertaId, nuevoEstado) {
   const supabase = await crearClienteServidor();
   const usuario = await obtenerUsuarioConRol(supabase);

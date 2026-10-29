@@ -10,7 +10,7 @@ test("administración puede pausar y rechazar ofertas publicadas y reanudar las 
   assert.ok(admin.rechazada.includes("publicada"));
 });
 
-test("las transiciones cubren los estados y conservan la moderación previa", () => {
+test("las transiciones cubren los estados, conservan moderación y el cierre del club es definitivo", () => {
   assert.deepEqual(Object.keys(admin).sort(), Object.keys(estados).sort());
   assert.deepEqual(admin.pendiente_moderacion, ["publicada", "rechazada"]);
   for (const [origen, destinos] of Object.entries(admin)) {
@@ -19,4 +19,5 @@ test("las transiciones cubren los estados y conservan la moderación previa", ()
   }
   assert.equal(club.rechazada, undefined);
   assert.equal(club.pendiente_moderacion, undefined);
+  assert.equal(club.cerrada, undefined);
 });

@@ -60,20 +60,31 @@ export async function listarOfertasDelClub(clubId) {
   return data ?? [];
 }
 
-/** RF-13: oferta propia del club (en cualquier estado), para edición o gestión interna. */
+/** RF-13: oferta propia del club junto con su cantidad de postulantes para definir qué campos son editables. */
 export async function obtenerOfertaDelClubPorId(ofertaId, clubId) {
   const supabase = await crearClienteServidor();
 
-  const { data, error } = await supabase
-    .from("ofertas_laborales")
-    .select("*")
-    .eq("id", ofertaId)
-    .eq("club_id", clubId)
-    .maybeSingle();
+  const [{ data, error }, { count: totalPostulantes, error: errorConteo }] = await Promise.all([
+    supabase
+      .from("ofertas_laborales")
+      .select("*")
+      .eq("id", ofertaId)
+      .eq("club_id", clubId)
+      .maybeSingle(),
+    supabase
+      .from("postulaciones")
+      .select("id", { count: "exact", head: true })
+      .eq("oferta_id", ofertaId),
+  ]);
 
   if (error) console.error("Error al obtener la oferta del club:", error.message);
+  if (!data) return null;
 
-  return data;
+  return {
+    ...data,
+    // Ante fallo de conteo se asume al menos 1 postulante (fail-closed) para no desbloquear campos sensibles.
+    total_postulantes: errorConteo || totalPostulantes === null ? 1 : totalPostulantes,
+  };
 }
 
 /** Ofertas publicadas de un club, para mostrarlas en su perfil público. */

@@ -19,3 +19,23 @@
 .contenido {
   @apply mt-8;
 }
+
+.bloqueo {
+  @apply mt-8 rounded-xl border border-emerald-900/60 bg-slate-900/50 p-6;
+}
+
+.textoBloqueo {
+  @apply text-sm leading-relaxed text-slate-200;
+}
+
+.accionesBloqueo {
+  @apply mt-5 flex flex-wrap items-center gap-3;
+}
+
+.botonNueva {
+  @apply rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors;
+}
+
+.botonVolver {
+  @apply rounded-md border border-slate-700 bg-slate-800/60 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors;
+}

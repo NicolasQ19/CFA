@@ -5,10 +5,59 @@ import {
 } from "../tipos/dominio.js";
 
 /**
- * Valida y normaliza los campos editables de una oferta laboral del club (RF-13 / CU-11).
- * Si la oferta estaba rechazada, al editarla vuelve a enviarse a pendiente_moderacion (CU-21 / Diagrama 5.1).
+ * Determina si una oferta del club puede editarse y si su identidad (puesto, posición,
+ * categoría, contrato y provincia) sigue abierta o ya quedó fijada.
+ *
+ * Reglas de integridad:
+ * - Ofertas `cerrada`: cierre definitivo; no admiten edición ni reapertura.
+ * - Ofertas `pendiente_moderacion` o `rechazada` SIN postulantes: edición completa permitida.
+ * - Ofertas `publicada`, `pausada` o con postulantes registrados: identidad bloqueada;
+ *   solo se permite ajustar la descripción y el cambio reenvía la oferta a moderación.
  */
-export function validarDatosOferta(datosFormulario, estadoActual = null) {
+export function obtenerReglasEdicionOferta(oferta, totalPostulantes = 0) {
+  if (!oferta) {
+    return {
+      puedeEditar: false,
+      identidadEditable: false,
+      tienePostulantes: false,
+      requiereReenvioModeracion: false,
+      motivoBloqueo: "No se encontró la oferta solicitada.",
+    };
+  }
+
+  if (oferta.estado === "cerrada") {
+    return {
+      puedeEditar: false,
+      identidadEditable: false,
+      tienePostulantes: Number(totalPostulantes) > 0,
+      requiereReenvioModeracion: false,
+      motivoBloqueo:
+        "Las ofertas cerradas son definitivas y no pueden editarse. Si necesitás cubrir otra vacante, publicá una nueva oferta.",
+    };
+  }
+
+  const tienePostulantes = Number(totalPostulantes) > 0;
+  const antesDePublicarse =
+    oferta.estado === "pendiente_moderacion" || oferta.estado === "rechazada";
+  const identidadEditable = antesDePublicarse && !tienePostulantes;
+  const requiereReenvioModeracion =
+    oferta.estado === "publicada" ||
+    oferta.estado === "pausada" ||
+    oferta.estado === "rechazada";
+
+  return {
+    puedeEditar: true,
+    identidadEditable,
+    tienePostulantes,
+    requiereReenvioModeracion,
+    motivoBloqueo: null,
+  };
+}
+
+/**
+ * Valida y normaliza todos los campos al crear una oferta nueva (o en edición completa previa a publicación).
+ */
+export function validarDatosOferta(datosFormulario) {
   const puestoBuscado = String(datosFormulario.get("puestoBuscado") ?? "");
   const categoria = String(datosFormulario.get("categoria") ?? "").trim();
   const tipoContrato = String(datosFormulario.get("tipoContrato") ?? "");
@@ -35,18 +84,105 @@ export function validarDatosOferta(datosFormulario, estadoActual = null) {
     return { error: "Seleccioná una provincia válida." };
   }
 
-  const datos = {
-    puesto_buscado: puestoBuscado,
-    posicion_juego: posicionJuego,
-    categoria,
-    tipo_contrato: tipoContrato,
-    provincia,
-    descripcion,
+  return {
+    datos: {
+      puesto_buscado: puestoBuscado,
+      posicion_juego: posicionJuego,
+      categoria,
+      tipo_contrato: tipoContrato,
+      provincia,
+      descripcion,
+    },
   };
+}
 
-  if (estadoActual === "rechazada") {
-    datos.estado = "pendiente_moderacion";
+function intentoModificarIdentidadBloqueada(datosFormulario, ofertaActual) {
+  const campos = [
+    ["puestoBuscado", ofertaActual.puesto_buscado ?? ""],
+    ["categoria", String(ofertaActual.categoria ?? "").trim()],
+    ["tipoContrato", ofertaActual.tipo_contrato ?? ""],
+    ["provincia", String(ofertaActual.provincia ?? "").trim()],
+  ];
+
+  for (const [nombreCampo, valorActual] of campos) {
+    if (datosFormulario.has(nombreCampo)) {
+      const enviado = String(datosFormulario.get(nombreCampo) ?? "").trim();
+      if (enviado !== valorActual) return true;
+    }
   }
 
-  return { datos };
+  if (datosFormulario.has("posicionJuego")) {
+    const posicionEnviada = String(datosFormulario.get("posicionJuego") ?? "").trim() || null;
+    const posicionActual = ofertaActual.posicion_juego || null;
+    if (posicionEnviada !== posicionActual) return true;
+  }
+
+  return false;
+}
+
+/**
+ * Valida la edición de una oferta existente protegiendo a los postulantes, la moderación
+ * y evitando que el club recicle una misma oferta para eludir límites de publicación.
+ */
+export function validarEdicionOferta({
+  datosFormulario,
+  ofertaActual,
+  totalPostulantes = 0,
+}) {
+  const reglas = obtenerReglasEdicionOferta(ofertaActual, totalPostulantes);
+  if (!reglas.puedeEditar) {
+    return { error: reglas.motivoBloqueo };
+  }
+
+  if (reglas.identidadEditable) {
+    const validacion = validarDatosOferta(datosFormulario);
+    if (validacion.error) {
+      return { error: validacion.error };
+    }
+
+    const sinCambios =
+      validacion.datos.puesto_buscado === ofertaActual.puesto_buscado &&
+      (validacion.datos.posicion_juego || null) === (ofertaActual.posicion_juego || null) &&
+      validacion.datos.categoria === String(ofertaActual.categoria ?? "").trim() &&
+      validacion.datos.tipo_contrato === ofertaActual.tipo_contrato &&
+      validacion.datos.provincia === String(ofertaActual.provincia ?? "").trim() &&
+      validacion.datos.descripcion === String(ofertaActual.descripcion ?? "").trim();
+
+    if (sinCambios && ofertaActual.estado !== "rechazada") {
+      return { error: "No realizaste cambios en la oferta." };
+    }
+
+    return {
+      datos: {
+        ...validacion.datos,
+        estado: "pendiente_moderacion",
+      },
+    };
+  }
+
+  if (intentoModificarIdentidadBloqueada(datosFormulario, ofertaActual)) {
+    return {
+      error:
+        "El puesto y las condiciones principales no pueden modificarse porque la oferta ya fue publicada o tiene postulantes. Publicá una nueva oferta.",
+    };
+  }
+
+  const descripcion = String(datosFormulario.get("descripcion") ?? "").trim();
+  if (!descripcion) {
+    return { error: "Completá la descripción de la oferta." };
+  }
+
+  if (
+    descripcion === String(ofertaActual.descripcion ?? "").trim() &&
+    ofertaActual.estado !== "rechazada"
+  ) {
+    return { error: "No realizaste cambios en la descripción de la oferta." };
+  }
+
+  return {
+    datos: {
+      descripcion,
+      estado: "pendiente_moderacion",
+    },
+  };
 }

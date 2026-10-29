@@ -66,12 +66,14 @@ export default async function PaginaMisOfertas() {
               </span>
               <div className={styles.itemAcciones}>
                 <BotonesEstadoOferta ofertaId={oferta.id} estado={oferta.estado} />
-                <Link
-                  href={`/mis-ofertas/${oferta.id}/editar`}
-                  className={styles.enlaceEditar}
-                >
-                  Editar oferta
-                </Link>
+                {oferta.estado !== "cerrada" && (
+                  <Link
+                    href={`/mis-ofertas/${oferta.id}/editar`}
+                    className={styles.enlaceEditar}
+                  >
+                    Editar oferta
+                  </Link>
+                )}
                 <Link
                   href={`/mis-ofertas/${oferta.id}/postulantes`}
                   className={styles.enlacePostulantes}

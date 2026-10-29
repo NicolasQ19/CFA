@@ -129,3 +129,11 @@ Desde `/admin/usuarios`, un administrador activo puede filtrar por rol (`club`, 
 En el panel de Supabase (**Authentication → URL Configuration → Redirect URLs**), agregar la URL de retorno del entorno (`http://localhost:3000/**` en desarrollo local y el dominio productivo con `/**` en despliegue) para que `resetPasswordForEmail` redirija a `/auth/confirmar?next=/restablecer-contrasena`.
 
 No requiere migración SQL adicional: utiliza Supabase Auth (`/recuperar-contrasena`, `/auth/confirmar` y `/restablecer-contrasena`), preserva la no enumeración de cuentas y bloquea el restablecimiento en cuentas suspendidas (`cuenta_activa = false`).
+
+## Integridad de edición y cierre definitivo de ofertas
+
+Ejecutar una vez **`migrations/20261030_proteger_edicion_y_cierre_ofertas.sql`** en el SQL Editor del proyecto para reforzar en PostgreSQL las mismas reglas aplicadas por la interfaz y las Server Actions:
+
+- Cerrar una oferta es definitivo para el club (no puede reabrirse ni editarse).
+- El puesto, posición, categoría, tipo de contrato y provincia solo pueden modificarse mientras la oferta esté en `pendiente_moderacion` o `rechazada` y no registre postulantes.
+- Editar la descripción de una oferta publicada o pausada mantiene fijas sus condiciones principales y vuelve a enviarla a `pendiente_moderacion`.

@@ -5,14 +5,14 @@ import { cambiarEstadoDeOferta } from "@/dominio/ofertas/acciones";
 import { TRANSICIONES_OFERTA_DEL_CLUB } from "@/tipos/dominio";
 import styles from "./BotonesEstadoOferta.module.css";
 
-/** Texto del botón según el estado destino, mirado desde el estado actual. */
-function textoAccion(estadoActual, nuevoEstado) {
+/** Texto del botón según el estado destino. */
+function textoAccion(nuevoEstado) {
   if (nuevoEstado === "pausada") return "Pausar";
   if (nuevoEstado === "cerrada") return "Cerrar";
-  return estadoActual === "cerrada" ? "Reabrir" : "Reanudar";
+  return "Reanudar";
 }
 
-/** RF-13: el club pausa, reanuda, cierra o reabre una oferta propia. */
+/** RF-13: el club pausa, reanuda o cierra definitivamente una oferta propia. */
 export function BotonesEstadoOferta({ ofertaId, estado }) {
   const [estaEnviando, iniciarTransicion] = useTransition();
   const [confirmandoCierre, setConfirmandoCierre] = useState(false);
@@ -33,7 +33,9 @@ export function BotonesEstadoOferta({ ofertaId, estado }) {
   if (confirmandoCierre) {
     return (
       <div className={styles.contenedor}>
-        <span className={styles.pregunta}>¿Cerrar la oferta? Deja de verse en el listado.</span>
+        <span className={styles.pregunta}>
+          ¿Cerrar definitivamente la oferta? Dejará de verse en el listado y no podrá reabrirse ni editarse.
+        </span>
         <div className={styles.botones}>
           <button type="button" onClick={() => cambiar("cerrada")} className={styles.botonPeligro}>
             Sí, cerrar
@@ -63,7 +65,7 @@ export function BotonesEstadoOferta({ ofertaId, estado }) {
             }
             className={nuevoEstado === "cerrada" ? styles.botonPeligro : styles.boton}
           >
-            {textoAccion(estado, nuevoEstado)}
+            {textoAccion(nuevoEstado)}
           </button>
         ))}
       </div>

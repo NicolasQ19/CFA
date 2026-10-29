@@ -47,12 +47,11 @@ export const ETIQUETAS_ESTADO_OFERTA = {
 
 /**
  * Cambios de estado que el club puede hacer sobre sus propias ofertas.
- * Pendientes y rechazadas no aparecen: esas solo las mueve el administrador.
+ * Pendientes y rechazadas solo las mueve el administrador; el cierre es definitivo para evitar reciclar ofertas.
  */
 export const TRANSICIONES_OFERTA_DEL_CLUB = {
   publicada: ["pausada", "cerrada"],
   pausada: ["publicada", "cerrada"],
-  cerrada: ["publicada"],
 };
 
 export const TRANSICIONES_OFERTA_DEL_ADMIN = {
