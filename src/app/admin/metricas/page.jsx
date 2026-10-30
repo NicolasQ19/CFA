@@ -1,12 +1,24 @@
 import Link from "next/link";
-import { ETIQUETAS_ESTADO_OFERTA } from "@/tipos/dominio";
+import { ETIQUETAS_ESTADO_OFERTA, ETIQUETAS_ESTADO_POSTULACION } from "@/tipos/dominio";
 import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
+import { crearClienteAdmin } from "@/lib/supabase/cliente-admin";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 import styles from "../page.module.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Métricas | Administración CFA" };
+
+function obtenerClienteLecturaMetricas(supabase) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return supabase;
+  }
+  try {
+    return crearClienteAdmin();
+  } catch {
+    return supabase;
+  }
+}
 
 export default async function PaginaMetricas() {
   const usuario = await obtenerUsuarioActual();
@@ -14,24 +26,44 @@ export default async function PaginaMetricas() {
   if (usuario.rol !== "administrador") redirect("/");
 
   const supabase = await crearClienteServidor();
+  const clienteMetricas = obtenerClienteLecturaMetricas(supabase);
   const desde = (dias) => new Date(Date.now() - dias * 86400000).toISOString();
   const roles = [["club", "Clubes"], ["candidato", "Candidatos"], ["representante", "Representantes"]];
-  const filas = await Promise.all(roles.map(async ([rol, etiqueta]) => {
-    const base = () => supabase.from("usuarios").select("id", { count: "exact", head: true }).eq("rol", rol);
-    const consultas = await Promise.all([
-      base(), base().eq("cuenta_activa", true),
-      base().gte("creado_en", desde(7)), base().gte("creado_en", desde(30)),
-    ]);
-    return { rol, etiqueta, valores: consultas.map(r => r.count), error: consultas.some(r => r.error || r.count === null) };
-  }));
-  const estados = await Promise.all(Object.entries(ETIQUETAS_ESTADO_OFERTA).map(async ([estado, etiqueta]) => {
-    const { count, error } = await supabase.from("ofertas_laborales").select("id", { count: "exact", head: true }).eq("estado", estado);
-    return { estado, etiqueta, cantidad: count, error: error || count === null };
-  }));
-  const hayError = filas.some(f => f.error) || estados.some(e => e.error);
+
+  const [filas, estados, estadosPostulacion, postulacionesRecientes] = await Promise.all([
+    Promise.all(roles.map(async ([rol, etiqueta]) => {
+      const base = () => supabase.from("usuarios").select("id", { count: "exact", head: true }).eq("rol", rol);
+      const consultas = await Promise.all([
+        base(), base().eq("cuenta_activa", true),
+        base().gte("creado_en", desde(7)), base().gte("creado_en", desde(30)),
+      ]);
+      return { rol, etiqueta, valores: consultas.map(r => r.count), error: consultas.some(r => r.error || r.count === null) };
+    })),
+    Promise.all(Object.entries(ETIQUETAS_ESTADO_OFERTA).map(async ([estado, etiqueta]) => {
+      const { count, error } = await supabase.from("ofertas_laborales").select("id", { count: "exact", head: true }).eq("estado", estado);
+      return { estado, etiqueta, cantidad: count, error: error || count === null };
+    })),
+    Promise.all(Object.entries(ETIQUETAS_ESTADO_POSTULACION).map(async ([estado, etiqueta]) => {
+      const { count, error } = await clienteMetricas.from("postulaciones").select("id", { count: "exact", head: true }).eq("estado", estado);
+      return { estado, etiqueta, cantidad: count, error: error || count === null };
+    })),
+    Promise.all([
+      clienteMetricas.from("postulaciones").select("id", { count: "exact", head: true }).gte("creada_en", desde(7)),
+      clienteMetricas.from("postulaciones").select("id", { count: "exact", head: true }).gte("creada_en", desde(30)),
+    ]),
+  ]);
+
+  const hayError =
+    filas.some(f => f.error) ||
+    estados.some(e => e.error) ||
+    estadosPostulacion.some(p => p.error) ||
+    postulacionesRecientes.some(r => r.error || r.count === null);
+
   const clubes = filas[0].valores[0];
   const candidatos = filas[1].valores[0];
   const totalOfertas = estados.reduce((total, e) => total + (e.cantidad ?? 0), 0);
+  const totalPostulaciones = estadosPostulacion.reduce((total, p) => total + (p.cantidad ?? 0), 0);
+  const [postulaciones7d, postulaciones30d] = postulacionesRecientes.map(r => r.count ?? 0);
   const formato = new Intl.NumberFormat("es-AR");
 
   return (
@@ -39,7 +71,7 @@ export default async function PaginaMetricas() {
       <div className={styles.cabecera}>
         <div>
           <h1 className={styles.titulo}>Métricas</h1>
-          <p className={styles.subtitulo}>Registros, actividad de las cuentas y estado de las ofertas de la plataforma.</p>
+          <p className={styles.subtitulo}>Registros, actividad de las cuentas, ofertas laborales y postulaciones de la plataforma.</p>
         </div>
         <Link href="/admin/usuarios" className={styles.filtro}>
           Gestionar usuarios →
@@ -54,6 +86,7 @@ export default async function PaginaMetricas() {
             ["Total de clubes y candidatos", clubes + candidatos],
             ["Clubes registrados", clubes],
             ["Candidatos registrados", candidatos],
+            ["Postulaciones totales", totalPostulaciones],
           ].map(([etiqueta, cantidad]) => (
             <div key={etiqueta} className={styles.item}>
               <dt className={styles.datoEtiqueta}>{etiqueta}</dt>
@@ -88,6 +121,19 @@ export default async function PaginaMetricas() {
               <div className={styles.barra}><span style={{ width: `${totalOfertas ? cantidad / totalOfertas * 100 : 0}%` }} /></div>
               <p className={styles.subtitulo}>{totalOfertas ? Math.round(cantidad / totalOfertas * 100) : 0}% del total</p>
             </Link>)}
+          </div>
+        </section>
+        <section className={styles.seccionMetrica} aria-labelledby="postulaciones">
+          <h2 id="postulaciones" className={styles.itemTitulo}>Actividad de postulaciones</h2>
+          <p className={styles.subtitulo}>
+            {formato.format(totalPostulaciones)} postulaciones acumuladas · {formato.format(postulaciones7d)} en los últimos 7 días · {formato.format(postulaciones30d)} en los últimos 30 días.
+          </p>
+          <div className={styles.estadosMetricas}>
+            {estadosPostulacion.map(({ estado, etiqueta, cantidad }) => <div key={estado} className={styles.item}>
+              <div className={styles.lineaClub}><span className={styles.datoValor}>{etiqueta}</span><strong>{formato.format(cantidad)}</strong></div>
+              <div className={styles.barra}><span style={{ width: `${totalPostulaciones ? cantidad / totalPostulaciones * 100 : 0}%` }} /></div>
+              <p className={styles.subtitulo}>{totalPostulaciones ? Math.round(cantidad / totalPostulaciones * 100) : 0}% del total</p>
+            </div>)}
           </div>
         </section>
         </>

@@ -184,3 +184,7 @@ No requiere migraciones nuevas. `/admin/suscripciones` lista las cuentas de club
 Cuando el cambio lo hizo la administración y no el propio usuario (`activada_por <> usuario_id`), la cuenta recibe el aviso en su campana con enlace a `/planes`. Las altas que el usuario hace desde `/planes` no generan aviso, porque ya las conoce.
 
 Mis ofertas, Mis postulaciones y Mi cartera muestran el consumo del cupo («2 de 3 ofertas activas»), resaltado en ámbar cuando se agotó, con enlace a `/planes`. Con plan Pro, el indicador informa que no hay tope.
+
+## Cierre de oferta en postulaciones y métricas de postulaciones
+
+Ejecutar una vez **`migrations/20261109_cierre_oferta_y_metricas_postulaciones.sql`** en el SQL Editor del proyecto después de las migraciones anteriores. Habilita la lectura administrativa de conteos de `postulaciones` bajo RLS para `/admin/metricas` y refuerza en PostgreSQL la transición automática de las postulaciones abiertas (`postulado`, `visto`, `preseleccionado`) al estado `oferta_cerrada` cuando se cierra una oferta.
