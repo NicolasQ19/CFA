@@ -1,4 +1,5 @@
 import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
+import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
@@ -44,38 +45,33 @@ export default async function PaginaBuscarCandidatos({ searchParams }) {
           defaultValue={nombre ?? ""}
           className={styles.entradaFiltro}
         />
-        <select name="puesto" defaultValue={filtros?.puesto ?? ""} className={styles.entradaFiltro}>
-          <option value="">Todos los puestos</option>
-          {Object.entries(ETIQUETAS_PUESTO_PROFESIONAL).map(([clave, texto]) => (
-            <option key={clave} value={clave}>
-              {texto}
-            </option>
-          ))}
-        </select>
-        <select
-          name="posicion"
-          defaultValue={filtros?.posicion ?? ""}
-          className={styles.entradaFiltro}
-        >
-          <option value="">Cualquier posición</option>
-          {POSICIONES_DE_JUEGO.map((posicion) => (
-            <option key={posicion} value={posicion}>
-              {posicion}
-            </option>
-          ))}
-        </select>
-        <select
-          name="provincia"
-          defaultValue={filtros?.provincia ?? ""}
-          className={styles.entradaFiltro}
-        >
-          <option value="">Todas las provincias</option>
-          {PROVINCIAS_ARGENTINA.map((provincia) => (
-            <option key={provincia} value={provincia}>
-              {provincia}
-            </option>
-          ))}
-        </select>
+        <SelectorDesplegable
+          nombre="puesto"
+          valorInicial={filtros?.puesto ?? ""}
+          placeholder="Todos los puestos"
+          opciones={[
+            { valor: "", texto: "Todos los puestos" },
+            ...Object.entries(ETIQUETAS_PUESTO_PROFESIONAL).map(([valor, texto]) => ({ valor, texto })),
+          ]}
+        />
+        <SelectorDesplegable
+          nombre="posicion"
+          valorInicial={filtros?.posicion ?? ""}
+          placeholder="Cualquier posición"
+          opciones={[
+            { valor: "", texto: "Cualquier posición" },
+            ...POSICIONES_DE_JUEGO.map((posicion) => ({ valor: posicion, texto: posicion })),
+          ]}
+        />
+        <SelectorDesplegable
+          nombre="provincia"
+          valorInicial={filtros?.provincia ?? ""}
+          placeholder="Todas las provincias"
+          opciones={[
+            { valor: "", texto: "Todas las provincias" },
+            ...PROVINCIAS_ARGENTINA.map((provincia) => ({ valor: provincia, texto: provincia })),
+          ]}
+        />
         <button type="submit" className={styles.botonFiltrar}>
           Buscar
         </button>

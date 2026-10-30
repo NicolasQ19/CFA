@@ -1,4 +1,5 @@
 import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
+import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import Link from "next/link";
 import { listarOfertasPublicadas } from "@/dominio/ofertas/consultas";
 import {
@@ -23,15 +24,6 @@ export default async function PaginaListadoOfertas({ searchParams }) {
 
   return (
     <main className={styles.main}>
-      <header className={styles.cabecera}>
-        <div>
-          <p className={styles.sobretitulo}>OPORTUNIDADES EN EL FÚTBOL ARGENTINO</p>
-          <h1 className={styles.titulo}>Ofertas laborales</h1>
-          <p className={styles.subtitulo}>Explorá búsquedas de clubes para jugadores, cuerpo técnico y staff. Encontrá una oferta acorde a tu perfil.</p>
-        </div>
-        <a href="#resultados" className={styles.enlaceCabecera}>Explorar ofertas <span aria-hidden="true">↗</span></a>
-      </header>
-
       <div className={styles.distribucion}>
       <aside className={styles.panelFiltros} aria-labelledby="tituloFiltros">
         <div className={styles.encabezadoFiltros}>
@@ -39,24 +31,26 @@ export default async function PaginaListadoOfertas({ searchParams }) {
           <p>Elegí los criterios y aplicá los filtros.</p>
         </div>
       <form className={styles.formularioFiltros} method="get" key={JSON.stringify(filtros)}>
-        <label htmlFor="filtroPuesto" className={styles.etiquetaFiltro}>Puesto profesional</label>
-        <select id="filtroPuesto" name="puesto" defaultValue={filtros?.puesto ?? ""} className={styles.entradaFiltro}>
-          <option value="">Todos los puestos</option>
-          {Object.entries(ETIQUETAS_PUESTO_PROFESIONAL).map(([clave, texto]) => (
-            <option key={clave} value={clave}>
-              {texto}
-            </option>
-          ))}
-        </select>
-        <label htmlFor="filtroProvincia" className={styles.etiquetaFiltro}>Provincia</label>
-        <select id="filtroProvincia" name="provincia" defaultValue={filtros?.provincia ?? ""} className={styles.entradaFiltro}>
-          <option value="">Todas las provincias</option>
-          {PROVINCIAS_ARGENTINA.map((provincia) => (
-            <option key={provincia} value={provincia}>
-              {provincia}
-            </option>
-          ))}
-        </select>
+        <span id="filtroPuesto" className={styles.etiquetaFiltro}>Puesto profesional</span>
+        <SelectorDesplegable
+          nombre="puesto"
+          etiquetaId="filtroPuesto"
+          valorInicial={filtros?.puesto ?? ""}
+          opciones={[
+            { valor: "", texto: "Todos los puestos" },
+            ...Object.entries(ETIQUETAS_PUESTO_PROFESIONAL).map(([valor, texto]) => ({ valor, texto })),
+          ]}
+        />
+        <span id="filtroProvincia" className={styles.etiquetaFiltro}>Provincia</span>
+        <SelectorDesplegable
+          nombre="provincia"
+          etiquetaId="filtroProvincia"
+          valorInicial={filtros?.provincia ?? ""}
+          opciones={[
+            { valor: "", texto: "Todas las provincias" },
+            ...PROVINCIAS_ARGENTINA.map((provincia) => ({ valor: provincia, texto: provincia })),
+          ]}
+        />
         <label htmlFor="filtroCategoria" className={styles.etiquetaFiltro}>Categoría de competencia</label>
         <input
           id="filtroCategoria"
@@ -65,11 +59,16 @@ export default async function PaginaListadoOfertas({ searchParams }) {
           defaultValue={filtros?.categoria ?? ""}
           className={styles.entradaFiltro}
         />
-        <label htmlFor="filtroContrato" className={styles.etiquetaFiltro}>Tipo de contrato</label>
-        <select id="filtroContrato" name="tipoContrato" defaultValue={filtros?.tipoContrato ?? ""} className={styles.entradaFiltro}>
-          <option value="">Todos los tipos</option>
-          {Object.entries(ETIQUETAS_TIPO_CONTRATO).map(([valor, etiqueta]) => <option key={valor} value={valor}>{etiqueta}</option>)}
-        </select>
+        <span id="filtroContrato" className={styles.etiquetaFiltro}>Tipo de contrato</span>
+        <SelectorDesplegable
+          nombre="tipoContrato"
+          etiquetaId="filtroContrato"
+          valorInicial={filtros?.tipoContrato ?? ""}
+          opciones={[
+            { valor: "", texto: "Todos los tipos" },
+            ...Object.entries(ETIQUETAS_TIPO_CONTRATO).map(([valor, texto]) => ({ valor, texto })),
+          ]}
+        />
         <button type="submit" className={styles.botonFiltrar}>
           Aplicar filtros
         </button>
@@ -81,7 +80,7 @@ export default async function PaginaListadoOfertas({ searchParams }) {
       <section id="resultados" className={styles.resultados} aria-labelledby="tituloResultados">
         <div className={styles.cabeceraResultados}>
           <div>
-            <h2 id="tituloResultados">{hayFiltros ? "Resultados de tu búsqueda" : "Ofertas disponibles"}</h2>
+            <h1 id="tituloResultados">{hayFiltros ? "Resultados de tu búsqueda" : "Ofertas disponibles"}</h1>
             <p>{ofertas.length} {ofertas.length === 1 ? "oportunidad encontrada" : "oportunidades encontradas"}</p>
           </div>
           <span className={styles.orden}>Más recientes primero</span>

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 import { crearClienteAdmin } from "@/lib/supabase/cliente-admin";
-import { cambiarEstadoCuentaUsuario } from "@/lib/gestion-usuarios";
+import { cambiarEstadoCuentaUsuario, eliminarUsuarioComoAdmin } from "@/lib/gestion-usuarios";
 
 function obtenerClienteAdminOpcional() {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -32,6 +32,33 @@ export async function actualizarEstadoUsuario(usuarioId, nuevaActiva) {
     return resultado;
   }
 
+  revalidarPanelAdmin();
+
+  return resultado;
+}
+
+/** CU-04 / RF-04: elimina definitivamente la cuenta de un candidato, club o representante. */
+export async function eliminarUsuario(usuarioId) {
+  const supabase = await crearClienteServidor();
+  const supabaseAdmin = obtenerClienteAdminOpcional();
+
+  const resultado = await eliminarUsuarioComoAdmin({
+    supabase,
+    supabaseAdmin,
+    objetivoId: usuarioId,
+  });
+
+  if (resultado.error) {
+    return resultado;
+  }
+
+  revalidarPanelAdmin();
+
+  return resultado;
+}
+
+/** Refresca las vistas que dependen del padrón de usuarios. */
+function revalidarPanelAdmin() {
   for (const ruta of [
     "/admin/usuarios",
     "/admin/metricas",
@@ -42,6 +69,4 @@ export async function actualizarEstadoUsuario(usuarioId, nuevaActiva) {
   ]) {
     revalidatePath(ruta);
   }
-
-  return resultado;
 }

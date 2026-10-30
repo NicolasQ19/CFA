@@ -2,14 +2,16 @@
 
 import { useState, useTransition } from "react";
 import { cancelarPostulacionRepresentado } from "@/dominio/representantes/acciones";
+import { DialogoConfirmacion } from "@/componentes/DialogoConfirmacion";
 import styles from "./CancelarPostulacion.module.css";
 
 export function CancelarPostulacion({ postulacionId, nombreCandidato = "este candidato" }) {
   const [pendiente, iniciarTransicion] = useTransition();
   const [error, setError] = useState(null);
+  const [confirmando, setConfirmando] = useState(false);
 
   function cancelar() {
-    if (!window.confirm(`¿Cancelar la postulación de ${nombreCandidato}? Se retirará de esta oferta y podrás volver a postularlo si sigue publicada.`)) return;
+    setConfirmando(false);
     setError(null);
     iniciarTransicion(async () => {
       try {
@@ -22,9 +24,20 @@ export function CancelarPostulacion({ postulacionId, nombreCandidato = "este can
   }
 
   return <div className={styles.contenedor}>
-    <button type="button" className={styles.boton} disabled={pendiente} onClick={cancelar} aria-label={`Cancelar postulación de ${nombreCandidato}`}>
+    <button type="button" className={styles.boton} disabled={pendiente} onClick={() => setConfirmando(true)} aria-label={`Cancelar postulación de ${nombreCandidato}`}>
       {pendiente ? "Cancelando..." : "Cancelar postulación"}
     </button>
     {error && <p role="alert" className={styles.error}>{error}</p>}
+    <DialogoConfirmacion
+      abierto={confirmando}
+      titulo="Cancelar la postulación"
+      descripcion={`Vas a retirar la postulación de ${nombreCandidato} de esta oferta.`}
+      detalle="Podés volver a postularlo mientras la búsqueda siga publicada."
+      textoConfirmar="Cancelar postulación"
+      textoCancelar="Volver"
+      peligro
+      onConfirmar={cancelar}
+      onCancelar={() => setConfirmando(false)}
+    />
   </div>;
 }

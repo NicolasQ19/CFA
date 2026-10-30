@@ -1,62 +1,38 @@
 @reference "tailwindcss";
 
-.main {
-  @apply mx-auto flex w-full max-w-md flex-col justify-center px-4 py-12;
-}
+.main { @apply grid w-full items-stretch lg:grid-cols-[1.05fr_0.95fr]; min-height: calc(100vh - 81px); }
 
-.titulo {
-  @apply text-2xl font-bold text-white;
-}
+/* Columna del formulario */
+.columnaFormulario { @apply flex items-center justify-center px-4 py-14 sm:px-8; background: var(--negro); }
+.panel { @apply w-full max-w-md border border-emerald-900/60 p-7 sm:p-9; background: var(--negro-suave); }
+.volanta { @apply mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-emerald-300; }
+.titulo { @apply text-3xl font-semibold text-white; letter-spacing: -0.045em; }
+.subtitulo { @apply mt-3 text-sm text-slate-400; }
 
-.subtitulo {
-  @apply mt-1 text-sm text-slate-300;
-}
+.formulario { @apply mt-8 flex flex-col gap-5; }
+.campo { @apply flex flex-col gap-2; }
+.etiqueta { @apply text-xs font-semibold uppercase tracking-wider text-slate-300; }
+.entrada { @apply w-full border border-emerald-900/70 px-4 py-3 text-sm text-white; background: #060b08; }
+.entrada:focus { @apply border-emerald-400; outline: none; }
+.enlaceOlvido { @apply text-xs font-medium text-emerald-300 hover:text-emerald-200 hover:underline; }
 
-.formulario {
-  @apply mt-8 flex flex-col gap-4;
-}
-
-.campo {
-  @apply flex flex-col gap-1;
-}
-
-.filaEtiqueta {
-  @apply flex items-center justify-between gap-2;
-}
-
-.etiqueta {
-  @apply text-sm font-medium text-slate-200;
-}
-
-.enlaceOlvido {
-  @apply text-xs font-medium text-emerald-400 hover:text-emerald-300 hover:underline;
-}
-
-.entrada {
-  @apply rounded-md border border-emerald-800/70 px-3 py-2 text-sm;
-}
-
-.error {
-  @apply rounded-md bg-red-950/60 px-3 py-2 text-sm text-red-300;
-}
-
-.exito {
-  @apply mt-6 rounded-lg border border-emerald-500/40 bg-emerald-950/70 px-4 py-3 text-sm text-emerald-200;
-}
+.error { @apply border-l-2 border-red-500 bg-red-950/50 px-4 py-3 text-sm text-red-200; }
+.exito { @apply mt-6 border-l-2 border-emerald-400 bg-emerald-950/60 px-4 py-3 text-sm text-emerald-200; }
 
 .botonEnviar {
-  @apply mt-2 rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60;
+  @apply mt-1 w-full border border-emerald-400 bg-emerald-400 px-6 py-3.5 text-sm font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300 disabled:opacity-60;
+  min-height: 48px;
 }
 
-.piePagina {
-  @apply mt-6 text-center text-sm text-slate-300;
-}
+.piePagina { @apply mt-7 border-t border-emerald-900/60 pt-5 text-sm text-slate-400; }
+.enlace { @apply font-semibold text-emerald-300 hover:underline; }
 
-.enlace {
-  @apply font-medium text-white underline;
-}
-
-.main { padding-block: 64px; }
-.formulario { background: var(--surface); padding: 24px; border: 1px solid #204532; border-radius: 18px; box-shadow: 0 24px 64px #00000030; }
-.botonEnviar { min-height: 44px; border-radius: 10px; }
-.botonEnviar:hover:not(:disabled) { background: #065f46; }
+/* Columna informativa */
+.columnaInfo { @apply hidden flex-col justify-center gap-7 border-l border-emerald-900/60 px-12 py-14 lg:flex; background: var(--papel); color: var(--tinta); }
+.volantaInfo { @apply text-xs font-semibold uppercase tracking-[0.3em] text-emerald-700; }
+.tituloInfo { @apply max-w-md text-3xl font-semibold; letter-spacing: -0.045em; }
+.ventajas { @apply flex max-w-md flex-col gap-4; }
+.ventajas li { @apply flex items-start gap-3 text-sm leading-relaxed; color: #41524a; }
+.ventajas span { @apply shrink-0 font-semibold text-emerald-600; }
+.enlacesInfo { @apply flex flex-col gap-3 border-t border-black/10 pt-6; }
+.enlacesInfo a { @apply text-sm font-semibold text-emerald-700 hover:underline; }

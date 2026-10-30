@@ -1,49 +1,53 @@
 @reference "tailwindcss";
 
-.main {
-  @apply mx-auto w-full max-w-4xl px-4 py-10;
-}
+.main { @apply w-full; }
+.contenedor { @apply mx-auto w-full max-w-6xl px-4 sm:px-6; }
 
-.titulo {
-  @apply text-2xl font-bold text-white;
-}
+.cabecera { @apply border-b border-emerald-900/60 py-16 sm:py-20; background: var(--negro); }
+.volanta { @apply mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-emerald-300; }
+.titulo { @apply font-semibold text-white; font-size: clamp(2.1rem, 4.4vw, 3.2rem); letter-spacing: -0.05em; }
+.bajada { @apply mt-5 max-w-3xl text-base leading-relaxed text-slate-300; }
 
-.subtitulo {
-  @apply mt-1 text-sm text-slate-300;
-}
+.seccion { @apply py-14 sm:py-16; }
+.tituloSeccion { @apply text-2xl font-semibold text-white; }
+.tituloClaro { @apply text-2xl font-semibold sm:text-3xl; color: var(--tinta); }
+.parrafoClaro { @apply mt-3 max-w-2xl text-sm leading-relaxed; color: #41524a; }
 
-.planes {
-  @apply mt-8 grid gap-4 md:grid-cols-2;
-}
+/* Gestión del plan propio */
+.planes { @apply grid gap-5 md:grid-cols-2; }
+.tarjeta { @apply flex flex-col gap-3 border border-emerald-900/60 p-6; background: var(--negro-suave); }
+.tarjetaActual { @apply flex flex-col gap-3 border-2 border-emerald-400 p-6; background: var(--negro-suave); }
+.tarjetaEncabezado { @apply flex flex-wrap items-center justify-between gap-2; }
+.nombrePlan { @apply text-lg font-semibold text-white; }
+.insignia { @apply bg-emerald-400 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-emerald-950; }
+.precio { @apply text-xs uppercase tracking-wider text-slate-400; }
+.beneficios { @apply mt-2 flex flex-col gap-2; }
+.beneficios li { @apply flex items-start gap-2 text-sm leading-relaxed text-slate-200; }
+.beneficios span { @apply shrink-0 text-emerald-400; }
+.nota { @apply mt-6 max-w-3xl text-xs leading-relaxed text-slate-400; }
 
-.tarjeta {
-  @apply flex flex-col rounded-xl border border-emerald-900/60 bg-slate-950/60 p-5;
-}
+/* Comparación pública */
+.bandaClara { @apply py-16 sm:py-20; background: var(--papel); color: var(--tinta); }
+.grillaPlanes { @apply mt-9 grid grid-cols-1 gap-5 lg:grid-cols-3; }
+.tarjetaPlan { @apply flex min-w-0 flex-col gap-4 border border-black/15 bg-white p-6; }
+.planRol { @apply text-xs font-semibold uppercase tracking-[0.25em] text-emerald-700; }
+.planDescripcion { @apply text-sm; color: #41524a; }
+.planNivel { @apply flex flex-col gap-3 border border-black/10 p-5; }
+.planNivelPro { @apply mt-auto flex flex-col gap-3 border border-black p-5; background: var(--negro); }
+.planNivelCabecera { @apply flex flex-wrap items-baseline justify-between gap-2; }
+.planNombre { @apply text-base font-semibold; color: var(--tinta); }
+.planNombrePro { @apply text-base font-semibold text-white; }
+.planPrecio { @apply text-xs uppercase tracking-wider; color: #5d6d65; }
+.planInsignia { @apply bg-emerald-400 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-emerald-950; }
+.beneficiosClaros { @apply flex flex-col gap-2; }
+.beneficiosClaros li { @apply flex items-start gap-2 text-xs leading-relaxed; color: #41524a; }
+.beneficiosClaros span { @apply shrink-0 text-emerald-600; }
+.beneficiosPro { @apply flex flex-col gap-2; }
+.beneficiosPro li { @apply flex items-start gap-2 text-xs leading-relaxed text-slate-300; }
+.beneficiosPro span { @apply shrink-0 text-emerald-400; }
 
-.tarjetaActual {
-  @apply flex flex-col rounded-xl border-2 border-emerald-500 bg-emerald-950/30 p-5;
-}
-
-.tarjetaEncabezado {
-  @apply flex flex-wrap items-center justify-between gap-2;
-}
-
-.nombrePlan {
-  @apply text-lg font-semibold text-white;
-}
-
-.insignia {
-  @apply rounded-full bg-emerald-600 px-2.5 py-0.5 text-xs font-semibold text-white;
-}
-
-.precio {
-  @apply mt-1 text-sm text-slate-400;
-}
-
-.beneficios {
-  @apply mt-4 flex list-disc flex-col gap-1.5 pl-5 text-sm text-slate-200;
-}
-
-.nota {
-  @apply mt-6 text-xs text-slate-400;
-}
+.cierre { @apply border-t border-emerald-900/60 py-14; background: var(--negro); }
+.cierreInterno { @apply flex flex-wrap items-center justify-between gap-6; }
+.acciones { @apply flex flex-wrap gap-3; }
+.botonPrimario { @apply inline-flex min-h-11 items-center justify-center border border-emerald-400 bg-emerald-400 px-7 py-3.5 text-sm font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300; }
+.botonSecundario { @apply inline-flex min-h-11 items-center justify-center border border-white/30 px-7 py-3.5 text-sm font-semibold uppercase tracking-wider text-white hover:border-emerald-400 hover:text-emerald-300; }

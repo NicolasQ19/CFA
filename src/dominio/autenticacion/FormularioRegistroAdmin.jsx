@@ -6,7 +6,7 @@ import styles from "./FormularioRegistroAdmin.module.css";
 
 const ESTADO_INICIAL = { error: null };
 
-export function FormularioRegistroAdmin({ claveSecreta }) {
+export function FormularioRegistroAdmin() {
   const [estado, ejecutarRegistro, estaEnviando] = useActionState(
     registrarAdministrador,
     ESTADO_INICIAL
@@ -14,7 +14,19 @@ export function FormularioRegistroAdmin({ claveSecreta }) {
 
   return (
     <form action={ejecutarRegistro} className={styles.formulario}>
-      <input type="hidden" name="claveSecreta" value={claveSecreta} />
+      <div className={styles.campo}>
+        <label htmlFor="claveSecreta" className={styles.etiqueta}>
+          Clave de alta
+        </label>
+        <input
+          id="claveSecreta"
+          name="claveSecreta"
+          type="password"
+          required
+          autoComplete="off"
+          className={styles.entrada}
+        />
+      </div>
 
       <div className={styles.campo}>
         <label htmlFor="nombreCompleto" className={styles.etiqueta}>

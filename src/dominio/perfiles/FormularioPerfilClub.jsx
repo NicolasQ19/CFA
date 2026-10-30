@@ -1,6 +1,7 @@
 "use client";
 
 import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
+import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { guardarPerfilClub } from "@/dominio/perfiles/acciones-club";
@@ -45,25 +46,18 @@ export function FormularioPerfilClub({ perfilExistente }) {
       </div>
 
       <div className={styles.campo}>
-        <label htmlFor="provincia" className={styles.etiqueta}>
+        <span id="provincia" className={styles.etiqueta}>
           Provincia
-        </label>
-        <select
-          id="provincia"
-          name="provincia"
-          required
-          defaultValue={perfilExistente?.provincia ?? ""}
-          className={styles.entrada}
-        >
-          <option value="" disabled>
-            Elegí una provincia
-          </option>
-          {opcionesConValorActual(PROVINCIAS_ARGENTINA, perfilExistente?.provincia).map((provincia) => (
-            <option key={provincia} value={provincia}>
-              {provincia}
-            </option>
-          ))}
-        </select>
+        </span>
+        <SelectorDesplegable
+          nombre="provincia"
+          etiquetaId="provincia"
+          valorInicial={perfilExistente?.provincia ?? ""}
+          placeholder="Elegí una provincia"
+          opciones={opcionesConValorActual(PROVINCIAS_ARGENTINA, perfilExistente?.provincia).map(
+            (provincia) => ({ valor: provincia, texto: provincia })
+          )}
+        />
       </div>
 
       <div className={styles.campo}>

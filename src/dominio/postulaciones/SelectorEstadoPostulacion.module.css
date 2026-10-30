@@ -4,36 +4,34 @@
   @apply flex min-w-48 flex-col gap-1.5;
 }
 
-.select {
-  @apply w-full rounded-md border border-emerald-800/70 bg-zinc-950 px-2 py-1.5 text-sm text-slate-100 disabled:opacity-60;
+/* El aspecto base lo pone SelectorDesplegable; acá solo el color según el estado. */
+.etiquetaOculta {
+  @apply sr-only;
 }
 
-.selectPostulado {
-  @apply border-blue-800 bg-blue-950/60 text-blue-300;
+.selectPostulado button, .selectVisto button, .selectPreseleccionado button,
+.selectRechazado button {
+  border-width: 1px;
 }
 
-.selectVisto {
-  @apply border-purple-800 bg-purple-950/60 text-purple-300;
-}
+.selectPostulado button { @apply border-blue-700 bg-blue-950 text-blue-200; }
 
-.selectPreseleccionado {
-  @apply border-amber-800 bg-amber-950/60 text-amber-300;
-}
+.selectVisto button { @apply border-purple-700 bg-purple-950 text-purple-200; }
 
-.selectRechazado {
-  @apply border-red-800 bg-red-950/60 text-red-300;
-}
+.selectPreseleccionado button { @apply border-amber-700 bg-amber-950 text-amber-200; }
+
+.selectRechazado button { @apply border-red-700 bg-red-950 text-red-200; }
 
 .accionesRapidas {
   @apply flex flex-wrap gap-1;
 }
 
 .botonRapido {
-  @apply rounded border border-emerald-900/60 px-2 py-0.5 text-xs font-medium text-slate-300 hover:bg-emerald-950/40 disabled:opacity-50;
+  @apply rounded-none border border-emerald-900/60 px-2 py-0.5 text-xs font-medium text-slate-300 hover:bg-emerald-950/40 disabled:opacity-50;
 }
 
 .botonActivo {
-  @apply border-emerald-500 bg-emerald-700 text-white hover:bg-emerald-700;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 border border-emerald-400 bg-emerald-400 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300 disabled:opacity-55;
 }
 
 .feedback {

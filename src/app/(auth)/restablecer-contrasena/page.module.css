@@ -17,7 +17,7 @@
   background: var(--surface);
   padding: 24px;
   border: 1px solid #204532;
-  border-radius: 18px;
+  border-radius: 0;
   box-shadow: 0 24px 64px #00000030;
   @apply mt-8 flex flex-col gap-4;
 }
@@ -35,11 +35,11 @@
 }
 
 .entrada {
-  @apply rounded-md border border-emerald-800/70 px-3 py-2 text-sm;
+  @apply rounded-none border border-emerald-800/70 px-3 py-2 text-sm;
 }
 
 .error {
-  @apply rounded-md bg-red-950/60 px-3 py-2 text-sm text-red-300;
+  @apply rounded-none bg-red-950/60 px-3 py-2 text-sm text-red-300;
 }
 
 .estadoCarga {
@@ -48,12 +48,12 @@
 
 .botonEnviar {
   min-height: 44px;
-  border-radius: 10px;
-  @apply mt-2 flex cursor-pointer items-center justify-center bg-emerald-700 px-4 py-2 text-center text-sm font-semibold text-white disabled:opacity-60;
+  border-radius: 0;
+  @apply mt-2 inline-flex min-h-11 w-full cursor-pointer items-center justify-center border border-emerald-400 bg-emerald-400 px-5 py-2.5 text-center text-xs font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300 disabled:opacity-55;
 }
 
 .botonEnviar:hover:not(:disabled) {
-  background: #065f46;
+  background: #6ee7b7;
 }
 
 .piePagina {

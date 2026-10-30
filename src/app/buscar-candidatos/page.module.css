@@ -17,11 +17,11 @@
 }
 
 .entradaFiltro {
-  @apply rounded-md border border-emerald-800/70 px-3 py-2 text-sm;
+  @apply rounded-none border border-emerald-800/70 px-3 py-2 text-sm;
 }
 
 .botonFiltrar {
-  @apply rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 border border-emerald-400 bg-emerald-400 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300 disabled:opacity-55;
 }
 
 .resultados {
@@ -29,7 +29,7 @@
 }
 
 .vacio {
-  @apply mt-3 rounded-lg border border-dashed border-emerald-800/70 p-8 text-center text-sm text-slate-300;
+  @apply mt-3 rounded-none border border-dashed border-emerald-800/70 p-8 text-center text-sm text-slate-300;
 }
 
 .lista {
@@ -39,7 +39,7 @@
 .tarjeta {
   background: var(--surface);
   box-shadow: 0 12px 32px #00000020;
-  @apply flex items-center gap-4 rounded-lg border border-emerald-900/60 p-4 hover:border-emerald-500;
+  @apply flex items-center gap-4 rounded-none border border-emerald-900/60 p-4 hover:border-emerald-500;
 }
 
 .foto {

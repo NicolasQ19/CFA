@@ -16,7 +16,9 @@ export function ImagenAmpliable({ src, alt = "Imagen", className, ...atributos }
   }
 
   return <>
-    <img {...atributos} ref={imagenRef} src={src} alt={alt} className={`${className ?? ""} ${styles.miniatura}`}
+    {/* Miniatura: carga diferida para no frenar el primer dibujado de los listados. */}
+    <img {...atributos} ref={imagenRef} src={src} alt={alt} loading="lazy" decoding="async"
+      className={`${className ?? ""} ${styles.miniatura}`}
       role="button" tabIndex={0} aria-label={`Ampliar ${alt || "imagen"}`} aria-haspopup="dialog"
       title="Ver imagen en grande" onClick={abrir} onKeyDown={evento => {
         if (evento.key === "Enter" || evento.key === " ") abrir(evento);
@@ -40,7 +42,7 @@ function VisorImagen({ src, alt, cerrar }) {
     }}>
     <div className={styles.contenido}>
       <div className={styles.barra}><p>{alt || "Imagen ampliada"}</p><button type="button" autoFocus onClick={() => dialogoRef.current.close()} className={styles.cerrar}>Cerrar <span aria-hidden="true">×</span></button></div>
-      <img src={src} alt={alt} className={styles.imagenGrande} />
+      <img src={src} alt={alt} decoding="async" className={styles.imagenGrande} />
       <p className={styles.ayuda}>Podés cerrar con Escape o haciendo clic fuera de la imagen.</p>
     </div>
   </dialog>;

@@ -6,6 +6,14 @@ import { cerrarSesion } from "@/dominio/autenticacion/acciones";
 import styles from "./BarraNavegacion.module.css";
 import { clubEstaVerificado } from "@/lib/verificacion-club";
 
+/** Secciones públicas de la plataforma: tienen página propia y se ven siempre. */
+const SECCIONES_PUBLICAS = [
+  { href: "/ofertas", texto: "Ofertas" },
+  { href: "/como-funciona", texto: "Cómo funciona" },
+  { href: "/planes", texto: "Planes" },
+  { href: "/preguntas-frecuentes", texto: "Preguntas frecuentes" },
+];
+
 export async function BarraNavegacion() {
   const usuario = await obtenerUsuarioActual();
 
@@ -16,11 +24,19 @@ export async function BarraNavegacion() {
           CFA
         </Link>
 
-        <div className={styles.acciones}>
-          {usuario?.rol !== "administrador" && <Link href="/ofertas" className={styles.enlace}>
-            Ofertas
-          </Link>}
+        {/* Las secciones públicas son la navegación de la visita: con sesión
+            iniciada las reemplaza la barra propia del rol. */}
+        {!usuario && (
+          <div className={styles.secciones}>
+            {SECCIONES_PUBLICAS.map((seccion) => (
+              <Link key={seccion.href} href={seccion.href} className={styles.enlaceSeccion}>
+                {seccion.texto}
+              </Link>
+            ))}
+          </div>
+        )}
 
+        <div className={styles.acciones}>
           {!usuario && (
             <>
               <Link href="/iniciar-sesion" className={styles.enlace}>
@@ -34,6 +50,7 @@ export async function BarraNavegacion() {
 
           {usuario?.rol === "candidato" && (
             <>
+              <Link href="/ofertas" className={styles.enlace}>Ofertas</Link>
               <Link href="/mis-postulaciones" className={styles.enlace}>
                 Mis postulaciones
               </Link>
@@ -48,6 +65,7 @@ export async function BarraNavegacion() {
 
           {usuario?.rol === "club" && (
             <>
+              <Link href="/ofertas" className={styles.enlace}>Ofertas</Link>
               <Link href="/mi-club" className={styles.enlace}>
                 Mi club
               </Link>
@@ -65,6 +83,7 @@ export async function BarraNavegacion() {
 
           {usuario?.rol === "representante" && (
             <>
+            <Link href="/ofertas" className={styles.enlace}>Ofertas</Link>
             <Link href="/mi-perfil" className={styles.enlace}>Mi perfil</Link>
             <Link href={`/perfil-publico-representante?id=${usuario.id}`} className={styles.enlace}>Mi perfil público</Link>
             <Link href="/mi-cartera" className={styles.enlace}>

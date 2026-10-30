@@ -5,7 +5,7 @@
 }
 
 .indicador {
-  @apply flex flex-col gap-3 rounded-xl border border-emerald-800/60 bg-emerald-950/40 p-4;
+  @apply flex flex-col gap-3 rounded-none border border-emerald-800/60 bg-emerald-950/40 p-4;
   grid-column: 1 / -1;
 }
 
@@ -24,15 +24,15 @@
 }
 
 .progreso::-webkit-progress-bar { background: #163b30; }
-.progreso::-webkit-progress-value { background: #34d399; border-radius: 999px; }
-.progreso::-moz-progress-bar { background: #34d399; border-radius: 999px; }
+.progreso::-webkit-progress-value { background: #34d399; border-radius: 0; }
+.progreso::-moz-progress-bar { background: #34d399; border-radius: 0; }
 
 .pendientes {
   @apply mt-2 flex flex-wrap gap-2;
 }
 
 .pendientes a {
-  @apply inline-block rounded-lg border border-emerald-800/60 px-3 py-1.5 text-xs text-emerald-200 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-emerald-400;
+  @apply inline-block rounded-none border border-emerald-800/60 px-3 py-1.5 text-xs text-emerald-200 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-emerald-400;
 }
 
 .perfilCompleto {
@@ -40,7 +40,7 @@
 }
 
 .seccionProfesional {
-  @apply min-w-0 rounded-2xl border border-emerald-900/60 p-5;
+  @apply min-w-0 rounded-none border border-emerald-900/60 p-5;
   grid-column: 1 / -1;
 }
 
@@ -70,12 +70,12 @@
 }
 
 .seccionFoto {
-  @apply flex flex-wrap items-center gap-5 rounded-2xl border border-emerald-900/60 p-5;
+  @apply flex flex-wrap items-center gap-5 rounded-none border border-emerald-900/60 p-5;
   background: var(--surface);
 }
 
 .fotoContenedor {
-  @apply relative h-24 w-24 overflow-hidden rounded-2xl border-2 border-emerald-500/30 bg-emerald-950/60 shadow-inner flex items-center justify-center shrink-0;
+  @apply relative h-24 w-24 overflow-hidden rounded-none border-2 border-emerald-500/30 bg-emerald-950/60 shadow-inner flex items-center justify-center shrink-0;
 }
 
 .foto {
@@ -107,11 +107,11 @@
 }
 
 .entrada {
-  @apply rounded-lg border border-emerald-800/70 bg-emerald-950/40 px-3.5 py-2 text-sm text-white placeholder-slate-400 focus:border-emerald-500 focus:outline-none;
+  @apply rounded-none border border-emerald-800/70 bg-emerald-950/40 px-3.5 py-2 text-sm text-white placeholder-slate-400 focus:border-emerald-500 focus:outline-none;
 }
 
 .entradaArchivo {
-  @apply text-xs text-slate-300 file:mr-3 file:rounded-md file:border-0 file:bg-emerald-900/60 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-emerald-200 file:hover:bg-emerald-800 cursor-pointer;
+  @apply text-xs text-slate-300 file:mr-3 file:rounded-none file:border-0 file:bg-emerald-900/60 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-emerald-200 file:hover:bg-emerald-800 cursor-pointer;
 }
 
 .casilla {
@@ -119,22 +119,22 @@
 }
 
 .botonGuardar {
-  @apply rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500 disabled:opacity-50 self-start shadow-md;
+  @apply self-start inline-flex min-h-11 items-center justify-center gap-2 border border-emerald-400 bg-emerald-400 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300 disabled:opacity-55;
 }
 
 .error {
-  @apply text-xs font-medium text-red-400 bg-red-950/30 border border-red-800/50 p-3 rounded-lg;
+  @apply text-xs font-medium text-red-400 bg-red-950/30 border border-red-800/50 p-3 rounded-none;
   grid-column: 1 / -1;
 }
 
 .exito {
-  @apply text-xs font-medium text-emerald-400 bg-emerald-950/40 border border-emerald-800/50 p-3 rounded-lg;
+  @apply text-xs font-medium text-emerald-400 bg-emerald-950/40 border border-emerald-800/50 p-3 rounded-none;
   grid-column: 1 / -1;
 }
 
-.datosContacto { @apply rounded-2xl border border-emerald-900/60 p-5; background: var(--surface); }
-.barraAcciones { @apply sticky z-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-emerald-700/60 p-4 shadow-xl; grid-column: 1 / -1; bottom: 1rem; background: #101c16f5; backdrop-filter: blur(12px); }
-.barraAcciones .botonGuardar { @apply min-h-11 rounded-xl; }
+.datosContacto { @apply rounded-none border border-emerald-900/60 p-5; background: var(--surface); }
+.barraAcciones { @apply sticky z-10 flex flex-wrap items-center justify-between gap-4 rounded-none border border-emerald-700/60 p-4 shadow-xl; grid-column: 1 / -1; bottom: 1rem; background: #101c16f5; backdrop-filter: blur(12px); }
+.barraAcciones .botonGuardar { @apply min-h-11 rounded-none; }
 @media (min-width: 1100px) {
   .seccionProfesional .grillaCampos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .seccionProfesional .campoCompleto { grid-column: span 1; }

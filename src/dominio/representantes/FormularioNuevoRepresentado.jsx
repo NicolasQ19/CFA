@@ -1,6 +1,7 @@
 "use client";
 
 import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
+import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import { useActionState, useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
@@ -176,42 +177,32 @@ export function FormularioNuevoRepresentado({ candidatoExistente = null }) {
             <p className="text-xs text-slate-400">Opcional. Permite calcular la edad y filtrar las postulaciones.</p>
           </div>
           <div className={styles.campo}>
-            <label htmlFor="puesto" className={styles.etiqueta}>
+            <span id="puesto" className={styles.etiqueta}>
               Puesto profesional *
-            </label>
-            <select
-              id="puesto"
-              name="puesto"
-              value={puesto}
-              onChange={(e) => setPuesto(e.target.value)}
-              className={styles.select}
-            >
-              {Object.entries(ETIQUETAS_PUESTO_PROFESIONAL).map(([clave, texto]) => (
-                <option key={clave} value={clave}>
-                  {texto}
-                </option>
-              ))}
-            </select>
+            </span>
+            <SelectorDesplegable
+              nombre="puesto"
+              etiquetaId="puesto"
+              valor={puesto}
+              onCambio={setPuesto}
+              opciones={Object.entries(ETIQUETAS_PUESTO_PROFESIONAL).map(([valor, texto]) => ({ valor, texto }))}
+            />
           </div>
 
           <div className={styles.campo}>
-            <label htmlFor="provincia" className={styles.etiqueta}>
+            <span id="provincia" className={styles.etiqueta}>
               Provincia de radicación *
-            </label>
-            <select
-              id="provincia"
-              name="provincia"
-              defaultValue={candidatoExistente?.provincia ?? ""}
-              required
-              className={styles.select}
-            >
-              <option value="">Seleccionar provincia...</option>
-              {PROVINCIAS_ARGENTINA.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
+            </span>
+            <SelectorDesplegable
+              nombre="provincia"
+              etiquetaId="provincia"
+              valorInicial={candidatoExistente?.provincia ?? ""}
+              placeholder="Seleccionar provincia..."
+              opciones={[
+                { valor: "", texto: "Seleccionar provincia..." },
+                ...PROVINCIAS_ARGENTINA.map((provincia) => ({ valor: provincia, texto: provincia })),
+              ]}
+            />
           </div>
 
           <div className={styles.campo}>
@@ -236,41 +227,35 @@ export function FormularioNuevoRepresentado({ candidatoExistente = null }) {
           <h3 className={styles.tituloSeccion}>2. Ficha Deportiva (Futbolista)</h3>
           <div className={styles.grilla}>
             <div className={styles.campo}>
-              <label htmlFor="posicionJuego" className={styles.etiqueta}>
+              <span id="posicionJuego" className={styles.etiqueta}>
                 Posición habitual en cancha
-              </label>
-              <select
-                id="posicionJuego"
-                name="posicionJuego"
-                defaultValue={candidatoExistente?.posicion_juego ?? ""}
-                className={styles.select}
-              >
-                <option value="">Seleccionar posición...</option>
-                {POSICIONES_DE_JUEGO.map((pos) => (
-                  <option key={pos} value={pos}>
-                    {pos}
-                  </option>
-                ))}
-              </select>
+              </span>
+              <SelectorDesplegable
+                nombre="posicionJuego"
+                etiquetaId="posicionJuego"
+                valorInicial={candidatoExistente?.posicion_juego ?? ""}
+                placeholder="Seleccionar posición..."
+                opciones={[
+                  { valor: "", texto: "Seleccionar posición..." },
+                  ...POSICIONES_DE_JUEGO.map((posicion) => ({ valor: posicion, texto: posicion })),
+                ]}
+              />
             </div>
 
             <div className={styles.campo}>
-              <label htmlFor="piernaHabil" className={styles.etiqueta}>
+              <span id="piernaHabil" className={styles.etiqueta}>
                 Pierna hábil
-              </label>
-              <select
-                id="piernaHabil"
-                name="piernaHabil"
-                defaultValue={candidatoExistente?.pierna_habil ?? ""}
-                className={styles.select}
-              >
-                <option value="">Seleccionar...</option>
-                {PIERNAS_HABILES.map((pierna) => (
-                  <option key={pierna} value={pierna}>
-                    {pierna}
-                  </option>
-                ))}
-              </select>
+              </span>
+              <SelectorDesplegable
+                nombre="piernaHabil"
+                etiquetaId="piernaHabil"
+                valorInicial={candidatoExistente?.pierna_habil ?? ""}
+                placeholder="Seleccionar..."
+                opciones={[
+                  { valor: "", texto: "Seleccionar..." },
+                  ...PIERNAS_HABILES.map((pierna) => ({ valor: pierna, texto: pierna })),
+                ]}
+              />
             </div>
 
             <div className={styles.campo}>

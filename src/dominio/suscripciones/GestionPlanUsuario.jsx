@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import { actualizarPlanDeUsuario } from "./acciones";
 import { MESES_SUSCRIPCION } from "@/lib/suscripciones";
 import styles from "./AccionesPlan.module.css";
@@ -23,19 +24,16 @@ export function GestionPlanUsuario({ usuarioId, planVigente, nombrePlanPago }) {
   return (
     <div className={styles.contenedor}>
       <div className={styles.formulario}>
-        <label htmlFor={`meses-${usuarioId}`} className={styles.etiqueta}>
+        <span id={`meses-${usuarioId}`} className={styles.etiqueta}>
           Meses
-        </label>
-        <select
-          id={`meses-${usuarioId}`}
-          value={meses}
-          onChange={(evento) => setMeses(Number(evento.target.value))}
+        </span>
+        <SelectorDesplegable
+          etiquetaId={`meses-${usuarioId}`}
+          valor={String(meses)}
+          onCambio={(valor) => setMeses(Number(valor))}
           className={styles.selector}
-        >
-          {MESES_SUSCRIPCION.map((valor) => (
-            <option key={valor} value={valor}>{valor}</option>
-          ))}
-        </select>
+          opciones={MESES_SUSCRIPCION.map((valor) => ({ valor: String(valor), texto: String(valor) }))}
+        />
         <button type="button" disabled={pendiente} onClick={() => aplicar("pago")} className={styles.boton}>
           {planVigente === "pago" ? "Extender" : `Activar ${nombrePlanPago}`}
         </button>

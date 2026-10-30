@@ -1,6 +1,7 @@
 "use client";
 
 import { ETIQUETAS_ESTADO_POSTULACION } from "@/tipos/dominio";
+import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import styles from "./SelectorEstadoPostulacion.module.css";
 
 const ESTADOS_ACCION = ["postulado", "visto", "preseleccionado", "rechazado"];
@@ -15,21 +16,28 @@ const CLASE_SELECT = {
 export function SelectorEstadoPostulacion({ estado, onChange, disabled }) {
   return (
     <div className={styles.contenedor}>
-      <select
-        name="estado"
-        value={estado}
-        disabled={disabled}
-        onChange={(evento) => onChange(evento.target.value)}
-        className={`${styles.select} ${CLASE_SELECT[estado] ?? ""}`}
-        aria-label="Estado de la postulación"
-      >
-        {!ESTADOS_ACCION.includes(estado) && <option value={estado}>{ETIQUETAS_ESTADO_POSTULACION[estado] ?? estado}</option>}
-        {ESTADOS_ACCION.map((clave) => (
-          <option key={clave} value={clave}>
-            {ETIQUETAS_ESTADO_POSTULACION[clave]}
-          </option>
-        ))}
-      </select>
+      <span id="etiquetaEstadoPostulacion" className={styles.etiquetaOculta}>
+        Estado de la postulación
+      </span>
+      <SelectorDesplegable
+        nombre="estado"
+        etiquetaId="etiquetaEstadoPostulacion"
+        valor={estado}
+        deshabilitado={disabled}
+        onCambio={onChange}
+        className={CLASE_SELECT[estado] ?? ""}
+        opciones={[
+          // Un estado fuera de las acciones habituales (por ejemplo "contratado")
+          // se muestra igual para no perder el valor guardado.
+          ...(ESTADOS_ACCION.includes(estado)
+            ? []
+            : [{ valor: estado, texto: ETIQUETAS_ESTADO_POSTULACION[estado] ?? estado }]),
+          ...ESTADOS_ACCION.map((valor) => ({
+            valor,
+            texto: ETIQUETAS_ESTADO_POSTULACION[valor],
+          })),
+        ]}
+      />
 
       <div className={styles.accionesRapidas}>
         {["visto", "preseleccionado", "rechazado"].map((clave) => (

@@ -1,0 +1,15 @@
+@reference "tailwindcss";
+
+.campo { @apply flex flex-col gap-2; }
+.filaEtiqueta { @apply flex flex-wrap items-baseline justify-between gap-2; }
+.etiqueta { @apply text-xs font-semibold uppercase tracking-wider text-slate-300; }
+.contenedorEntrada { @apply relative flex items-center; }
+.entrada {
+  @apply w-full border border-emerald-900/70 px-4 py-3 pr-24 text-sm text-white;
+  background: #060b08;
+}
+.entrada:focus { @apply border-emerald-400; outline: none; }
+.boton {
+  @apply absolute right-0 top-0 h-full border-l border-emerald-900/70 px-4 text-xs font-semibold uppercase tracking-wider text-emerald-300 hover:text-emerald-200;
+}
+.ayuda { @apply text-xs text-slate-500; }

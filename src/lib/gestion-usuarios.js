@@ -135,3 +135,93 @@ export async function cambiarEstadoCuentaUsuario({
 
   return { exito: true, cuenta_activa: actualizada.cuenta_activa };
 }
+
+/** Reglas de la eliminación definitiva: nunca cuentas de administrador ni la propia. */
+export function validarEliminacionUsuario({ admin, objetivo, objetivoId }) {
+  if (!admin || admin.rol !== "administrador" || !admin.cuenta_activa) {
+    return { error: "Solo un administrador activo puede eliminar cuentas de usuarios." };
+  }
+  if (typeof objetivoId !== "string" || !PATRON_UUID.test(objetivoId)) {
+    return { error: "Identificador de usuario inválido." };
+  }
+  if (admin.id === objetivoId) {
+    return { error: "No podés eliminar tu propia cuenta." };
+  }
+  if (!objetivo) {
+    return { error: "No se encontró el usuario seleccionado." };
+  }
+  if (objetivo.rol === "administrador") {
+    return { error: "Las cuentas de administrador no se pueden eliminar desde el panel." };
+  }
+  return { ok: true };
+}
+
+/**
+ * Elimina definitivamente una cuenta de candidato, club o representante (CU-04 / RF-04).
+ *
+ * El borrado baja en cascada: perfil, ofertas, postulaciones, seguimiento, cartera y
+ * suscripción del usuario se eliminan con él. Las fichas de cartera no tienen login,
+ * así que se borran de `usuarios`; el resto se borra de Supabase Auth, que arrastra
+ * la fila de `usuarios` por la clave foránea en cascada.
+ */
+export async function eliminarUsuarioComoAdmin({ supabase, supabaseAdmin = null, objetivoId }) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Iniciá sesión como administrador para continuar." };
+  }
+
+  const { data: admin } = await supabase
+    .from("usuarios")
+    .select("id, rol, cuenta_activa")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!supabaseAdmin) {
+    return {
+      error:
+        "La eliminación necesita la clave de servicio de Supabase (SUPABASE_SERVICE_ROLE_KEY) configurada en el servidor.",
+    };
+  }
+
+  const { data: objetivo } = await supabaseAdmin
+    .from("usuarios")
+    .select("id, rol, nombre_completo, correo_electronico")
+    .eq("id", objetivoId)
+    .maybeSingle();
+
+  const validacion = validarEliminacionUsuario({ admin, objetivo, objetivoId });
+  if (validacion.error) {
+    return { error: validacion.error };
+  }
+
+  if (esFichaRepresentado(objetivo)) {
+    const { error: errorFicha } = await supabaseAdmin
+      .from("usuarios")
+      .delete()
+      .eq("id", objetivoId);
+
+    if (errorFicha) {
+      return { error: errorFicha.message ?? "No se pudo eliminar la ficha de cartera." };
+    }
+
+    return { exito: true, nombre: objetivo.nombre_completo };
+  }
+
+  const { error: errorAuth } = await supabaseAdmin.auth.admin.deleteUser(objetivoId);
+
+  if (errorAuth && errorAuth.code !== "user_not_found") {
+    return { error: errorAuth.message ?? "No se pudo eliminar la cuenta." };
+  }
+
+  // Si la cuenta ya no existía en Auth, la fila de `usuarios` puede haber quedado suelta.
+  const { error: errorFila } = await supabaseAdmin.from("usuarios").delete().eq("id", objetivoId);
+
+  if (errorFila) {
+    return { error: errorFila.message ?? "No se pudo eliminar la cuenta." };
+  }
+
+  return { exito: true, nombre: objetivo.nombre_completo };
+}

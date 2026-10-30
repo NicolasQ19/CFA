@@ -2,43 +2,47 @@
 
 .header {
   @apply border-b border-emerald-900/60;
+  background: #050806ee;
+  backdrop-filter: blur(16px);
 }
 
 .nav {
-  @apply mx-auto flex max-w-4xl items-center justify-between px-4 py-4;
+  @apply mx-auto flex items-center justify-between px-4 py-4;
+  max-width: 1152px;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .marca {
-  @apply font-bold text-white;
+  @apply font-bold;
+  color: #6ee7b7;
+  font-size: 1.65rem;
+  letter-spacing: -0.07em;
 }
 
-.acciones {
-  @apply flex items-center gap-4 text-sm;
+/* Secciones públicas: cada una tiene su página propia. */
+.secciones { @apply flex flex-wrap items-center gap-x-6 gap-y-2 text-sm; }
+.enlaceSeccion {
+  @apply border-b-2 border-transparent py-1 text-xs font-semibold uppercase tracking-wider text-slate-300;
 }
+.enlaceSeccion:hover { @apply border-emerald-400 text-white; }
 
-.enlace {
-  @apply text-slate-200 hover:text-white;
-}
+.acciones { @apply flex items-center text-sm; flex-wrap: wrap; gap: 12px 20px; }
+
+.enlace { @apply text-slate-200 hover:text-white; }
+.enlace:hover, .botonSalir:hover { color: #6ee7b7; }
 
 .enlaceRegistro {
-  @apply rounded-md bg-emerald-700 px-3 py-1.5 font-semibold text-white;
+  @apply bg-emerald-400 font-semibold;
+  color: #052e1b;
+  padding: 10px 18px;
 }
+.enlaceRegistro:hover { background: #6ee7b7; }
 
-.botonSalir {
-  @apply text-slate-200 hover:text-white;
-}
+.botonSalir { @apply text-slate-200 hover:text-white; }
 
-.header {
-  background: #080f0ce8;
-  backdrop-filter: blur(16px);
-}
-.nav { max-width: 1152px; gap: 20px; flex-wrap: wrap; }
-.marca { color: #6ee7b7; font-size: 1.65rem; letter-spacing: -0.07em; }
-.acciones { flex-wrap: wrap; gap: 12px 20px; }
-.enlace:hover, .botonSalir:hover { color: #6ee7b7; }
-.enlaceRegistro { border-radius: 9px; padding: 10px 18px; }
-.enlaceRegistro:hover { background: #065f46; }
-@media (max-width: 480px) {
+@media (max-width: 860px) {
   .nav { align-items: flex-start; gap: 12px; }
-  .acciones { width: 100%; font-size: 0.8rem; gap: 12px; }
+  .secciones, .acciones { width: 100%; }
+  .acciones { font-size: 0.8rem; gap: 12px; }
 }

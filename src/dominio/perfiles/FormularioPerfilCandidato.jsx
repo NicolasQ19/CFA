@@ -1,6 +1,7 @@
 "use client";
 
 import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
+import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { guardarPerfilCandidato } from "@/dominio/perfiles/acciones";
@@ -389,27 +390,26 @@ function CampoFoto({ fotoActual }) {
   );
 }
 
-/** Select no controlado de una lista de textos; incluye el valor guardado aunque no esté en la lista. */
+/** Desplegable no controlado de una lista de textos; incluye el valor guardado aunque no esté en la lista. */
 function CampoLista({ id, etiqueta, opciones, etiquetas, valorInicial, requerido = false }) {
   return (
     <div className={styles.campo}>
-      <label htmlFor={id} className={styles.etiqueta}>
+      <span id={`${id}-etiqueta`} className={styles.etiqueta}>
         {etiqueta}
-      </label>
-      <select
-        id={id}
-        name={id}
-        defaultValue={valorInicial}
-        required={requerido}
-        className={styles.entrada}
-      >
-        <option value="">Elegí una opción</option>
-        {opcionesConValorActual(opciones, valorInicial).map((opcion) => (
-          <option key={opcion} value={opcion}>
-            {etiquetas?.[opcion] ?? opcion}
-          </option>
-        ))}
-      </select>
+      </span>
+      <SelectorDesplegable
+        nombre={id}
+        etiquetaId={`${id}-etiqueta`}
+        valorInicial={valorInicial ?? ""}
+        placeholder={requerido ? "Elegí una opción" : "Sin especificar"}
+        opciones={[
+          { valor: "", texto: requerido ? "Elegí una opción" : "Sin especificar" },
+          ...opcionesConValorActual(opciones, valorInicial).map((opcion) => ({
+            valor: opcion,
+            texto: etiquetas?.[opcion] ?? opcion,
+          })),
+        ]}
+      />
     </div>
   );
 }
@@ -417,22 +417,16 @@ function CampoLista({ id, etiqueta, opciones, etiquetas, valorInicial, requerido
 function CampoSelect({ id, etiqueta, valor, onCambio, opciones }) {
   return (
     <div className={styles.campo}>
-      <label htmlFor={id} className={styles.etiqueta}>
+      <span id={`${id}-etiqueta`} className={styles.etiqueta}>
         {etiqueta}
-      </label>
-      <select
-        id={id}
-        name={id}
-        value={valor}
-        onChange={(evento) => onCambio(evento.target.value)}
-        className={styles.entrada}
-      >
-        {opciones.map(([clave, texto]) => (
-          <option key={clave} value={clave}>
-            {texto}
-          </option>
-        ))}
-      </select>
+      </span>
+      <SelectorDesplegable
+        nombre={id}
+        etiquetaId={`${id}-etiqueta`}
+        valor={valor}
+        onCambio={onCambio}
+        opciones={opciones.map(([valorOpcion, texto]) => ({ valor: valorOpcion, texto }))}
+      />
     </div>
   );
 }

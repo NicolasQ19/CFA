@@ -3,16 +3,13 @@ import { FormularioRegistroAdmin } from "@/dominio/autenticacion/FormularioRegis
 import styles from "./page.module.css";
 
 /**
- * Ruta no enlazada desde ningún lugar de la UI: solo la conoce quien tenga la
- * URL con la clave secreta correcta (?clave=...). Sin la clave correcta, se
- * comporta como una página inexistente (404) para no revelar que existe.
- * La clave se vuelve a validar del lado del servidor en `registrarAdministrador`.
+ * Ruta no enlazada desde ningún lugar de la UI. La clave de alta se pide dentro
+ * del formulario y nunca viaja en la URL: así no queda en el historial, en el
+ * encabezado Referer ni en los registros del servidor. `registrarAdministrador`
+ * la vuelve a validar antes de crear la cuenta.
  */
-export default async function PaginaRegistroAdmin({ searchParams }) {
-  const { clave } = await searchParams;
-  const claveEsperada = process.env.ADMIN_REGISTRO_SECRETO;
-
-  if (!claveEsperada || clave !== claveEsperada) {
+export default function PaginaRegistroAdmin() {
+  if (!process.env.ADMIN_REGISTRO_SECRETO) {
     notFound();
   }
 
@@ -22,7 +19,7 @@ export default async function PaginaRegistroAdmin({ searchParams }) {
       <p className={styles.subtitulo}>Acceso restringido — CFA</p>
 
       <div className={styles.contenido}>
-        <FormularioRegistroAdmin claveSecreta={clave} />
+        <FormularioRegistroAdmin />
       </div>
     </main>
   );

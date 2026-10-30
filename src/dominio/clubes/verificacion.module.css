@@ -1,6 +1,6 @@
 @reference "tailwindcss";
 
-.aviso { @apply my-6 rounded-xl border border-amber-700/60 bg-amber-950/20 p-5 text-sm leading-relaxed text-slate-200; }
+.aviso { @apply my-6 rounded-none border border-amber-700/60 bg-amber-950/20 p-5 text-sm leading-relaxed text-slate-200; }
 .aviso[data-estado="verificado"] { @apply border-emerald-700 bg-emerald-950/40; }
 .aviso[data-estado="rechazado"] { @apply border-red-800 bg-red-950/30; }
 .aviso p { @apply mt-2; }
@@ -8,8 +8,8 @@
 .formulario { @apply mt-5 text-sm leading-relaxed text-slate-300; }
 .campos { @apply mt-4 grid gap-4; }
 .campos label { @apply grid gap-2 font-medium; }
-.campos input:not([type="checkbox"]), .campos select, .campos textarea { @apply w-full rounded-lg border border-emerald-900 bg-slate-950 px-3 py-2 text-white; }
-.campos button { @apply justify-self-start rounded-lg bg-emerald-700 px-4 py-2 font-semibold text-white; }
+.campos input:not([type="checkbox"]), .campos select, .campos textarea { @apply w-full rounded-none border border-emerald-900 bg-slate-950 px-3 py-2 text-white; }
+.campos button { @apply justify-self-start inline-flex min-h-11 items-center justify-center gap-2 border border-emerald-400 bg-emerald-400 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300 disabled:opacity-55; }
 .campos:disabled { @apply opacity-60; }
 .campos .confirmacion { @apply flex items-start gap-3; }
 .confirmacion input { @apply mt-1; }

@@ -6,6 +6,11 @@
   --foreground: #f4faf6;
   --surface: #101c16;
   --accent: #34d399;
+  /* Tonos neutros que acompañan al verde: negros de fondo y blancos de banda clara. */
+  --negro: #050806;
+  --negro-suave: #0b1510;
+  --papel: #f3f6f4;
+  --tinta: #0a1410;
 }
 
 @theme inline {
@@ -34,11 +39,44 @@
     color: var(--foreground);
     min-height: 44px;
     max-width: 100%;
-    border-radius: 10px;
+    border-radius: 0;
   }
   input::placeholder, textarea::placeholder { color: #8b9e93; opacity: 1; }
   input[type="checkbox"], input[type="radio"] { accent-color: #10b981; }
-  option { background: #101c16; color: #f4faf6; }
+
+  /* Desplegables: un solo aspecto en filtros, formularios y paneles de gestión.
+     Se reemplaza la flecha del sistema por una propia para que no cambie entre navegadores. */
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid #1f4a35;
+    padding: 10px 44px 10px 14px;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    background-color: #060b08;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%2334d399' stroke-width='1.6' stroke-linecap='square'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 12px 8px;
+  }
+  select:hover:not(:disabled) { border-color: #2f7a55; }
+  select:focus, select:focus-visible { border-color: var(--accent); }
+  select:disabled { opacity: 0.55; background-image: none; }
+  /* Las listas múltiples o con alto propio no llevan flecha ni el alto del control simple. */
+  select[multiple], select[size]:not([size="1"]) {
+    background-image: none;
+    padding-right: 14px;
+    min-height: 0;
+  }
+  /* Varios módulos fijan su propio padding con utilidades: se reserva igual el
+     espacio de la flecha para que nunca pise al texto de la opción elegida. */
+  select[class]:not([multiple]):not([size]) {
+    padding-right: 44px;
+    background-position: right 16px center;
+  }
+  option { background: #0b1510; color: #f4faf6; padding: 8px; }
+  option:disabled { color: #8b9e93; }
+  optgroup { background: #0b1510; color: #6ee7b7; font-weight: 600; }
   button, a, input, select, textarea { transition: background-color 160ms, border-color 160ms, color 160ms, box-shadow 160ms; }
   button:not(:disabled), select { cursor: pointer; }
   button:disabled { cursor: not-allowed; }
@@ -54,4 +92,49 @@
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* ---------------------------------------------------------------------------
+   Botones compartidos
+   Antes cada módulo redefinía su propio verde, su padding y su borde, y se
+   desincronizaban entre pantallas. Estas tres clases son la base: los módulos
+   solo agregan lo propio del lugar (ancho, posición dentro de la grilla).
+   --------------------------------------------------------------------------- */
+@layer components {
+  .botonBase {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 12px 20px;
+    border: 1px solid transparent;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: center;
+  }
+  .botonBase:disabled { opacity: 0.55; }
+
+  .botonPrimarioApp {
+    border-color: #34d399;
+    background: #34d399;
+    color: #042316;
+  }
+  .botonPrimarioApp:hover:not(:disabled) { background: #6ee7b7; border-color: #6ee7b7; }
+
+  .botonSecundarioApp {
+    border-color: #ffffff40;
+    background: transparent;
+    color: #f4faf6;
+  }
+  .botonSecundarioApp:hover:not(:disabled) { border-color: #34d399; color: #6ee7b7; }
+
+  .botonPeligroApp {
+    border-color: #dc2626;
+    background: #b91c1c;
+    color: #ffffff;
+  }
+  .botonPeligroApp:hover:not(:disabled) { background: #dc2626; }
 }

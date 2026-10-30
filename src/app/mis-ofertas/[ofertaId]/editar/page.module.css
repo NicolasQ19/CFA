@@ -21,7 +21,7 @@
 }
 
 .bloqueo {
-  @apply mt-8 rounded-xl border border-emerald-900/60 bg-slate-900/50 p-6;
+  @apply mt-8 rounded-none border border-emerald-900/60 bg-slate-900/50 p-6;
 }
 
 .textoBloqueo {
@@ -33,9 +33,9 @@
 }
 
 .botonNueva {
-  @apply rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 border border-emerald-400 bg-emerald-400 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300 disabled:opacity-55;
 }
 
 .botonVolver {
-  @apply rounded-md border border-slate-700 bg-slate-800/60 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors;
+  @apply rounded-none border border-slate-700 bg-slate-800/60 px-4 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors;
 }

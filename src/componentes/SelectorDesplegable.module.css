@@ -1,0 +1,48 @@
+@reference "tailwindcss";
+
+.contenedor { @apply relative w-full min-w-0; }
+
+.boton {
+  @apply flex w-full items-center justify-between gap-3 border border-emerald-900/70 px-4 text-left text-sm text-white;
+  background: #060b08;
+  min-height: 44px;
+  padding-block: 10px;
+}
+.boton:hover:not(:disabled) { @apply border-emerald-700; }
+.boton:disabled { @apply cursor-not-allowed opacity-60; }
+.boton[aria-expanded="true"] { @apply border-emerald-400; }
+
+.textoElegido { @apply truncate font-medium text-white; }
+.textoVacio { @apply truncate text-slate-400; }
+
+.flecha, .flechaAbierta {
+  @apply shrink-0 border-b-2 border-r-2 border-emerald-400;
+  width: 9px;
+  height: 9px;
+  transform: rotate(45deg) translate(-2px, -2px);
+}
+.flechaAbierta { transform: rotate(225deg) translate(-2px, -2px); }
+
+.lista {
+  @apply absolute left-0 right-0 z-30 mt-1 max-h-72 overflow-y-auto border border-emerald-400/60 py-1;
+  background: #0b1510;
+  box-shadow: 0 24px 48px #000000a8;
+}
+
+.opcion {
+  @apply relative;
+  @apply flex cursor-pointer items-center justify-between gap-3 px-4 py-2.5 text-sm text-slate-300;
+}
+.opcionResaltada { @apply bg-emerald-950 text-white; }
+.opcionElegida { @apply font-semibold text-white; }
+.opcionElegida::before {
+  content: "";
+  @apply absolute left-0 h-6 w-0.5 bg-emerald-400;
+}
+.tilde { @apply shrink-0 text-emerald-400; }
+
+/* La barra de la lista acompaña a la paleta en vez de usar la del sistema. */
+.lista::-webkit-scrollbar { width: 10px; }
+.lista::-webkit-scrollbar-track { background: #060b08; }
+.lista::-webkit-scrollbar-thumb { background: #1f4a35; }
+.lista::-webkit-scrollbar-thumb:hover { background: #2f7a55; }

@@ -1,6 +1,7 @@
 "use client";
 
 import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
+import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { CancelarPostulacion } from "./CancelarPostulacion";
@@ -72,29 +73,53 @@ export function PostularRepresentado({ ofertaId, puestoOferta, cartera, postulac
       ) : (
         <form onSubmit={manejarPostulacion} className={styles.formulario}>
           <div className={styles.grillaFiltros}>
-            <label className={styles.campoFiltro}>Buscar en
-              <select value={filtros.buscarPor} disabled={estaEnviando} className={styles.select} onChange={e => cambiarFiltro("buscarPor", e.target.value)}>
-                <option value="todos">Nombre y apellido</option><option value="nombre">Nombres</option><option value="apellido">Apellidos</option>
-              </select>
-            </label>
-            <label className={styles.campoFiltro}>Ordenar por
-              <select value={filtros.orden} disabled={estaEnviando} className={styles.select} onChange={e => cambiarFiltro("orden", e.target.value)}>
-                <option value="nombre_asc">Nombre A–Z</option><option value="nombre_desc">Nombre Z–A</option>
-                <option value="apellido_asc">Apellido A–Z</option><option value="apellido_desc">Apellido Z–A</option>
-                <option value="edad_asc">Edad: menor a mayor</option><option value="edad_desc">Edad: mayor a menor</option>
-              </select>
-            </label>
+            <span className={styles.campoFiltro}><span id="filtroBuscarEn">Buscar en</span>
+              <SelectorDesplegable
+                valor={filtros.buscarPor}
+                deshabilitado={estaEnviando}
+                etiquetaId="filtroBuscarEn"
+                onCambio={(valor) => cambiarFiltro("buscarPor", valor)}
+                opciones={[
+                  { valor: "todos", texto: "Nombre y apellido" },
+                  { valor: "nombre", texto: "Nombres" },
+                  { valor: "apellido", texto: "Apellidos" },
+                ]}
+              />
+            </span>
+            <span className={styles.campoFiltro}><span id="filtroOrden">Ordenar por</span>
+              <SelectorDesplegable
+                valor={filtros.orden}
+                deshabilitado={estaEnviando}
+                etiquetaId="filtroOrden"
+                onCambio={(valor) => cambiarFiltro("orden", valor)}
+                opciones={[
+                  { valor: "nombre_asc", texto: "Nombre A–Z" },
+                  { valor: "nombre_desc", texto: "Nombre Z–A" },
+                  { valor: "apellido_asc", texto: "Apellido A–Z" },
+                  { valor: "apellido_desc", texto: "Apellido Z–A" },
+                  { valor: "edad_asc", texto: "Edad: menor a mayor" },
+                  { valor: "edad_desc", texto: "Edad: mayor a menor" },
+                ]}
+              />
+            </span>
             <label className={styles.campoFiltro}>Edad mínima
               <input type="number" min={0} max={120} step={1} value={filtros.edadMinima} disabled={estaEnviando} className={styles.select} onChange={e => cambiarFiltro("edadMinima", e.target.value)} />
             </label>
             <label className={styles.campoFiltro}>Edad máxima
               <input type="number" min={0} max={120} step={1} value={filtros.edadMaxima} disabled={estaEnviando} className={styles.select} onChange={e => cambiarFiltro("edadMaxima", e.target.value)} />
             </label>
-            <label className={styles.campoFiltro}>Provincia
-              <select value={filtros.provincia} disabled={estaEnviando} className={styles.select} onChange={e => cambiarFiltro("provincia", e.target.value)}>
-                <option value="">Todas las provincias</option>{provincias.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </label>
+            <span className={styles.campoFiltro}><span id="filtroProvinciaCartera">Provincia</span>
+              <SelectorDesplegable
+                valor={filtros.provincia}
+                deshabilitado={estaEnviando}
+                etiquetaId="filtroProvinciaCartera"
+                onCambio={(valor) => cambiarFiltro("provincia", valor)}
+                opciones={[
+                  { valor: "", texto: "Todas las provincias" },
+                  ...provincias.map((provincia) => ({ valor: provincia, texto: provincia })),
+                ]}
+              />
+            </span>
           </div>
           <label htmlFor="buscarRepresentado" className={styles.etiquetaFiltro}>Buscar candidato</label>
           <input id="buscarRepresentado" type="search" value={busqueda}
@@ -111,29 +136,29 @@ export function PostularRepresentado({ ofertaId, puestoOferta, cartera, postulac
           {rangoInvalido && <p role="alert" className={styles.error}>La edad mínima no puede ser mayor que la máxima.</p>}
           <p className={styles.subtitulo} role="status">{filtrados.length} de {disponibles.length} candidatos disponibles con el puesto solicitado.</p>
           {filtrados.length === 0 && <p className={styles.avisoVacio}>No hay candidatos que coincidan con esos filtros.</p>}
-          <label htmlFor="candidatoRepresentado" className={styles.etiquetaFiltro}>Elegir candidato</label>
+          <span id="candidatoRepresentado" className={styles.etiquetaFiltro}>Elegir candidato</span>
           <div className={styles.filaSelect}>
-            <select
-              id="candidatoRepresentado"
-              disabled={estaEnviando || filtrados.length === 0}
-              value={candidatoSeleccionado}
-              onChange={(e) => setCandidatoSeleccionado(e.target.value)}
-              required
+            <SelectorDesplegable
+              etiquetaId="candidatoRepresentado"
               className={styles.select}
-            >
-              <option value="">Seleccionar candidato de mi cartera...</option>
-              {filtrados.map((item) => {
-                const nombre = item.nombre || item.usuario?.nombre_completo || "Talento";
-                return (
-                  <option key={item.candidato_id} value={item.candidato_id}>
-                    {nombre} (
-                    {ETIQUETAS_PUESTO_PROFESIONAL[item.perfil?.puesto] ?? item.perfil?.puesto}
-                    {item.perfil?.posicion_juego ? ` - ${item.perfil.posicion_juego}` : ""})
-                    {edadCandidato(item.perfil?.fecha_nacimiento) === null ? " · Edad sin informar" : ` · ${edadCandidato(item.perfil.fecha_nacimiento)} años`}
-                  </option>
-                );
-              })}
-            </select>
+              deshabilitado={estaEnviando || filtrados.length === 0}
+              valor={candidatoSeleccionado}
+              onCambio={setCandidatoSeleccionado}
+              placeholder="Seleccionar candidato de mi cartera..."
+              opciones={[
+                { valor: "", texto: "Seleccionar candidato de mi cartera..." },
+                ...filtrados.map((item) => {
+                  const nombre = item.nombre || item.usuario?.nombre_completo || "Talento";
+                  const puesto = ETIQUETAS_PUESTO_PROFESIONAL[item.perfil?.puesto] ?? item.perfil?.puesto;
+                  const posicion = item.perfil?.posicion_juego ? ` - ${item.perfil.posicion_juego}` : "";
+                  const edad = edadCandidato(item.perfil?.fecha_nacimiento);
+                  return {
+                    valor: item.candidato_id,
+                    texto: `${nombre} (${puesto}${posicion}) · ${edad === null ? "Edad sin informar" : `${edad} años`}`,
+                  };
+                }),
+              ]}
+            />
             <button
               type="submit"
               disabled={estaEnviando || !candidatoElegido}

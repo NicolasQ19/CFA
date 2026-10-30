@@ -1,0 +1,34 @@
+@reference "tailwindcss";
+
+.dialogo {
+  @apply w-full max-w-lg border border-emerald-800/70 p-0;
+  margin: auto;
+  background: var(--negro-suave);
+  color: var(--foreground);
+  box-shadow: 0 32px 80px #000000b8;
+}
+.dialogo::backdrop { background: #000000b0; }
+
+.panel { @apply flex flex-col gap-4 p-7; text-align: left; }
+.titulo { @apply text-xl font-semibold text-white; }
+.descripcion { @apply text-sm leading-relaxed text-slate-300; }
+.detalle { @apply border-l-2 border-emerald-700 pl-4 text-sm leading-relaxed text-slate-400; }
+
+.campo { @apply flex flex-col gap-2 text-xs uppercase tracking-wider text-slate-300; }
+.campo strong { @apply font-semibold text-emerald-300; }
+.entrada {
+  @apply w-full border border-emerald-900/70 px-4 py-3 text-sm normal-case tracking-normal text-white;
+  background: #060b08;
+}
+.entrada:focus { @apply border-emerald-400; outline: none; }
+
+.acciones { @apply mt-2 flex flex-wrap justify-end gap-3; }
+.botonCancelar {
+  @apply border border-white/25 px-5 py-3 text-xs font-semibold uppercase tracking-wider text-slate-200 hover:border-white/50 hover:text-white;
+}
+.botonConfirmar {
+  @apply border border-emerald-400 bg-emerald-400 px-5 py-3 text-xs font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300 disabled:opacity-50;
+}
+.botonPeligro {
+  @apply border border-red-500 bg-red-600 px-5 py-3 text-xs font-semibold uppercase tracking-wider text-white hover:bg-red-500 disabled:opacity-50;
+}

@@ -18,5 +18,5 @@
 
 .volanta { @apply mb-3 text-xs font-semibold tracking-widest text-emerald-300; }
 .accesos { @apply flex flex-wrap gap-4; }
-.cabecera { @apply flex flex-wrap items-center justify-between gap-5 rounded-2xl border border-emerald-800/50 p-5 sm:p-6; background: linear-gradient(130deg, #173c29, #101c16); }
+.cabecera { @apply flex flex-wrap items-center justify-between gap-5 rounded-none border border-emerald-800/50 p-5 sm:p-6; background: linear-gradient(130deg, #173c29, #101c16); }
 .enlace { @apply inline-flex min-h-11 items-center text-sm font-semibold text-emerald-300 hover:underline; }

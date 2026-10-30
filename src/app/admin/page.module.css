@@ -5,10 +5,10 @@
 }
 
 .filtros { @apply mt-6 flex flex-wrap items-center gap-2; }
-.filtro { @apply rounded-lg border border-emerald-900/60 px-3 py-2 text-sm text-slate-300 hover:bg-emerald-950; }
+.filtro { @apply rounded-none border border-emerald-900/60 px-3 py-2 text-sm text-slate-300 hover:bg-emerald-950; }
 .filtro[aria-current="page"] { @apply border-emerald-500 bg-emerald-950 text-emerald-300; }
 .seccionMetrica { @apply mt-10; }
-.tablaContenedor { @apply my-5 overflow-x-auto rounded-xl border border-emerald-900/60; }
+.tablaContenedor { @apply my-5 overflow-x-auto rounded-none border border-emerald-900/60; }
 .tabla { @apply w-full text-left text-sm text-slate-200; }
 .tabla th, .tabla td { @apply whitespace-nowrap border-b border-emerald-900/40 px-4 py-4; }
 .tabla thead { @apply bg-emerald-950/50 text-xs text-slate-400; }
@@ -48,7 +48,7 @@
 }
 
 .itemVacio {
-  @apply rounded-lg border border-dashed border-emerald-900/60 p-10 text-center;
+  @apply rounded-none border border-dashed border-emerald-900/60 p-10 text-center;
 }
 
 .textoVacio {
@@ -62,7 +62,7 @@
 .item {
   background: var(--surface);
   box-shadow: 0 12px 32px #00000030;
-  @apply rounded-xl border border-emerald-900/60 p-6;
+  @apply rounded-none border border-emerald-900/60 p-6;
 }
 
 .itemEncabezado {
@@ -98,7 +98,7 @@
 }
 
 .etiquetaPendiente {
-  @apply mt-2 inline-block rounded-md border border-amber-500/40 bg-amber-950/50 px-2 py-0.5 text-xs font-medium text-amber-300;
+  @apply mt-2 inline-block rounded-none border border-amber-500/40 bg-amber-950/50 px-2 py-0.5 text-xs font-medium text-amber-300;
 }
 
 .accionesModeracion {
@@ -106,7 +106,7 @@
 }
 
 .seccionDetalle {
-  @apply mt-5 rounded-lg border border-emerald-900/40 bg-emerald-950/30 p-4;
+  @apply mt-5 rounded-none border border-emerald-900/40 bg-emerald-950/30 p-4;
 }
 
 .subtituloSeccion {
@@ -134,7 +134,7 @@
 }
 
 .descripcion {
-  @apply mt-2 whitespace-pre-line rounded-lg border border-emerald-900/30 bg-emerald-950/20 p-4 text-sm leading-relaxed text-slate-200;
+  @apply mt-2 whitespace-pre-line rounded-none border border-emerald-900/30 bg-emerald-950/20 p-4 text-sm leading-relaxed text-slate-200;
 }
 
 .seccionClub {
@@ -154,15 +154,15 @@
 }
 
 .entradaBusqueda {
-  @apply min-w-[240px] flex-1 rounded-lg border border-emerald-900/60 bg-emerald-950/40 px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-emerald-500 focus:outline-none;
+  @apply min-w-[240px] flex-1 rounded-none border border-emerald-900/60 bg-emerald-950/40 px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-emerald-500 focus:outline-none;
 }
 
 .botonBuscar {
-  @apply cursor-pointer rounded-lg border border-emerald-600/60 bg-emerald-600/20 px-4 py-2 text-sm font-medium text-emerald-300 transition-colors hover:bg-emerald-600/30;
+  @apply cursor-pointer rounded-none border border-emerald-600/60 bg-emerald-600/20 px-4 py-2 text-sm font-medium text-emerald-300 transition-colors hover:bg-emerald-600/30;
 }
 
 .botonLimpiar {
-  @apply rounded-lg border border-slate-700/60 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800/60;
+  @apply rounded-none border border-slate-700/60 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800/60;
 }
 
 .celdaUsuario {
@@ -178,7 +178,7 @@
 }
 
 .insigniaFicha {
-  @apply inline-block rounded border border-sky-600/40 bg-sky-950/50 px-2 py-0.5 text-[11px] font-medium text-sky-300;
+  @apply inline-block rounded-none border border-sky-600/40 bg-sky-950/50 px-2 py-0.5 text-[11px] font-medium text-sky-300;
 }
 
 .estadoActiva {

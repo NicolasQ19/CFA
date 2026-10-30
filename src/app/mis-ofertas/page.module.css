@@ -13,7 +13,7 @@
 }
 
 .botonPublicar {
-  @apply rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 border border-emerald-400 bg-emerald-400 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300 disabled:opacity-55;
 }
 
 .lista {
@@ -25,7 +25,7 @@
 }
 
 .item {
-  @apply rounded-lg border border-emerald-900/60 p-4;
+  @apply rounded-none border border-emerald-900/60 p-4;
 }
 
 .itemEncabezado {
@@ -61,18 +61,18 @@
 }
 
 .enlaceEditar {
-  @apply rounded-md border border-emerald-700/80 bg-emerald-950/40 px-3 py-1.5 text-sm font-semibold text-emerald-200 hover:bg-emerald-900/60 hover:text-white transition-colors;
+  @apply rounded-none border border-emerald-700/80 bg-emerald-950/40 px-3 py-1.5 text-sm font-semibold text-emerald-200 hover:bg-emerald-900/60 hover:text-white transition-colors;
 }
 
 .enlacePostulantes {
-  @apply rounded-md border border-emerald-800/70 px-3 py-1.5 text-sm font-semibold text-slate-100 hover:bg-emerald-950/40;
+  @apply rounded-none border border-emerald-800/70 px-3 py-1.5 text-sm font-semibold text-slate-100 hover:bg-emerald-950/40;
 }
 
 .encabezado { flex-wrap: wrap; gap: 16px; }
 .descripcion { margin-top: 12px; color: #b5cabe; }
 .accesos { display: flex; flex-wrap: wrap; gap: 20px; margin-block: 20px; color: #6ee7b7; font-size: .9rem; }
 .resumen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
-.resumen > div { display: grid; gap: 8px; padding: 20px; border: 1px solid #245239; border-radius: 14px; background: var(--surface); }
+.resumen > div { display: grid; gap: 8px; padding: 20px; border: 1px solid #245239; border-radius: 0; background: var(--surface); }
 .resumen strong { font-size: 2rem; line-height: 1; color: #6ee7b7; }
 .resumen span { font-size: .8rem; color: #c3d4ca; }
 @media (min-width: 720px) { .resumen { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

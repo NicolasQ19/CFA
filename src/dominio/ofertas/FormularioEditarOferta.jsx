@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import Link from "next/link";
 import { editarOferta } from "@/dominio/ofertas/acciones";
 import { obtenerReglasEdicionOferta } from "@/lib/editar-oferta";
@@ -36,42 +37,32 @@ export function FormularioEditarOferta({ oferta }) {
       {reglas.identidadEditable ? (
         <>
           <div className={styles.campo}>
-            <label htmlFor="puestoBuscado" className={styles.etiqueta}>
+            <span id="puestoBuscado" className={styles.etiqueta}>
               Puesto buscado
-            </label>
-            <select
-              id="puestoBuscado"
-              name="puestoBuscado"
-              value={puestoBuscado}
-              onChange={(evento) => setPuestoBuscado(evento.target.value)}
-              className={styles.entrada}
-            >
-              {Object.entries(ETIQUETAS_PUESTO_PROFESIONAL).map(([clave, texto]) => (
-                <option key={clave} value={clave}>
-                  {texto}
-                </option>
-              ))}
-            </select>
+            </span>
+            <SelectorDesplegable
+              nombre="puestoBuscado"
+              etiquetaId="puestoBuscado"
+              valor={puestoBuscado}
+              onCambio={setPuestoBuscado}
+              opciones={Object.entries(ETIQUETAS_PUESTO_PROFESIONAL).map(([valor, texto]) => ({ valor, texto }))}
+            />
           </div>
 
           {puestoBuscado === "jugador" && (
             <div className={styles.campo}>
-              <label htmlFor="posicionJuego" className={styles.etiqueta}>
+              <span id="posicionJuego" className={styles.etiqueta}>
                 Posición
-              </label>
-              <select
-                id="posicionJuego"
-                name="posicionJuego"
-                defaultValue={oferta.posicion_juego || ""}
-                className={styles.entrada}
-              >
-                <option value="">Cualquier posición</option>
-                {posiciones.map((posicion) => (
-                  <option key={posicion} value={posicion}>
-                    {posicion}
-                  </option>
-                ))}
-              </select>
+              </span>
+              <SelectorDesplegable
+                nombre="posicionJuego"
+                etiquetaId="posicionJuego"
+                valorInicial={oferta.posicion_juego || ""}
+                opciones={[
+                  { valor: "", texto: "Cualquier posición" },
+                  ...posiciones.map((posicion) => ({ valor: posicion, texto: posicion })),
+                ]}
+              />
             </div>
           )}
 
@@ -90,47 +81,29 @@ export function FormularioEditarOferta({ oferta }) {
           </div>
 
           <div className={styles.campo}>
-            <label htmlFor="tipoContrato" className={styles.etiqueta}>
+            <span id="tipoContrato" className={styles.etiqueta}>
               Tipo de contrato
-            </label>
-            <select
-              id="tipoContrato"
-              name="tipoContrato"
-              required
-              defaultValue={oferta.tipo_contrato || ""}
-              className={styles.entrada}
-            >
-              <option value="" disabled>
-                Elegí un tipo
-              </option>
-              {Object.entries(ETIQUETAS_TIPO_CONTRATO).map(([clave, texto]) => (
-                <option key={clave} value={clave}>
-                  {texto}
-                </option>
-              ))}
-            </select>
+            </span>
+            <SelectorDesplegable
+              nombre="tipoContrato"
+              etiquetaId="tipoContrato"
+              valorInicial={oferta.tipo_contrato || ""}
+              placeholder="Elegí un tipo"
+              opciones={Object.entries(ETIQUETAS_TIPO_CONTRATO).map(([valor, texto]) => ({ valor, texto }))}
+            />
           </div>
 
           <div className={styles.campo}>
-            <label htmlFor="provincia" className={styles.etiqueta}>
+            <span id="provincia" className={styles.etiqueta}>
               Provincia
-            </label>
-            <select
-              id="provincia"
-              name="provincia"
-              required
-              defaultValue={oferta.provincia || ""}
-              className={styles.entrada}
-            >
-              <option value="" disabled>
-                Elegí una provincia
-              </option>
-              {provincias.map((provincia) => (
-                <option key={provincia} value={provincia}>
-                  {provincia}
-                </option>
-              ))}
-            </select>
+            </span>
+            <SelectorDesplegable
+              nombre="provincia"
+              etiquetaId="provincia"
+              valorInicial={oferta.provincia || ""}
+              placeholder="Elegí una provincia"
+              opciones={provincias.map((provincia) => ({ valor: provincia, texto: provincia }))}
+            />
           </div>
         </>
       ) : (

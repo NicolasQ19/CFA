@@ -2,6 +2,8 @@
 
 import { useActionState } from "react";
 import { contratarPlanPago, darDeBajaPlanPago } from "./acciones";
+import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
+import { MESES_SUSCRIPCION } from "@/lib/suscripciones";
 import styles from "./AccionesPlan.module.css";
 
 const ESTADO_INICIAL = { error: null, exito: null };
@@ -27,15 +29,19 @@ export function AccionesPlan({ planVigente, nombrePlanPago }) {
         </form>
       ) : (
         <form action={contratar} className={styles.formulario}>
-          <label htmlFor="meses" className={styles.etiqueta}>
+          <span id="etiquetaMeses" className={styles.etiqueta}>
             Duración
-          </label>
-          <select id="meses" name="meses" defaultValue="1" className={styles.selector}>
-            <option value="1">1 mes</option>
-            <option value="3">3 meses</option>
-            <option value="6">6 meses</option>
-            <option value="12">12 meses</option>
-          </select>
+          </span>
+          <SelectorDesplegable
+            nombre="meses"
+            etiquetaId="etiquetaMeses"
+            valorInicial="1"
+            className={styles.selector}
+            opciones={MESES_SUSCRIPCION.map((meses) => ({
+              valor: String(meses),
+              texto: meses === 1 ? "1 mes" : `${meses} meses`,
+            }))}
+          />
           <button type="submit" disabled={contratando} className={styles.boton}>
             {contratando ? "Activando..." : `Suscribirme a ${nombrePlanPago}`}
           </button>

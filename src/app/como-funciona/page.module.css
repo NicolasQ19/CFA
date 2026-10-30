@@ -1,0 +1,42 @@
+@reference "tailwindcss";
+
+.main { @apply w-full; }
+.contenedor { @apply mx-auto w-full max-w-6xl px-4 sm:px-6; }
+
+.cabecera { @apply border-b border-emerald-900/60 py-16 sm:py-20; background: var(--negro); }
+.volanta { @apply mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-emerald-300; }
+.volantaOscura { @apply mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-emerald-700; }
+.titulo { @apply font-semibold text-white; font-size: clamp(2.2rem, 4.6vw, 3.4rem); letter-spacing: -0.05em; }
+.bajada { @apply mt-5 max-w-3xl text-base leading-relaxed text-slate-300; }
+
+.seccion { @apply py-16 sm:py-20; }
+.tituloSeccion { @apply text-2xl font-semibold text-white sm:text-3xl; }
+.tituloClaro { @apply text-2xl font-semibold sm:text-3xl; color: var(--tinta); }
+.parrafo { @apply mt-4 max-w-3xl text-sm leading-relaxed text-slate-400; }
+
+.pasos { @apply mt-8 flex flex-col; }
+.paso { @apply flex gap-6 border-t border-emerald-900/60 py-8; }
+.paso:last-child { @apply border-b border-emerald-900/60; }
+.pasoNumero { @apply flex h-12 w-12 shrink-0 items-center justify-center border border-emerald-500/50 text-base font-semibold text-emerald-300; }
+.pasoTitulo { @apply text-lg font-semibold text-white; }
+.pasoTexto { @apply mt-2 text-sm text-slate-300; }
+.pasoDetalle { @apply mt-3 max-w-3xl text-sm leading-relaxed text-slate-400; }
+
+.bandaClara { @apply py-16 sm:py-20; background: var(--papel); color: var(--tinta); }
+.grillaRoles { @apply mt-8 grid grid-cols-1 gap-5 lg:grid-cols-3; }
+.tarjetaRol { @apply flex flex-col gap-3 border border-black/15 bg-white p-6; }
+.rolNumero { @apply text-xs font-semibold tracking-[0.3em] text-emerald-700; }
+.rolTitulo { @apply text-lg font-semibold; color: var(--tinta); }
+.rolTexto { @apply text-sm; color: #41524a; }
+.beneficios { @apply mt-1 flex flex-col gap-2; }
+.beneficios li { @apply flex items-start gap-2 text-xs leading-relaxed; color: #41524a; }
+.beneficios span { @apply shrink-0 text-emerald-600; }
+
+.puestos { @apply mt-7 flex flex-wrap gap-2; }
+.puestos li { @apply border border-emerald-800/60 px-4 py-2 text-sm text-slate-300; background: var(--negro-suave); }
+
+.cierre { @apply border-t border-emerald-900/60 py-16; background: var(--negro); }
+.cierreInterno { @apply flex flex-wrap items-center justify-between gap-6; }
+.acciones { @apply flex flex-wrap gap-3; }
+.botonPrimario { @apply inline-flex min-h-11 items-center justify-center border border-emerald-400 bg-emerald-400 px-7 py-3.5 text-sm font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300; }
+.botonSecundario { @apply inline-flex min-h-11 items-center justify-center border border-white/30 px-7 py-3.5 text-sm font-semibold uppercase tracking-wider text-white hover:border-emerald-400 hover:text-emerald-300; }

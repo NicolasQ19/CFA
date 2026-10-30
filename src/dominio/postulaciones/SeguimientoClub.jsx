@@ -1,5 +1,6 @@
 "use client";
 import { useActionState, useEffect, useId, useState } from "react";
+import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import { guardarSeguimientoClub } from "./acciones-club";
 import { ETAPAS_CLUB } from "@/lib/club";
 import { SelectorEstadoPostulacion } from "./SelectorEstadoPostulacion";
@@ -18,10 +19,15 @@ export function SeguimientoClub({ postulacionId, etapa, notas, estadoInicial, di
     <input type="hidden" name="postulacionId" value={postulacionId} />
     <section className={styles.seccion}>
     <h3>Seguimiento privado</h3>
-    <label htmlFor={`${id}-etapa`}>Etapa interna</label>
-    <select id={`${id}-etapa`} name="etapa" disabled={pendiente} value={etapaActual} onChange={evento => setEtapaActual(evento.target.value)}>
-      {Object.entries(ETAPAS_CLUB).map(([valor, etiqueta]) => <option key={valor} value={valor}>{etiqueta}</option>)}
-    </select>
+    <span id={`${id}-etapa`}>Etapa interna</span>
+    <SelectorDesplegable
+      nombre="etapa"
+      etiquetaId={`${id}-etapa`}
+      valor={etapaActual}
+      deshabilitado={pendiente}
+      onCambio={setEtapaActual}
+      opciones={Object.entries(ETAPAS_CLUB).map(([valor, texto]) => ({ valor, texto }))}
+    />
     <label htmlFor={`${id}-notas`}>Notas privadas del club</label>
     <textarea id={`${id}-notas`} name="notas" disabled={pendiente} value={notasActuales} onChange={evento => setNotasActuales(evento.target.value)} maxLength={3000} rows={3} placeholder="Entrevistas, observaciones y próximos pasos…" />
     <p className={styles.ayuda}>Solo tu club puede leer estas notas. La etapa interna no cambia el estado informado al candidato.</p>

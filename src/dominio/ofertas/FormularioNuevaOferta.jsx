@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import Link from "next/link";
 import { crearOferta } from "@/dominio/ofertas/acciones";
 import {
@@ -20,37 +21,31 @@ export function FormularioNuevaOferta() {
   return (
     <form action={ejecutarCreacion} className={styles.formulario}>
       <div className={styles.campo}>
-        <label htmlFor="puestoBuscado" className={styles.etiqueta}>
+        <span id="puestoBuscado" className={styles.etiqueta}>
           Puesto buscado
-        </label>
-        <select
-          id="puestoBuscado"
-          name="puestoBuscado"
-          value={puestoBuscado}
-          onChange={(evento) => setPuestoBuscado(evento.target.value)}
-          className={styles.entrada}
-        >
-          {Object.entries(ETIQUETAS_PUESTO_PROFESIONAL).map(([clave, texto]) => (
-            <option key={clave} value={clave}>
-              {texto}
-            </option>
-          ))}
-        </select>
+        </span>
+        <SelectorDesplegable
+          nombre="puestoBuscado"
+          etiquetaId="puestoBuscado"
+          valor={puestoBuscado}
+          onCambio={setPuestoBuscado}
+          opciones={Object.entries(ETIQUETAS_PUESTO_PROFESIONAL).map(([valor, texto]) => ({ valor, texto }))}
+        />
       </div>
 
       {puestoBuscado === "jugador" && (
         <div className={styles.campo}>
-          <label htmlFor="posicionJuego" className={styles.etiqueta}>
+          <span id="posicionJuego" className={styles.etiqueta}>
             Posición
-          </label>
-          <select id="posicionJuego" name="posicionJuego" defaultValue="" className={styles.entrada}>
-            <option value="">Cualquier posición</option>
-            {POSICIONES_DE_JUEGO.map((posicion) => (
-              <option key={posicion} value={posicion}>
-                {posicion}
-              </option>
-            ))}
-          </select>
+          </span>
+          <SelectorDesplegable
+            nombre="posicionJuego"
+            etiquetaId="posicionJuego"
+            opciones={[
+              { valor: "", texto: "Cualquier posición" },
+              ...POSICIONES_DE_JUEGO.map((posicion) => ({ valor: posicion, texto: posicion })),
+            ]}
+          />
         </div>
       )}
 
@@ -68,35 +63,27 @@ export function FormularioNuevaOferta() {
       </div>
 
       <div className={styles.campo}>
-        <label htmlFor="tipoContrato" className={styles.etiqueta}>
+        <span id="tipoContrato" className={styles.etiqueta}>
           Tipo de contrato
-        </label>
-        <select id="tipoContrato" name="tipoContrato" required defaultValue="" className={styles.entrada}>
-          <option value="" disabled>
-            Elegí un tipo
-          </option>
-          {Object.entries(ETIQUETAS_TIPO_CONTRATO).map(([clave, texto]) => (
-            <option key={clave} value={clave}>
-              {texto}
-            </option>
-          ))}
-        </select>
+        </span>
+        <SelectorDesplegable
+          nombre="tipoContrato"
+          etiquetaId="tipoContrato"
+          placeholder="Elegí un tipo"
+          opciones={Object.entries(ETIQUETAS_TIPO_CONTRATO).map(([valor, texto]) => ({ valor, texto }))}
+        />
       </div>
 
       <div className={styles.campo}>
-        <label htmlFor="provincia" className={styles.etiqueta}>
+        <span id="provincia" className={styles.etiqueta}>
           Provincia
-        </label>
-        <select id="provincia" name="provincia" required defaultValue="" className={styles.entrada}>
-          <option value="" disabled>
-            Elegí una provincia
-          </option>
-          {PROVINCIAS_ARGENTINA.map((provincia) => (
-            <option key={provincia} value={provincia}>
-              {provincia}
-            </option>
-          ))}
-        </select>
+        </span>
+        <SelectorDesplegable
+          nombre="provincia"
+          etiquetaId="provincia"
+          placeholder="Elegí una provincia"
+          opciones={PROVINCIAS_ARGENTINA.map((provincia) => ({ valor: provincia, texto: provincia }))}
+        />
       </div>
 
       <div className={styles.campo}>

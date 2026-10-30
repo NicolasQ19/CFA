@@ -1,11 +1,11 @@
 @reference "tailwindcss";
 
 .botonSumar {
-  @apply rounded-lg bg-emerald-700 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 border border-emerald-400 bg-emerald-400 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300 disabled:opacity-55;
 }
 
 .botonQuitar {
-  @apply min-h-11 rounded-xl border border-red-800/60 px-3 py-2 text-xs font-semibold text-red-300 transition hover:bg-red-950/40 disabled:opacity-50;
+  @apply min-h-11 rounded-none border border-red-800/60 px-3 py-2 text-xs font-semibold text-red-300 transition hover:bg-red-950/40 disabled:opacity-50;
 }
 
 .error {

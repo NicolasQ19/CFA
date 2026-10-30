@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { BotonEstadoCuenta } from "@/dominio/usuarios/BotonEstadoCuenta";
+import { BotonEliminarUsuario } from "@/dominio/usuarios/BotonEliminarUsuario";
+import estilosAcciones from "@/dominio/usuarios/BotonEstadoCuenta.module.css";
 import {
   ESTADOS_FILTRO_USUARIOS,
   ROLES_FILTRO_USUARIOS,
@@ -87,7 +89,7 @@ export default async function PaginaGestionUsuarios({ searchParams }) {
         <div>
           <h1 className={styles.titulo}>Gestión de Usuarios</h1>
           <p className={styles.subtitulo}>
-            Consultá las cuentas registradas por rol, buscá por nombre o correo y activá o desactivá accesos.
+            Consultá las cuentas registradas por rol, buscá por nombre o correo, activá o desactivá accesos y eliminá cuentas que ya no correspondan.
           </p>
         </div>
         <span className={styles.insigniaConteo}>
@@ -210,12 +212,23 @@ export default async function PaginaGestionUsuarios({ searchParams }) {
                       </span>
                     </td>
                     <td>
-                      <BotonEstadoCuenta
-                        usuarioId={u.id}
-                        nombre={u.nombre_completo}
-                        activa={Boolean(u.cuenta_activa)}
-                        esPropia={u.id === usuarioActual.id}
-                      />
+                      <div className={estilosAcciones.acciones}>
+                        <BotonEstadoCuenta
+                          usuarioId={u.id}
+                          nombre={u.nombre_completo}
+                          activa={Boolean(u.cuenta_activa)}
+                          esPropia={u.id === usuarioActual.id}
+                        />
+                        {/* Las cuentas de administrador y la propia no se pueden eliminar. */}
+                        {u.rol !== "administrador" && u.id !== usuarioActual.id && (
+                          <BotonEliminarUsuario
+                            usuarioId={u.id}
+                            nombre={u.nombre_completo}
+                            rol={u.rol}
+                            esFicha={esRepresentado}
+                          />
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );

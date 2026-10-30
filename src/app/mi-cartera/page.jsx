@@ -1,4 +1,5 @@
 import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
+import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
@@ -114,9 +115,17 @@ export default async function PaginaMiCartera({ searchParams }) {
         {cartera.length > 0 && <form method="get" action="/mi-cartera#representados" className={styles.filtros} key={`cartera-${filtros.nombre}-${filtros.puesto}`}>
           {filtros.estado && <input type="hidden" name="estado" value={filtros.estado} />}
           <label className={styles.campoFiltro} htmlFor="nombreRepresentado">Nombre o apellido<input id="nombreRepresentado" name="nombre" type="search" defaultValue={filtros.nombre} placeholder="Buscar en tu cartera..." /></label>
-          <label className={styles.campoFiltro} htmlFor="puestoRepresentado">Puesto profesional<select id="puestoRepresentado" name="puesto" defaultValue={filtros.puesto}>
-            <option value="">Todos los puestos</option>{Object.entries(ETIQUETAS_PUESTO_PROFESIONAL).map(([valor, etiqueta]) => <option key={valor} value={valor}>{etiqueta}</option>)}
-          </select></label>
+          <span className={styles.campoFiltro}><span id="puestoRepresentado">Puesto profesional</span>
+            <SelectorDesplegable
+              nombre="puesto"
+              etiquetaId="puestoRepresentado"
+              valorInicial={filtros.puesto}
+              opciones={[
+                { valor: "", texto: "Todos los puestos" },
+                ...Object.entries(ETIQUETAS_PUESTO_PROFESIONAL).map(([valor, texto]) => ({ valor, texto })),
+              ]}
+            />
+          </span>
           <button type="submit" className={styles.botonFiltrar}>Buscar</button>
           {(filtros.nombre || filtros.puesto) && <Link href={`/mi-cartera${filtros.estado ? `?estado=${encodeURIComponent(filtros.estado)}` : ""}#representados`} className={styles.enlacePerfil}>Limpiar búsqueda</Link>}
         </form>}
@@ -210,9 +219,17 @@ export default async function PaginaMiCartera({ searchParams }) {
         {postulaciones.length > 0 && <form method="get" action="/mi-cartera#postulaciones" className={styles.filtros} key={`postulaciones-${filtros.estado}`}>
           {filtros.nombre && <input type="hidden" name="nombre" value={filtros.nombre} />}
           {filtros.puesto && <input type="hidden" name="puesto" value={filtros.puesto} />}
-          <label className={styles.campoFiltro} htmlFor="estadoPostulacion">Estado de la postulación<select id="estadoPostulacion" name="estado" defaultValue={filtros.estado}>
-            <option value="">Todos los estados</option>{Object.entries(ETIQUETAS_ESTADO_POSTULACION).map(([valor, etiqueta]) => <option key={valor} value={valor}>{etiqueta}</option>)}
-          </select></label>
+          <span className={styles.campoFiltro}><span id="estadoPostulacion">Estado de la postulación</span>
+            <SelectorDesplegable
+              nombre="estado"
+              etiquetaId="estadoPostulacion"
+              valorInicial={filtros.estado}
+              opciones={[
+                { valor: "", texto: "Todos los estados" },
+                ...Object.entries(ETIQUETAS_ESTADO_POSTULACION).map(([valor, texto]) => ({ valor, texto })),
+              ]}
+            />
+          </span>
           <button type="submit" className={styles.botonFiltrar}>Aplicar filtro</button>
         </form>}
 

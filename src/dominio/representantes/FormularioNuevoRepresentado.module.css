@@ -5,7 +5,7 @@
 }
 
 .seccion {
-  @apply flex flex-col gap-4 rounded-xl border border-emerald-900/60 bg-emerald-950/20 p-5;
+  @apply flex flex-col gap-4 rounded-none border border-emerald-900/60 bg-emerald-950/20 p-5;
 }
 
 .tituloSeccion {
@@ -29,7 +29,7 @@
 }
 
 .fotoMiniPreview {
-  @apply relative h-20 w-20 overflow-hidden rounded-xl border border-emerald-500/40 bg-emerald-950/70 flex items-center justify-center shrink-0;
+  @apply relative h-20 w-20 overflow-hidden rounded-none border border-emerald-500/40 bg-emerald-950/70 flex items-center justify-center shrink-0;
 }
 
 .fotoImg {
@@ -41,7 +41,7 @@
 }
 
 .entradaArchivo {
-  @apply text-xs text-slate-300 file:mr-3 file:rounded-md file:border-0 file:bg-emerald-900/60 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-emerald-200 file:hover:bg-emerald-800 cursor-pointer;
+  @apply text-xs text-slate-300 file:mr-3 file:rounded-none file:border-0 file:bg-emerald-900/60 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-emerald-200 file:hover:bg-emerald-800 cursor-pointer;
 }
 
 .casilla {
@@ -63,7 +63,7 @@
 .entrada,
 .select,
 .textarea {
-  @apply rounded-lg border border-emerald-800/80 bg-emerald-950/50 px-3.5 py-2 text-sm text-white placeholder-slate-400 focus:border-emerald-500 focus:outline-none;
+  @apply rounded-none border border-emerald-800/80 bg-emerald-950/50 px-3.5 py-2 text-sm text-white placeholder-slate-400 focus:border-emerald-500 focus:outline-none;
 }
 
 .textarea {
@@ -75,11 +75,11 @@
 }
 
 .cabeceraPrevia {
-  @apply flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-800/60 bg-emerald-950/30 p-4;
+  @apply flex flex-wrap items-center justify-between gap-3 rounded-none border border-emerald-800/60 bg-emerald-950/30 p-4;
 }
 
 .dialogo {
-  @apply rounded-2xl border border-emerald-800 bg-slate-950 text-white;
+  @apply rounded-none border border-emerald-800 bg-slate-950 text-white;
   width: min(64rem, calc(100% - 2rem));
   max-height: 90vh;
   margin: auto;
@@ -96,13 +96,13 @@
 .tituloDialogo { @apply text-base font-semibold text-white; }
 
 .botonCancelar {
-  @apply rounded-lg border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-slate-800;
+  @apply rounded-none border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:bg-slate-800;
 }
 
 .botonGuardar {
-  @apply rounded-lg bg-emerald-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 border border-emerald-400 bg-emerald-400 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300 disabled:opacity-55;
 }
 
 .error {
-  @apply rounded-lg border border-red-800 bg-red-950/40 p-3 text-xs font-medium text-red-300;
+  @apply rounded-none border border-red-800 bg-red-950/40 p-3 text-xs font-medium text-red-300;
 }

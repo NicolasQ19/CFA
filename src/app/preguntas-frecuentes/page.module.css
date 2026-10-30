@@ -1,0 +1,28 @@
+@reference "tailwindcss";
+
+.main { @apply w-full; }
+.contenedor { @apply mx-auto w-full max-w-4xl px-4 sm:px-6; }
+
+.cabecera { @apply border-b border-emerald-900/60 py-16 sm:py-20; background: var(--negro); }
+.volanta { @apply mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-emerald-300; }
+.titulo { @apply font-semibold text-white; font-size: clamp(2.2rem, 4.6vw, 3.4rem); letter-spacing: -0.05em; }
+.bajada { @apply mt-5 max-w-2xl text-base leading-relaxed text-slate-300; }
+
+.seccion { @apply py-14 sm:py-16; }
+.preguntas { @apply flex flex-col; }
+.pregunta { @apply border-b border-emerald-900/60; }
+.pregunta:first-child { @apply border-t border-emerald-900/60; }
+.pregunta summary { @apply flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-sm font-semibold text-white; }
+.pregunta summary::-webkit-details-marker { display: none; }
+.pregunta summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.pregunta summary span { @apply text-xl font-normal text-emerald-300; }
+.pregunta[open] summary span { transform: rotate(45deg); }
+.pregunta p { @apply pb-5 text-sm leading-relaxed text-slate-400; }
+
+.cierre { @apply border-t border-emerald-900/60 py-14; background: var(--negro); }
+.cierreInterno { @apply flex flex-wrap items-center justify-between gap-6; }
+.tituloSeccion { @apply text-2xl font-semibold text-white; }
+.parrafo { @apply mt-3 max-w-xl text-sm text-slate-400; }
+.acciones { @apply flex flex-wrap gap-3; }
+.botonPrimario { @apply inline-flex min-h-11 items-center justify-center border border-emerald-400 bg-emerald-400 px-7 py-3.5 text-sm font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300; }
+.botonSecundario { @apply inline-flex min-h-11 items-center justify-center border border-white/30 px-7 py-3.5 text-sm font-semibold uppercase tracking-wider text-white hover:border-emerald-400 hover:text-emerald-300; }
