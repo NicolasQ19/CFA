@@ -23,3 +23,11 @@
 .botonEnviar {
   @apply self-start rounded-md bg-emerald-700 px-5 py-2 text-sm font-semibold text-white disabled:opacity-60;
 }
+
+.aviso {
+  @apply flex flex-col items-start gap-2;
+}
+
+.enlacePlan {
+  @apply rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-emerald-500;
+}

@@ -84,8 +84,15 @@ export async function BarraNavegacion() {
             <Link href="/admin/metricas" className={styles.enlace}>
               Métricas
             </Link>
+            <Link href="/admin/suscripciones" className={styles.enlace}>Suscripciones</Link>
             <Link href="/admin/clubes" className={styles.enlace}>Verificación de clubes</Link>
             </>
+          )}
+
+          {["club", "candidato", "representante"].includes(usuario?.rol) && (
+            <Link href="/planes" className={styles.enlace}>
+              Planes
+            </Link>
           )}
 
           {["administrador", "club", "candidato", "representante"].includes(usuario?.rol) && (

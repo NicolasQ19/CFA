@@ -12,6 +12,7 @@ export function BotonPostularse({ ofertaId }) {
   const [postulacionId, setPostulacionId] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [faltaPerfil, setFaltaPerfil] = useState(false);
+  const [limitePlan, setLimitePlan] = useState(false);
 
   if (postulado) {
     return (
@@ -28,6 +29,7 @@ export function BotonPostularse({ ofertaId }) {
   function handlePostulacion() {
     setErrorMsg(null);
     setFaltaPerfil(false);
+    setLimitePlan(false);
     startTransition(async () => {
       const res = await postularseAOferta(ofertaId);
       if (res?.exito) {
@@ -36,6 +38,7 @@ export function BotonPostularse({ ofertaId }) {
       } else {
         setErrorMsg(res?.error ?? "No se pudo enviar la postulación.");
         setFaltaPerfil(Boolean(res?.faltaPerfil));
+        setLimitePlan(Boolean(res?.limitePlan));
       }
     });
   }
@@ -51,6 +54,11 @@ export function BotonPostularse({ ofertaId }) {
           {faltaPerfil && (
             <Link href="/mi-perfil" className={styles.enlace}>
               Completar perfil
+            </Link>
+          )}
+          {limitePlan && (
+            <Link href="/planes" className={styles.enlace}>
+              Ver planes y mejorar el mío
             </Link>
           )}
         </p>

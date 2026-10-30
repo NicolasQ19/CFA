@@ -132,8 +132,8 @@ export function CampanaNotificaciones({ rol = "administrador", usuarioId }) {
   const textos = {
     administrador: { contador: "ofertas pendientes", ayuda: "Nuevas ofertas para revisar.", vacio: "No hay ofertas pendientes de revisión.", href: "/admin?estado=pendiente_moderacion", enlace: "Ver todas las ofertas pendientes" },
     club: { contador: "avisos del club", ayuda: "Verificación del club, novedades de ofertas y postulaciones pendientes de revisión.", vacio: "No hay novedades del club.", href: "/mi-club", enlace: "Ver mi club" },
-    candidato: { contador: "postulaciones actualizadas", ayuda: "Último estado informado por el club en cada postulación actualizada.", vacio: "Todavía no hay cambios de estado en tus postulaciones.", href: "/mis-postulaciones", enlace: "Ver mis postulaciones" },
-    representante: { contador: "postulaciones de representados actualizadas", ayuda: "Último estado informado por el club en las postulaciones que enviaste para tus representados.", vacio: "Todavía no hay cambios de estado en las postulaciones que enviaste.", href: "/mi-cartera#postulaciones", enlace: "Ver postulaciones de mi cartera" },
+    candidato: { contador: "novedades de tus postulaciones", ayuda: "Último estado informado por el club y cambios en la descripción de las ofertas a las que te postulaste.", vacio: "Todavía no hay novedades en tus postulaciones.", href: "/mis-postulaciones", enlace: "Ver mis postulaciones" },
+    representante: { contador: "novedades de las postulaciones de tus representados", ayuda: "Último estado informado por el club y cambios en la descripción de las ofertas en las que postulaste a tus representados.", vacio: "Todavía no hay novedades en las postulaciones que enviaste.", href: "/mi-cartera#postulaciones", enlace: "Ver postulaciones de mi cartera" },
   }[rol];
   return (
     <div className={styles.contenedor} ref={contenedor} onBlur={(evento) => {

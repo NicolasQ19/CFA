@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import Link from "next/link";
 import { crearOferta } from "@/dominio/ofertas/acciones";
 import {
   ETIQUETAS_PUESTO_PROFESIONAL,
@@ -112,7 +113,14 @@ export function FormularioNuevaOferta() {
       </div>
 
       {estado.error && (
-        <p className={styles.error}>{estado.error}</p>
+        <div className={styles.aviso}>
+          <p className={styles.error}>{estado.error}</p>
+          {estado.limitePlan && (
+            <Link href="/planes" className={styles.enlacePlan}>
+              Ver planes y mejorar el mío
+            </Link>
+          )}
+        </div>
       )}
 
       <button

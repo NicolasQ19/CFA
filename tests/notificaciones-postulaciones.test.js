@@ -10,7 +10,9 @@ function clienteFalso(respuestas, usuarioSesion = null) {
     from(tabla) {
       const pasos = [["from", tabla]];
       consultas.push(pasos);
-      const resultado = respuestas.shift();
+      // Sin respuesta encolada, la consulta devuelve vacío: así cada prueba declara
+      // solo las tablas que le interesan.
+      const resultado = respuestas.length > 0 ? respuestas.shift() : { data: [] };
       const consulta = {};
       for (const metodo of ["select", "eq", "in", "order", "limit", "range", "maybeSingle"]) {
         consulta[metodo] = (...args) => { pasos.push([metodo, ...args]); return consulta; };
@@ -27,6 +29,67 @@ const postulacion = (valores = {}) => ({
   id: "postulacion-1", estado: "postulado", creada_en: creacion, actualizada_en: creacion,
   ofertas_laborales: { puesto_buscado: "jugador", posicion_juego: "Arquero", perfiles_club: { nombre_club: "Club Uno" } },
   ...valores,
+});
+
+test("avisa al candidato cuando el club cambia la descripción de una oferta a la que se postuló", async () => {
+  const oferta = (descripcion_actualizada_en) => ({
+    puesto_buscado: "jugador", posicion_juego: "Arquero", descripcion_actualizada_en,
+    perfiles_club: { nombre_club: "Club Uno" },
+  });
+  const cliente = clienteFalso([{ data: [
+    postulacion({ id: "con-cambio", oferta_id: "oferta-1", ofertas_laborales: oferta(cambio) }),
+    postulacion({ id: "anterior-a-la-postulacion", oferta_id: "oferta-2", ofertas_laborales: oferta("2026-10-23T11:00:00Z") }),
+    postulacion({ id: "sin-cambio", oferta_id: "oferta-3", ofertas_laborales: oferta(null) }),
+  ] }]);
+
+  const resultado = await obtenerAvisosPostulaciones(cliente, { id: "candidato-1", rol: "candidato" });
+
+  assert.equal(resultado.total, 1);
+  const aviso = resultado.notificaciones[0];
+  assert.equal(aviso.id, "descripcion-con-cambio");
+  assert.equal(aviso.origen, "Club Uno");
+  assert.match(aviso.mensaje, /cambió la descripción de la oferta a la que te postulaste/);
+  assert.equal(aviso.fecha, cambio);
+  assert.equal(aviso.href, "/ofertas/oferta-1");
+});
+
+test("avisa al candidato y al representante cuando el club elimina una oferta con postulantes", async () => {
+  const baja = { id: "aviso-1", nombre_club: "Club Uno", titulo_oferta: "Arquero", creada_en: cambio };
+
+  const candidato = clienteFalso([{ data: [] }, { data: [baja] }]);
+  const avisosCandidato = await obtenerAvisosPostulaciones(candidato, { id: "candidato-1", rol: "candidato" });
+  assert.equal(avisosCandidato.total, 1);
+  assert.equal(avisosCandidato.notificaciones[0].id, "baja-aviso-1");
+  assert.equal(avisosCandidato.notificaciones[0].origen, "Club Uno");
+  assert.match(avisosCandidato.notificaciones[0].mensaje, /eliminó la oferta a la que te habías postulado/);
+  assert.equal(avisosCandidato.notificaciones[0].detalle, "Arquero");
+  assert.equal(avisosCandidato.notificaciones[0].href, "/mis-postulaciones");
+  assert.ok(candidato.consultas[1].some(paso => JSON.stringify(paso) === JSON.stringify(["eq", "candidato_id", "candidato-1"])));
+
+  const representante = clienteFalso([{ data: [] }, { data: [baja] }]);
+  const avisosRepresentante = await obtenerAvisosPostulaciones(representante, { id: "representante-1", rol: "representante" });
+  assert.match(avisosRepresentante.notificaciones[0].mensaje, /habías postulado a un representado/);
+  assert.equal(avisosRepresentante.notificaciones[0].href, "/mi-cartera");
+  assert.ok(representante.consultas[1].some(paso => JSON.stringify(paso) === JSON.stringify(["eq", "representante_id", "representante-1"])));
+});
+
+test("avisa del plan solo cuando lo cambió la administración", async () => {
+  const suscripcion = (valores) => ({ data: { actualizada_en: cambio, ...valores } });
+
+  const activado = clienteFalso([{ data: [] }, { data: [] }, suscripcion({ plan: "pago", vence_en: "2099-01-01T00:00:00Z", activada_por: "admin-1" })]);
+  const avisos = await obtenerAvisosPostulaciones(activado, { id: "candidato-1", rol: "candidato" });
+  assert.equal(avisos.total, 1);
+  assert.equal(avisos.notificaciones[0].origen, "Administración");
+  assert.match(avisos.notificaciones[0].mensaje, /activó tu plan Candidato Pro/);
+  assert.equal(avisos.notificaciones[0].href, "/planes");
+
+  const dadoDeBaja = clienteFalso([{ data: [] }, { data: [] }, suscripcion({ plan: "gratuito", vence_en: null, activada_por: "admin-1" })]);
+  const baja = await obtenerAvisosPostulaciones(dadoDeBaja, { id: "representante-1", rol: "representante" });
+  assert.match(baja.notificaciones[0].mensaje, /dio de baja tu plan Representante Pro/);
+
+  // Si lo contrató el propio usuario desde /planes, no hay novedad que avisar.
+  const propio = clienteFalso([{ data: [] }, { data: [] }, suscripcion({ plan: "pago", vence_en: "2099-01-01T00:00:00Z", activada_por: "candidato-1" })]);
+  assert.equal((await obtenerAvisosPostulaciones(propio, { id: "candidato-1", rol: "candidato" })).total, 0);
 });
 
 test("un visitante o una cuenta inactiva no consulta datos privilegiados", async () => {
@@ -76,9 +139,11 @@ test("pagina todas las postulaciones del representante manteniendo el filtro de 
   const resultado = await obtenerAvisosPostulaciones(cliente, { id: "r1", rol: "representante" });
   assert.equal(resultado.total, 501);
   assert.match(resultado.notificaciones.at(-1).mensaje, /Oferta cerrada/);
-  for (const consulta of cliente.consultas) {
+  // Las páginas de postulaciones; la consulta de ofertas eliminadas filtra por representante_id.
+  for (const consulta of cliente.consultas.slice(0, 2)) {
     assert.ok(consulta.some(paso => JSON.stringify(paso) === JSON.stringify(["eq", "postulado_por_representante_id", "r1"])));
   }
+  assert.ok(cliente.consultas[2].some(paso => JSON.stringify(paso) === JSON.stringify(["eq", "representante_id", "r1"])));
   assert.ok(cliente.consultas[1].some(paso => JSON.stringify(paso) === JSON.stringify(["range", 500, 999])));
 });
 
@@ -122,7 +187,8 @@ test("devuelve todas las versiones al paginar para calcular los avisos sin leer"
   const resultado = await obtenerAvisosPostulaciones(cliente, { id: "candidato-1", rol: "candidato" });
   assert.equal(resultado.total, 501);
   assert.equal(resultado.notificaciones.length, 501);
-  assert.equal(cliente.consultas.length, 2);
+  // Dos páginas de postulaciones, las ofertas eliminadas y el plan de la cuenta.
+  assert.equal(cliente.consultas.length, 4);
 });
 
 test("la identidad proviene de la sesión y un fallo de consulta no se muestra como cero avisos", async () => {

@@ -12,7 +12,9 @@ import {
  * - Ofertas `cerrada`: cierre definitivo; no admiten edición ni reapertura.
  * - Ofertas `pendiente_moderacion` o `rechazada` SIN postulantes: edición completa permitida.
  * - Ofertas `publicada`, `pausada` o con postulantes registrados: identidad bloqueada;
- *   solo se permite ajustar la descripción y el cambio reenvía la oferta a moderación.
+ *   solo se permite ajustar la descripción, que se guarda conservando el estado actual.
+ * - La moderación se exige únicamente antes de la primera publicación: al crear la oferta
+ *   y al corregir una oferta `rechazada`.
  */
 export function obtenerReglasEdicionOferta(oferta, totalPostulantes = 0) {
   if (!oferta) {
@@ -40,10 +42,7 @@ export function obtenerReglasEdicionOferta(oferta, totalPostulantes = 0) {
   const antesDePublicarse =
     oferta.estado === "pendiente_moderacion" || oferta.estado === "rechazada";
   const identidadEditable = antesDePublicarse && !tienePostulantes;
-  const requiereReenvioModeracion =
-    oferta.estado === "publicada" ||
-    oferta.estado === "pausada" ||
-    oferta.estado === "rechazada";
+  const requiereReenvioModeracion = oferta.estado === "rechazada";
 
   return {
     puedeEditar: true,
@@ -179,10 +178,43 @@ export function validarEdicionOferta({
     return { error: "No realizaste cambios en la descripción de la oferta." };
   }
 
+  // Una oferta ya publicada no vuelve a moderación por editar su descripción:
+  // la moderación previa solo aplica antes de la primera publicación.
+  if (ofertaActual.estado === "rechazada") {
+    return {
+      datos: {
+        descripcion,
+        estado: "pendiente_moderacion",
+      },
+    };
+  }
+
+  return { datos: { descripcion } };
+}
+
+/**
+ * Determina si el club puede eliminar una oferta propia.
+ *
+ * Eliminar borra la oferta de la base y, con ella, las postulaciones asociadas
+ * (`on delete cascade`). Se permite en cualquier estado, pero cuando había candidatos
+ * hay que avisarles: pierden la postulación de su historial sin haberla cancelado.
+ */
+export function validarEliminacionOferta(oferta, totalPostulantes = 0) {
+  if (!oferta) {
+    return {
+      puedeEliminar: false,
+      requiereAvisoPostulantes: false,
+      totalPostulantes: 0,
+      motivoBloqueo: "No se encontró la oferta solicitada.",
+    };
+  }
+
+  const postulantes = Math.max(0, Number(totalPostulantes) || 0);
+
   return {
-    datos: {
-      descripcion,
-      estado: "pendiente_moderacion",
-    },
+    puedeEliminar: true,
+    requiereAvisoPostulantes: postulantes > 0,
+    totalPostulantes: postulantes,
+    motivoBloqueo: null,
   };
 }

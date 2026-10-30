@@ -3,9 +3,10 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
-import { validarDatosOferta, validarEdicionOferta } from "@/lib/editar-oferta";
+import { validarDatosOferta, validarEdicionOferta, validarEliminacionOferta } from "@/lib/editar-oferta";
 import { comprobarClubVerificado } from "@/lib/verificacion-club";
-import { TRANSICIONES_OFERTA_DEL_CLUB, TRANSICIONES_OFERTA_DEL_ADMIN } from "@/tipos/dominio";
+import { obtenerCupoOfertasDelClub } from "@/lib/cupo-suscripciones";
+import { ETIQUETAS_PUESTO_PROFESIONAL, TRANSICIONES_OFERTA_DEL_CLUB, TRANSICIONES_OFERTA_DEL_ADMIN } from "@/tipos/dominio";
 
 /*El club publica una nueva oferta. Queda pendiente de moderación. */
 export async function crearOferta(
@@ -28,6 +29,12 @@ export async function crearOferta(
 
   if (!perfilClub) {
     return { error: "Completá los datos del club antes de publicar una oferta." };
+  }
+
+  // El plan gratuito limita las ofertas activas simultáneas; el trigger lo repite en la base.
+  const cupo = await obtenerCupoOfertasDelClub(supabase, usuario.id);
+  if (cupo.fallo || !cupo.permitido) {
+    return { error: cupo.fallo ?? cupo.error, limitePlan: cupo.limitePlan ?? false };
   }
 
   const validacion = validarDatosOferta(datosFormulario);
@@ -204,6 +211,88 @@ export async function moderarOferta(ofertaId, nuevoEstado) {
   revalidatePath(`/ofertas/${ofertaId}`);
   revalidatePath("/ofertas");
   return { exito: true };
+}
+
+/* El club elimina una oferta propia; si tenía postulantes, les deja un aviso antes de borrarla. */
+export async function eliminarOferta(ofertaId) {
+  const supabase = await crearClienteServidor();
+  const usuario = await obtenerUsuarioConRol(supabase);
+
+  if (usuario?.rol !== "club" || !usuario.cuenta_activa) {
+    return { error: "Tenés que iniciar sesión como club para eliminar una oferta." };
+  }
+
+  const id = String(ofertaId ?? "");
+  if (!id) {
+    return { error: "Identificador de oferta inválido." };
+  }
+
+  const [{ data: oferta }, { data: postulaciones, error: errorPostulaciones }] = await Promise.all([
+    supabase
+      .from("ofertas_laborales")
+      .select("id, club_id, puesto_buscado, posicion_juego, perfiles_club(nombre_club)")
+      .eq("id", id)
+      .maybeSingle(),
+    supabase
+      .from("postulaciones")
+      .select("candidato_id, postulado_por_representante_id")
+      .eq("oferta_id", id),
+  ]);
+
+  if (!oferta || oferta.club_id !== usuario.id) {
+    return { error: "Esta oferta no pertenece a tu club." };
+  }
+
+  if (errorPostulaciones) {
+    return { error: "No se pudo verificar si la oferta tiene postulantes. Intentá nuevamente." };
+  }
+
+  const { puedeEliminar, motivoBloqueo } = validarEliminacionOferta(oferta, postulaciones?.length ?? 0);
+  if (!puedeEliminar) {
+    return { error: motivoBloqueo };
+  }
+
+  // El aviso se registra antes del borrado: después, la postulación ya no existe.
+  if (postulaciones?.length) {
+    const { error: errorAviso } = await supabase.from("avisos_ofertas_eliminadas").insert(
+      postulaciones.map((postulacion) => ({
+        candidato_id: postulacion.candidato_id,
+        representante_id: postulacion.postulado_por_representante_id,
+        club_id: usuario.id,
+        nombre_club: oferta.perfiles_club?.nombre_club ?? "El club",
+        titulo_oferta: tituloDeOferta(oferta),
+      })),
+    );
+
+    if (errorAviso) {
+      return { error: "No se pudo avisar a los postulantes, así que la oferta no se eliminó. Intentá nuevamente." };
+    }
+  }
+
+  const { error } = await supabase
+    .from("ofertas_laborales")
+    .delete()
+    .eq("id", id)
+    .eq("club_id", usuario.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/mis-ofertas");
+  revalidatePath("/ofertas");
+  revalidatePath("/mis-postulaciones");
+  revalidatePath("/mi-cartera");
+  revalidatePath("/perfil-publico-club");
+  revalidatePath("/admin");
+  revalidatePath("/admin/metricas");
+  return { exito: true };
+}
+
+/** Título legible de la oferta, para que el aviso siga teniendo sentido una vez borrada. */
+function tituloDeOferta(oferta) {
+  const puesto = ETIQUETAS_PUESTO_PROFESIONAL[oferta?.puesto_buscado] ?? "Oferta laboral";
+  return oferta?.posicion_juego ? `${puesto} — ${oferta.posicion_juego}` : puesto;
 }
 
 async function obtenerUsuarioConRol(supabase) {

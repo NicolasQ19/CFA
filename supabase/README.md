@@ -16,6 +16,8 @@ Después de aplicar SQL, comprobar con sesiones de club y administrador: complet
 
 ## Notificaciones de postulaciones
 
+Ejecutar **`migrations/20261102_aviso_cambio_descripcion_oferta.sql`** para que candidatos y representantes reciban un aviso cuando el club edita la descripción de una oferta ya publicada o pausada. La migración agrega `ofertas_laborales.descripcion_actualizada_en` y un trigger que la completa solo en esos estados: la edición previa a la primera publicación no genera aviso porque todavía no hay postulantes. El aviso aparece si el cambio es posterior a la postulación y enlaza al detalle público de la oferta.
+
 La campana del navbar está disponible para clubes, candidatos y representantes. El club recibe avisos de las postulaciones que siguen en estado `postulado`, con el nombre del candidato y un enlace a su ficha en Postulantes. También incluye las enviadas por representantes. Al cambiar el estado, la postulación sale de los avisos pendientes del club.
 
 El candidato ve el último estado de cada postulación actualizada, con el club, la oferta y la fecha del cambio. No se genera un aviso inicial al postularse, pero sí se muestra si el club vuelve a cambiarla a `postulado`. Los avisos reflejan el estado actual, sin guardar un historial de estados. Las notas y etapas privadas de `seguimiento_club` no generan avisos.
@@ -136,4 +138,49 @@ Ejecutar una vez **`migrations/20261030_proteger_edicion_y_cierre_ofertas.sql`**
 
 - Cerrar una oferta es definitivo para el club (no puede reabrirse ni editarse).
 - El puesto, posición, categoría, tipo de contrato y provincia solo pueden modificarse mientras la oferta esté en `pendiente_moderacion` o `rechazada` y no registre postulantes.
-- Editar la descripción de una oferta publicada o pausada mantiene fijas sus condiciones principales y vuelve a enviarla a `pendiente_moderacion`.
+- Editar la descripción de una oferta publicada o pausada mantiene fijas sus condiciones principales.
+
+Ejecutar después **`migrations/20261101_editar_descripcion_sin_remoderacion.sql`**: la moderación previa queda limitada a la primera publicación. Una oferta `publicada` o `pausada` puede corregir su descripción sin salir del listado público ni volver a `pendiente_moderacion`; solo las ofertas `pendiente_moderacion` y `rechazada` siguen obligadas a pasar por administración antes de publicarse.
+
+## Planes de suscripción
+
+Ejecutar **`migrations/20261103_suscripciones.sql`**. Crea el enum `plan_suscripcion` (`gratuito` / `pago`), la tabla `suscripciones` (una fila por usuario, con `inicia_en`, `vence_en`, `activada_por` y `observaciones`) y la función `public.plan_vigente(uuid)`, que devuelve `gratuito` cuando no hay fila o cuando el plan pago venció.
+
+El plan se guarda con un único valor por usuario: los cupos concretos se derivan de la combinación (rol, plan) en `src/lib/suscripciones.js`, de modo que no puede existir un candidato con plan de club. Cupos del plan gratuito: 3 ofertas activas para el club, 3 postulaciones mensuales para el candidato y 6 para el representante. El plan pago no tiene tope.
+
+La activación es manual: cada usuario solo lee su propia suscripción y únicamente un administrador activo (`public.es_administrador_activo()`) puede crearla, modificarla o darla de baja. Un plan vencido no borra nada: el club que quedó por encima del cupo conserva sus ofertas, pero no puede publicar nuevas hasta bajar del límite.
+
+Ejecutar después **`migrations/20261104_limite_ofertas_activas_plan.sql`**, que aplica el cupo en la base: `public.limite_ofertas_activas_del_plan(uuid)` devuelve 3 para el plan gratuito y `null` (sin tope) para el pago, y el trigger `controlar_cupo_ofertas_club` rechaza crear una oferta o reactivar una pausada por encima del límite. Solo cuentan los estados `pendiente_moderacion`, `publicada` y `pausada`: las cerradas y rechazadas liberan cupo. Un cambio de estado entre dos estados que ya ocupaban cupo no vuelve a validarse, para que la moderación del administrador no quede bloqueada.
+
+## Eliminar ofertas del club
+
+Ejecutar **`migrations/20261105_eliminar_oferta_sin_postulantes.sql`**. El club puede eliminar definitivamente cualquier oferta propia desde Mis ofertas, en cualquier estado y tenga o no candidatos postulados. Como `postulaciones` depende de la oferta con `on delete cascade`, el borrado se lleva también las postulaciones recibidas.
+
+Para que los candidatos no pierdan el rastro en silencio, la migración crea `avisos_ofertas_eliminadas`: antes de borrar, la acción registra un aviso por postulante con el nombre del club y el título de la oferta, y ese aviso sobrevive a la oferta borrada. Si el aviso no puede registrarse, la oferta no se elimina. Cada destinatario lee solo sus avisos; el club únicamente puede insertarlos a su propio nombre y nadie puede editarlos ni borrarlos. Candidatos y representantes los ven en la campana de notificaciones.
+
+Si la migración anterior de este archivo ya se había aplicado, el script elimina el trigger `proteger_eliminacion_oferta_club` que bloqueaba el borrado con postulantes. Eliminar una oferta libera cupo del plan.
+
+## Alta y baja del plan Pro
+
+Ejecutar **`migrations/20261106_suscripcion_autogestionada.sql`**. Hace dos cosas:
+
+1. Corrige el mensaje del cupo de ofertas, que también lee el administrador al moderar: ahora dice «El club alcanzó el número máximo de ofertas publicadas según su plan (3)» en lugar de hablarle en segunda persona a quien modera.
+2. Agrega `public.activar_plan_pago(meses)` y `public.cancelar_plan_pago()`, funciones `security definer` que solo tocan la fila del usuario autenticado. Así la pantalla `/planes` puede dar de alta y de baja el plan sin abrir la escritura directa de `suscripciones`, que sigue reservada al administrador. La duración se limita a entre 1 y 12 meses y renovar un plan vigente suma al tiempo restante.
+
+El cobro está simulado: no hay pasarela de pago. Dar de baja devuelve la cuenta al plan gratuito sin borrar ofertas, postulaciones ni representados.
+
+## Cupo mensual de postulaciones
+
+Ejecutar **`migrations/20261107_cupo_postulaciones_mensuales.sql`**. Agrega `public.limite_postulaciones_del_plan(uuid, text)` (3 para el candidato gratuito, 6 para el representante gratuito, `null` para el plan pago) y el trigger `controlar_cupo_postulaciones`, que valida cada alta.
+
+El cupo lo consume quien envía la postulación: las que manda un representante descuentan de su plan y no del cupo del candidato representado. La ventana es el mes calendario en UTC (`date_trunc('month', now())`), así que se renueva el día 1. Se cuenta por envío: cancelar una postulación no devuelve el cupo del mes, para que el límite no se pueda reciclar.
+
+En la aplicación, el candidato ve el bloqueo al postularse desde el detalle de la oferta y el representante al postular a alguien de su cartera; en ambos casos el mensaje incluye un enlace a `/planes`.
+
+## Panel de suscripciones e indicadores de consumo
+
+No requiere migraciones nuevas. `/admin/suscripciones` lista las cuentas de club, candidato y representante con su plan vigente y su vencimiento, y permite activar, extender o dar de baja el plan Pro. La escritura la hace el administrador contra `suscripciones` por RLS; la acción valida además el rol de destino, la duración (1, 3, 6 o 12 meses) y que no sea su propia cuenta.
+
+Cuando el cambio lo hizo la administración y no el propio usuario (`activada_por <> usuario_id`), la cuenta recibe el aviso en su campana con enlace a `/planes`. Las altas que el usuario hace desde `/planes` no generan aviso, porque ya las conoce.
+
+Mis ofertas, Mis postulaciones y Mi cartera muestran el consumo del cupo («2 de 3 ofertas activas»), resaltado en ámbar cuando se agotó, con enlace a `/planes`. Con plan Pro, el indicador informa que no hay tope.

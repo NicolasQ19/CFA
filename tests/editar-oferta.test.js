@@ -4,6 +4,7 @@ import {
   obtenerReglasEdicionOferta,
   validarDatosOferta,
   validarEdicionOferta,
+  validarEliminacionOferta,
 } from "../src/lib/editar-oferta.js";
 
 function formulario(valores) {
@@ -152,8 +153,8 @@ test("validarEdicionOferta impide cambiar el puesto en ofertas publicadas o con 
   assert.match(intentoEnRechazadaConPostulantes.error, /no pueden modificarse/i);
 });
 
-test("validarEdicionOferta en oferta publicada o pausada solo actualiza descripción y la reenvía a pendiente_moderacion", () => {
-  const resultado = validarEdicionOferta({
+test("validarEdicionOferta en oferta publicada o pausada solo actualiza la descripción y conserva el estado", () => {
+  const publicada = validarEdicionOferta({
     datosFormulario: formulario({
       descripcion: "Se suma disponibilidad para entrenamientos en turno mañana.",
     }),
@@ -161,9 +162,31 @@ test("validarEdicionOferta en oferta publicada o pausada solo actualiza descripc
     totalPostulantes: 4,
   });
 
-  assert.deepEqual(resultado, {
+  assert.deepEqual(publicada, {
     datos: {
       descripcion: "Se suma disponibilidad para entrenamientos en turno mañana.",
+    },
+  });
+
+  const pausada = validarEdicionOferta({
+    datosFormulario: formulario({ descripcion: "Búsqueda en pausa, se actualizan requisitos." }),
+    ofertaActual: { ...OFERTA_BASE, estado: "pausada" },
+    totalPostulantes: 0,
+  });
+
+  assert.equal(pausada.datos.estado, undefined);
+});
+
+test("validarEdicionOferta reenvía a moderación solo las ofertas rechazadas con postulantes", () => {
+  const resultado = validarEdicionOferta({
+    datosFormulario: formulario({ descripcion: "Descripción corregida tras el rechazo." }),
+    ofertaActual: { ...OFERTA_BASE, estado: "rechazada" },
+    totalPostulantes: 3,
+  });
+
+  assert.deepEqual(resultado, {
+    datos: {
+      descripcion: "Descripción corregida tras el rechazo.",
       estado: "pendiente_moderacion",
     },
   });
@@ -183,4 +206,24 @@ test("validarEdicionOferta rechaza editar ofertas cerradas y evita reenviar a mo
     totalPostulantes: 1,
   });
   assert.match(sinCambios.error, /No realizaste cambios/i);
+});
+
+test("validarEliminacionOferta permite borrar en cualquier estado y marca cuándo hay que avisar", () => {
+  assert.deepEqual(validarEliminacionOferta(OFERTA_BASE, 0), {
+    puedeEliminar: true, requiereAvisoPostulantes: false, totalPostulantes: 0, motivoBloqueo: null,
+  });
+
+  const conPostulantes = validarEliminacionOferta({ ...OFERTA_BASE, estado: "publicada" }, 4);
+  assert.equal(conPostulantes.puedeEliminar, true);
+  assert.equal(conPostulantes.requiereAvisoPostulantes, true);
+  assert.equal(conPostulantes.totalPostulantes, 4);
+
+  assert.equal(validarEliminacionOferta({ ...OFERTA_BASE, estado: "cerrada" }, 2).puedeEliminar, true);
+
+  // Un conteo inválido no inventa postulantes ni los oculta.
+  assert.equal(validarEliminacionOferta(OFERTA_BASE, "dos").totalPostulantes, 0);
+
+  const sinOferta = validarEliminacionOferta(null, 0);
+  assert.equal(sinOferta.puedeEliminar, false);
+  assert.match(sinOferta.motivoBloqueo, /No se encontró/);
 });

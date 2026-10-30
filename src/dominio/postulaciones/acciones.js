@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 import { puestoCompatible } from "@/lib/postulacion-cartera";
 import { retirarPostulacionPropia } from "@/lib/cancelar-postulacion";
+import { obtenerCupoPostulaciones } from "@/lib/cupo-suscripciones";
 
 export async function cancelarMiPostulacion(postulacionId) {
   const supabase = await crearClienteServidor();
@@ -75,6 +76,12 @@ export async function postularseAOferta(ofertaId) {
 
   if (yaExiste) {
     return { error: "Ya te postulaste a esta oferta." };
+  }
+
+  // El plan gratuito limita las postulaciones por mes; el trigger lo repite en la base.
+  const cupo = await obtenerCupoPostulaciones(supabase, user.id, "candidato");
+  if (cupo.fallo || !cupo.permitido) {
+    return { error: cupo.fallo ?? cupo.error, limitePlan: cupo.limitePlan ?? false };
   }
 
   const { data: nuevaPostulacion, error } = await supabase.from("postulaciones").insert({

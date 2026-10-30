@@ -1,5 +1,36 @@
 import { ETIQUETAS_ESTADO_POSTULACION, ETIQUETAS_PUESTO_PROFESIONAL } from "../tipos/dominio.js";
 import { listarFilasNotificaciones } from "./lectura-notificaciones.js";
+import { NOMBRES_PLAN_POR_ROL, obtenerPlanVigente } from "./suscripciones.js";
+
+/**
+ * Aviso del plan cuando lo cambió la administración (no el propio usuario):
+ * la cuenta no se entera de otra forma de que le activaron o le dieron de baja el Pro.
+ */
+async function avisoDePlan(cliente, usuario) {
+  const { data, error } = await cliente.from("suscripciones")
+    .select("plan, vence_en, activada_por, actualizada_en, observaciones")
+    .eq("usuario_id", usuario.id)
+    .maybeSingle();
+
+  if (error || !data || !data.actualizada_en) return [];
+  if (!data.activada_por || data.activada_por === usuario.id) return [];
+
+  const nombres = NOMBRES_PLAN_POR_ROL[usuario.rol];
+  if (!nombres) return [];
+
+  const esPago = obtenerPlanVigente(data) === "pago";
+
+  return [{
+    id: `plan-${usuario.id}-${data.actualizada_en}`,
+    origen: "Administración",
+    mensaje: esPago
+      ? `activó tu plan ${nombres.pago}.${data.observaciones ? ` ${data.observaciones}` : ""}`
+      : `dio de baja tu plan ${nombres.pago}. Volviste a los límites de ${nombres.gratuito}.`,
+    detalle: "Plan de tu cuenta",
+    fecha: data.actualizada_en,
+    href: "/planes",
+  }];
+}
 
 function tituloOferta(oferta) {
   const puesto = ETIQUETAS_PUESTO_PROFESIONAL[oferta?.puesto_buscado] ?? "Oferta laboral";
@@ -48,9 +79,11 @@ export async function obtenerAvisosPostulaciones(cliente, usuario) {
       fecha: oferta.actualizada_en,
       href: `/mis-ofertas#oferta-${oferta.id}`,
     }));
+    const avisosPlan = await avisoDePlan(cliente, usuario);
+
     return {
-      total: postulaciones.length + decisiones.length + avisosVerificacion.length,
-      notificaciones: [...postulaciones, ...decisiones, ...avisosVerificacion]
+      total: postulaciones.length + decisiones.length + avisosVerificacion.length + avisosPlan.length,
+      notificaciones: [...postulaciones, ...decisiones, ...avisosVerificacion, ...avisosPlan]
         .sort((a, b) => Date.parse(b.fecha) - Date.parse(a.fecha) || a.id.localeCompare(b.id)),
     };
   }
@@ -63,13 +96,29 @@ export async function obtenerAvisosPostulaciones(cliente, usuario) {
   for (let desde = 0; ; desde += 500) {
     const { data, error } = await cliente.from("postulaciones")
       .select(esRepresentante
-        ? "id, estado, creada_en, actualizada_en, perfiles_candidato(usuarios(nombre_completo)), ofertas_laborales(puesto_buscado, posicion_juego, perfiles_club(nombre_club))"
-        : "id, estado, creada_en, actualizada_en, ofertas_laborales(puesto_buscado, posicion_juego, perfiles_club(nombre_club))")
+        ? "id, oferta_id, estado, creada_en, actualizada_en, perfiles_candidato(usuarios(nombre_completo)), ofertas_laborales(puesto_buscado, posicion_juego, descripcion_actualizada_en, perfiles_club(nombre_club))"
+        : "id, oferta_id, estado, creada_en, actualizada_en, ofertas_laborales(puesto_buscado, posicion_juego, descripcion_actualizada_en, perfiles_club(nombre_club))")
       .eq(esRepresentante ? "postulado_por_representante_id" : "candidato_id", usuario.id)
       .order("actualizada_en", { ascending: false }).order("id").range(desde, desde + 499);
     if (error) throw error;
     const filas = data ?? [];
     for (const fila of filas) {
+      const descripcionCambiada = fila.ofertas_laborales?.descripcion_actualizada_en;
+      // La descripción de la oferta cambió después de que se envió esta postulación.
+      if (descripcionCambiada && Date.parse(descripcionCambiada) > Date.parse(fila.creada_en)) {
+        total += 1;
+        notificaciones.push({
+          id: `descripcion-${fila.id}`,
+          origen: fila.ofertas_laborales?.perfiles_club?.nombre_club ?? "El club",
+          mensaje: esRepresentante
+            ? `cambió la descripción de una oferta a la que postulaste a ${fila.perfiles_candidato?.usuarios?.nombre_completo ?? "tu representado"}.`
+            : "cambió la descripción de la oferta a la que te postulaste.",
+          detalle: tituloOferta(fila.ofertas_laborales),
+          fecha: descripcionCambiada,
+          href: `/ofertas/${fila.oferta_id}`,
+        });
+      }
+
       const tieneCambio = fila.estado !== "postulado" || Date.parse(fila.actualizada_en) > Date.parse(fila.creada_en);
       if (!tieneCambio) continue;
       total += 1;
@@ -87,6 +136,32 @@ export async function obtenerAvisosPostulaciones(cliente, usuario) {
     }
     if (filas.length < 500) break;
   }
+
+  // La oferta eliminada ya no existe: el aviso es lo único que queda de esa postulación.
+  const bajas = await listarFilasNotificaciones(() => cliente.from("avisos_ofertas_eliminadas")
+    .select("id, nombre_club, titulo_oferta, creada_en")
+    .eq(esRepresentante ? "representante_id" : "candidato_id", usuario.id)
+    .order("creada_en", { ascending: false }).order("id"));
+
+  for (const baja of bajas ?? []) {
+    total += 1;
+    notificaciones.push({
+      id: `baja-${baja.id}`,
+      origen: baja.nombre_club,
+      mensaje: esRepresentante
+        ? "eliminó una oferta en la que habías postulado a un representado. La postulación ya no figura en tu cartera."
+        : "eliminó la oferta a la que te habías postulado. La postulación ya no figura en tu historial.",
+      detalle: baja.titulo_oferta,
+      fecha: baja.creada_en,
+      href: esRepresentante ? "/mi-cartera" : "/mis-postulaciones",
+    });
+  }
+
+  for (const aviso of await avisoDePlan(cliente, usuario)) {
+    total += 1;
+    notificaciones.push(aviso);
+  }
+
   return { total, notificaciones };
 }
 

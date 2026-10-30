@@ -3,6 +3,10 @@ import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerOfertasConConteoPostulantes, obtenerResumenClub } from "@/dominio/postulaciones/consultas-club";
 import { BotonesEstadoOferta } from "@/dominio/ofertas/BotonesEstadoOferta";
+import { BotonEliminarOferta } from "@/dominio/ofertas/BotonEliminarOferta";
+import { IndicadorConsumoPlan } from "@/dominio/suscripciones/IndicadorConsumoPlan";
+import { obtenerCupoOfertasDelClub } from "@/lib/cupo-suscripciones";
+import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 import { ETIQUETAS_ESTADO_OFERTA, ETIQUETAS_PUESTO_PROFESIONAL } from "@/tipos/dominio";
 import styles from "./page.module.css";
 import { clubEstaVerificado } from "@/lib/verificacion-club";
@@ -16,7 +20,12 @@ export default async function PaginaMisOfertas() {
   if (usuario.rol !== "club") redirect("/");
   if (!clubEstaVerificado(usuario)) return <main className={styles.main}><h1 className={styles.titulo}>Mis ofertas</h1><EstadoVerificacionClub verificacion={usuario.verificacion_club} /></main>;
 
-  const [ofertas, actividad] = await Promise.all([obtenerOfertasConConteoPostulantes(usuario.id), obtenerResumenClub(usuario.id)]);
+  const supabase = await crearClienteServidor();
+  const [ofertas, actividad, cupo] = await Promise.all([
+    obtenerOfertasConConteoPostulantes(usuario.id),
+    obtenerResumenClub(usuario.id),
+    obtenerCupoOfertasDelClub(supabase, usuario.id),
+  ]);
 
   return (
     <main className={styles.main}>
@@ -31,6 +40,7 @@ export default async function PaginaMisOfertas() {
       </div>
 
       <p className={styles.descripcion}>Gestioná las búsquedas y el seguimiento de tu club.</p>
+      <IndicadorConsumoPlan rol="club" cupo={cupo} unidad="ofertas activas" unidadSingular="oferta activa" />
       <div className={styles.accesos}><Link href="/perfil-publico-club">Ver perfil del club →</Link><Link href="/mi-club">Editar datos institucionales →</Link></div>
       {actividad.error ? <p role="status">{actividad.error}</p> : <section className={styles.resumen} aria-label="Resumen de actividad">
         {[["activas", "Ofertas activas"], ["nuevas", "Postulaciones · últimos 7 días"], ["pendientes", "Sin revisar"], ["total", "Postulaciones totales"]].map(([clave, etiqueta]) => <div key={clave}><strong>{actividad.resumen[clave]}</strong><span>{etiqueta}</span></div>)}
@@ -80,6 +90,10 @@ export default async function PaginaMisOfertas() {
                 >
                   Ver postulantes
                 </Link>
+                <BotonEliminarOferta
+                  ofertaId={oferta.id}
+                  totalPostulantes={oferta.total_postulantes}
+                />
               </div>
             </div>
           </li>

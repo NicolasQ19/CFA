@@ -41,7 +41,7 @@ export function PostularRepresentado({ ofertaId, puestoOferta, cartera, postulac
     iniciarTransicion(async () => {
       const res = await postularCandidatoRepresentado(ofertaId, candidatoSeleccionado);
       if (res?.error) {
-        setMensaje({ error: res.error, exito: null });
+        setMensaje({ error: res.error, exito: null, limitePlan: Boolean(res.limitePlan) });
       } else {
         setMensaje({ error: null, exito: "✓ Candidato postulado con éxito a esta búsqueda." });
         setCandidatoSeleccionado("");
@@ -182,7 +182,12 @@ export function PostularRepresentado({ ofertaId, puestoOferta, cartera, postulac
         </form>
       )}
 
-      {mensaje.error && <p role="alert" className={styles.error}>{mensaje.error}</p>}
+      {mensaje.error && (
+        <p role="alert" className={styles.error}>
+          {mensaje.error}{" "}
+          {mensaje.limitePlan && <Link href="/planes" className={styles.enlaceCartera}>Ver planes y mejorar el mío</Link>}
+        </p>
+      )}
       {mensaje.exito && <p role="status" className={styles.exito}>{mensaje.exito}</p>}
 
       {postulacionesExistentes.length > 0 && (

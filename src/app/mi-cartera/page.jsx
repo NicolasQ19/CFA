@@ -9,6 +9,9 @@ import {
 import { BotonQuitarCartera } from "@/dominio/representantes/BotonGestionarCartera";
 import { CancelarPostulacion } from "@/dominio/representantes/CancelarPostulacion";
 import { edadCandidato } from "@/lib/postulacion-cartera";
+import { IndicadorConsumoPlan } from "@/dominio/suscripciones/IndicadorConsumoPlan";
+import { obtenerCupoPostulaciones } from "@/lib/cupo-suscripciones";
+import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 import {
   ETIQUETAS_PUESTO_PROFESIONAL,
   ETIQUETAS_ESTADO_POSTULACION,
@@ -37,8 +40,10 @@ export default async function PaginaMiCartera({ searchParams }) {
     redirect("/");
   }
 
-  const [cartera, postulaciones, parametros] = await Promise.all([
+  const supabase = await crearClienteServidor();
+  const [cartera, postulaciones, parametros, cupo] = await Promise.all([
     listarCarteraCandidatos(usuario.id), listarPostulacionesDeRepresentante(usuario.id), searchParams,
+    obtenerCupoPostulaciones(supabase, usuario.id, "representante"),
   ]);
   const filtros = Object.fromEntries(["nombre", "puesto", "estado"].map(campo => [campo, typeof parametros?.[campo] === "string" ? parametros[campo].trim() : ""]));
   const normalizar = texto => String(texto ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es-AR");
@@ -66,6 +71,13 @@ export default async function PaginaMiCartera({ searchParams }) {
           </Link>
         </div>
       </header>
+
+      <IndicadorConsumoPlan
+        rol="representante"
+        cupo={cupo}
+        unidad="postulaciones este mes"
+        unidadSingular="postulación este mes"
+      />
 
       <dl className={styles.resumen} aria-label="Resumen de tu cartera">
         <div><dt>Representados</dt><dd><strong>{cartera.length}</strong><span>Perfiles en tu cartera actual</span></dd></div>

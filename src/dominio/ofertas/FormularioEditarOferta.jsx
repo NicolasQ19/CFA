@@ -29,9 +29,7 @@ export function FormularioEditarOferta({ oferta }) {
 
       {reglas.requiereReenvioModeracion && (
         <p role="status" className={styles.avisoModeracion}>
-          {oferta.estado === "rechazada"
-            ? "Esta oferta fue rechazada. Al guardar los cambios volverá a enviarse a moderación."
-            : "Al guardar cambios en la descripción, la oferta volverá a enviarse a moderación antes de mostrarse nuevamente en el listado público."}
+          Esta oferta fue rechazada. Al guardar los cambios volverá a enviarse a moderación.
         </p>
       )}
 

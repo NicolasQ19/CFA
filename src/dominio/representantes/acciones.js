@@ -8,6 +8,7 @@ import { validarPresentacionRepresentante } from "@/lib/perfil-representante";
 import { puestoCompatible, validarDatosPersonalesRepresentado } from "@/lib/postulacion-cartera";
 import { retirarPostulacionDeCartera } from "@/lib/cancelar-postulacion";
 import { urlPublica } from "@/lib/club";
+import { obtenerCupoPostulaciones } from "@/lib/cupo-suscripciones";
 
 const BUCKET_FOTOS = "fotos-perfil";
 const TAMANIO_MAXIMO_FOTO = 2_000_000;
@@ -527,7 +528,13 @@ export async function postularCandidatoRepresentado(ofertaId, candidatoId) {
     return { error: "Este candidato ya se encuentra postulado a esta oferta." };
   }
 
-  // 4. Crear postulación
+  // 4. Cupo mensual del plan del representante; el trigger lo repite en la base.
+  const cupo = await obtenerCupoPostulaciones(supabase, user.id, "representante");
+  if (cupo.fallo || !cupo.permitido) {
+    return { error: cupo.fallo ?? cupo.error, limitePlan: cupo.limitePlan ?? false };
+  }
+
+  // 5. Crear postulación
   const { error } = await supabase.from("postulaciones").insert({
     oferta_id: ofertaId,
     candidato_id: candidatoId,

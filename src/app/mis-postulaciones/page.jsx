@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerPostulacionesCandidato } from "@/dominio/postulaciones/consultas";
 import { CancelarMiPostulacion } from "@/dominio/postulaciones/CancelarMiPostulacion";
+import { IndicadorConsumoPlan } from "@/dominio/suscripciones/IndicadorConsumoPlan";
+import { obtenerCupoPostulaciones } from "@/lib/cupo-suscripciones";
+import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 import { ETIQUETAS_PUESTO_PROFESIONAL } from "@/tipos/dominio";
 import styles from "./page.module.css";
 
@@ -43,12 +46,22 @@ export default async function PaginaMisPostulaciones() {
     redirect("/");
   }
 
-  const postulaciones = await obtenerPostulacionesCandidato(usuario.id);
+  const supabase = await crearClienteServidor();
+  const [postulaciones, cupo] = await Promise.all([
+    obtenerPostulacionesCandidato(usuario.id),
+    obtenerCupoPostulaciones(supabase, usuario.id, "candidato"),
+  ]);
 
   return (
     <main className={styles.main}>
       <h1 className={styles.titulo}>Mis postulaciones</h1>
       <p className={styles.subtitulo}>Seguí el estado de las ofertas a las que te postulaste.</p>
+      <IndicadorConsumoPlan
+        rol="candidato"
+        cupo={cupo}
+        unidad="postulaciones este mes"
+        unidadSingular="postulación este mes"
+      />
 
       {postulaciones.length === 0 ? (
         <div className={styles.vacio}>
