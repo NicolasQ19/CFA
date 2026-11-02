@@ -3,10 +3,11 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
+import { ejecutarCambioEstadoOferta } from "@/lib/cierre-oferta";
 import { validarDatosOferta, validarEdicionOferta, validarEliminacionOferta } from "@/lib/editar-oferta";
 import { comprobarClubVerificado } from "@/lib/verificacion-club";
 import { obtenerCupoOfertasDelClub } from "@/lib/cupo-suscripciones";
-import { ETIQUETAS_PUESTO_PROFESIONAL, TRANSICIONES_OFERTA_DEL_CLUB, TRANSICIONES_OFERTA_DEL_ADMIN } from "@/tipos/dominio";
+import { ETIQUETAS_PUESTO_PROFESIONAL, TRANSICIONES_OFERTA_DEL_ADMIN } from "@/tipos/dominio";
 
 /*El club publica una nueva oferta. Queda pendiente de moderación. */
 export async function crearOferta(
@@ -139,32 +140,26 @@ export async function cambiarEstadoDeOferta(ofertaId, nuevoEstado) {
   }
   if (!usuario.cuenta_activa || !(await comprobarClubVerificado(supabase, usuario.id))) return { error: "Tu club debe estar verificado para gestionar ofertas." };
 
-  const { data: oferta } = await supabase
-    .from("ofertas_laborales")
-    .select("id, club_id, estado")
-    .eq("id", ofertaId)
-    .maybeSingle();
+  const resultado = await ejecutarCambioEstadoOferta({
+    supabase,
+    ofertaId,
+    clubId: usuario.id,
+    nuevoEstado,
+  });
 
-  if (!oferta || oferta.club_id !== usuario.id) {
-    return { error: "Esta oferta no pertenece a tu club." };
-  }
-
-  if (!TRANSICIONES_OFERTA_DEL_CLUB[oferta.estado]?.includes(nuevoEstado)) {
-    return { error: "No se puede cambiar la oferta a ese estado." };
-  }
-
-  const { error } = await supabase
-    .from("ofertas_laborales")
-    .update({ estado: nuevoEstado, actualizada_en: new Date().toISOString() })
-    .eq("id", ofertaId);
-
-  if (error) {
-    return { error: error.message };
+  if (resultado.error) {
+    return { error: resultado.error };
   }
 
   revalidatePath("/mis-ofertas");
   revalidatePath("/ofertas");
   revalidatePath(`/ofertas/${ofertaId}`);
+  revalidatePath(`/mis-ofertas/${ofertaId}/postulantes`);
+  revalidatePath("/mis-postulaciones");
+  revalidatePath("/mi-cartera");
+  revalidatePath("/perfil-publico-club");
+  revalidatePath("/admin");
+  revalidatePath("/admin/metricas");
   return { exito: true };
 }
 
