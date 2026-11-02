@@ -37,9 +37,9 @@ try {
     grant usage on schema storage to anon, authenticated;
     grant select on storage.objects to anon, authenticated;
   `);
-  await db.exec(await sql("0001_esquema_inicial.sql"));
-  await db.exec(await sql("0002_seguridad_rls.sql"));
-  await db.exec(await sql("0003_bloquear_autorregistro_admin.sql"));
+  await db.exec(await sql("0001_esquema_inicial_tablas_indices_y_enums.sql"));
+  await db.exec(await sql("0002_politicas_rls_base_por_rol.sql"));
+  await db.exec(await sql("0003_bloquear_autorregistro_con_rol_administrador.sql"));
   await db.exec(`
     alter table public.perfiles_club add column localidad text, add column descripcion text,
       add column instalaciones text, add column sitio_web text, add column instagram text, add column facebook text;
@@ -54,7 +54,7 @@ try {
   await db.query("insert into public.perfiles_club(usuario_id, nombre_club, provincia, categoria, localidad) values($1, 'Club Prueba', 'Buenos Aires', 'Regional', 'Hurlingham')", [club]);
   await db.query("insert into public.perfiles_candidato(usuario_id, puesto, provincia) values($1, 'jugador', 'Buenos Aires')", [candidato]);
   await db.exec("insert into storage.objects values(gen_random_uuid(), 'curriculums', 'prueba/cv.pdf')");
-  await db.exec(await sql("20261023_verificacion_clubes.sql"));
+  await db.exec(await sql("20261023_verificacion_de_clubes_y_permisos_derivados.sql"));
   console.log("OK: migración aplicada sobre PostgreSQL aislado.");
 
   await actuar(club);

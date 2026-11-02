@@ -9,6 +9,9 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    // Salida del servidor de desarrollo (next dev --port 3000 escribe acá).
+    // Sin esta línea eslint lintea los bundles generados por webpack.
+    ".next-dev/**",
   ]),
 ]);
 

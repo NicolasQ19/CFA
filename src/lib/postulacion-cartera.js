@@ -1,15 +1,10 @@
 import { ETIQUETAS_PUESTO_PROFESIONAL } from "../tipos/dominio.js";
+import { edadCandidato } from "./edad.js";
+
+export { edadCandidato };
 
 export function puestoCompatible(puestoCandidato, puestoOferta) {
   return Object.hasOwn(ETIQUETAS_PUESTO_PROFESIONAL, puestoOferta) && puestoCandidato === puestoOferta;
-}
-
-export function edadCandidato(fecha, hoy = new Date()) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha ?? "")) return null;
-  const [anio, mes, dia] = fecha.split("-").map(Number);
-  const nacimiento = new Date(anio, mes - 1, dia);
-  if (nacimiento.getFullYear() !== anio || nacimiento.getMonth() !== mes - 1 || nacimiento.getDate() !== dia || nacimiento > hoy) return null;
-  return hoy.getFullYear() - anio - (hoy.getMonth() + 1 < mes || (hoy.getMonth() + 1 === mes && hoy.getDate() < dia) ? 1 : 0);
 }
 
 export function validarDatosPersonalesRepresentado(formulario) {

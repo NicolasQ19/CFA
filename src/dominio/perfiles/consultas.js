@@ -1,4 +1,5 @@
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
+import { ordenParaConsulta, rangoDeNacimiento } from "@/lib/busqueda-candidatos";
 
 export async function obtenerPerfilClub(usuarioId) {
   const supabase = await crearClienteServidor();
@@ -26,7 +27,8 @@ export async function obtenerPerfilCandidato(usuarioId) {
 
 /**
  * Búsqueda de candidatos para clubes: solo perfiles visibles de cuentas activas,
- * filtrando por nombre, puesto, provincia y (para jugadores) posición.
+ * filtrando por nombre, puesto, provincia, rango de edad y (para jugadores)
+ * posición, con el orden que haya elegido el club.
  */
 export async function buscarCandidatos(filtros) {
   const supabase = await crearClienteServidor();
@@ -42,11 +44,17 @@ export async function buscarCandidatos(filtros) {
       posicion_juego,
       anios_experiencia,
       especialidad,
+      fecha_nacimiento,
       usuarios!inner (nombre_completo, cuenta_activa)
     `)
     .eq("perfil_visible", true)
-    .eq("usuarios.cuenta_activa", true)
-    .order("actualizado_en", { ascending: false })
+    .eq("usuarios.cuenta_activa", true);
+
+  const { columna, ascendente, ausentesAlFinal } = ordenParaConsulta(filtros.orden);
+  consulta = consulta
+    // `nullsFirst` solo donde hay nulos posibles (fecha_nacimiento): los perfiles
+    // sin fecha quedan al final en vez de encabezar el orden por edad.
+    .order(columna, { ascending: ascendente, ...(ausentesAlFinal ? { nullsFirst: false } : {}) })
     .limit(50);
 
   if (filtros.nombre) {
@@ -57,6 +65,11 @@ export async function buscarCandidatos(filtros) {
   if (filtros.puesto) consulta = consulta.eq("puesto", filtros.puesto);
   if (filtros.provincia) consulta = consulta.eq("provincia", filtros.provincia);
   if (filtros.posicion) consulta = consulta.eq("posicion_juego", filtros.posicion);
+
+  // El rango de edad se traduce a fechas para que filtre Postgres y no el servidor.
+  const { nacidoDesde, nacidoHasta } = rangoDeNacimiento(filtros);
+  if (nacidoDesde) consulta = consulta.gte("fecha_nacimiento", nacidoDesde);
+  if (nacidoHasta) consulta = consulta.lte("fecha_nacimiento", nacidoHasta);
 
   const { data, error } = await consulta;
 

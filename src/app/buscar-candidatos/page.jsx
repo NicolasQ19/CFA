@@ -11,6 +11,14 @@ import {
   PROVINCIAS_ARGENTINA,
   esPuestoDeCuerpoTecnico,
 } from "@/tipos/dominio";
+import {
+  EDAD_MAXIMA_BUSQUEDA,
+  EDAD_MINIMA_BUSQUEDA,
+  ORDENES_BUSQUEDA,
+  hayFiltrosAplicados,
+  normalizarFiltrosCandidatos,
+} from "@/lib/busqueda-candidatos";
+import { edadCandidato } from "@/lib/edad";
 import styles from "./page.module.css";
 
 /** Búsqueda de candidatos para clubes. Solo muestra perfiles que el candidato marcó como visibles. */
@@ -21,15 +29,9 @@ export default async function PaginaBuscarCandidatos({ searchParams }) {
   if (usuario.rol !== "club" && usuario.rol !== "administrador") redirect("/");
   if (usuario.rol === "club" && !clubEstaVerificado(usuario)) redirect("/mi-club#verificacion");
 
-  const filtros = await searchParams;
-  const nombre = filtros?.nombre?.trim() || undefined;
-
-  const candidatos = await buscarCandidatos({
-    nombre,
-    puesto: filtros?.puesto || undefined,
-    provincia: filtros?.provincia || undefined,
-    posicion: filtros?.posicion || undefined,
-  });
+  const { filtros, rangoInvertido } = normalizarFiltrosCandidatos(await searchParams);
+  const candidatos = await buscarCandidatos(filtros);
+  const hoy = new Date();
 
   return (
     <main className={styles.main}>
@@ -42,12 +44,13 @@ export default async function PaginaBuscarCandidatos({ searchParams }) {
         <input
           name="nombre"
           placeholder="Nombre"
-          defaultValue={nombre ?? ""}
+          defaultValue={filtros.nombre ?? ""}
           className={styles.entradaFiltro}
+          aria-label="Buscar por nombre"
         />
         <SelectorDesplegable
           nombre="puesto"
-          valorInicial={filtros?.puesto ?? ""}
+          valorInicial={filtros.puesto ?? ""}
           placeholder="Todos los puestos"
           opciones={[
             { valor: "", texto: "Todos los puestos" },
@@ -56,7 +59,7 @@ export default async function PaginaBuscarCandidatos({ searchParams }) {
         />
         <SelectorDesplegable
           nombre="posicion"
-          valorInicial={filtros?.posicion ?? ""}
+          valorInicial={filtros.posicion ?? ""}
           placeholder="Cualquier posición"
           opciones={[
             { valor: "", texto: "Cualquier posición" },
@@ -65,20 +68,64 @@ export default async function PaginaBuscarCandidatos({ searchParams }) {
         />
         <SelectorDesplegable
           nombre="provincia"
-          valorInicial={filtros?.provincia ?? ""}
+          valorInicial={filtros.provincia ?? ""}
           placeholder="Todas las provincias"
           opciones={[
             { valor: "", texto: "Todas las provincias" },
             ...PROVINCIAS_ARGENTINA.map((provincia) => ({ valor: provincia, texto: provincia })),
           ]}
         />
+        <div className={styles.rangoEdad} role="group" aria-labelledby="etiqueta-edad">
+          <span id="etiqueta-edad" className={styles.etiquetaRango}>Edad</span>
+          <input
+            name="edadMinima"
+            type="number"
+            inputMode="numeric"
+            min={EDAD_MINIMA_BUSQUEDA}
+            max={EDAD_MAXIMA_BUSQUEDA}
+            placeholder="Desde"
+            defaultValue={filtros.edadMinima ?? ""}
+            className={styles.entradaEdad}
+            aria-label={`Edad mínima, entre ${EDAD_MINIMA_BUSQUEDA} y ${EDAD_MAXIMA_BUSQUEDA}`}
+          />
+          <span aria-hidden="true">–</span>
+          <input
+            name="edadMaxima"
+            type="number"
+            inputMode="numeric"
+            min={EDAD_MINIMA_BUSQUEDA}
+            max={EDAD_MAXIMA_BUSQUEDA}
+            placeholder="Hasta"
+            defaultValue={filtros.edadMaxima ?? ""}
+            className={styles.entradaEdad}
+            aria-label={`Edad máxima, entre ${EDAD_MINIMA_BUSQUEDA} y ${EDAD_MAXIMA_BUSQUEDA}`}
+          />
+        </div>
+        <SelectorDesplegable
+          nombre="orden"
+          valorInicial={filtros.orden}
+          placeholder="Ordenar por"
+          opciones={Object.entries(ORDENES_BUSQUEDA).map(([valor, texto]) => ({ valor, texto }))}
+        />
         <button type="submit" className={styles.botonFiltrar}>
           Buscar
         </button>
+        {hayFiltrosAplicados(filtros) && (
+          <Link href="/buscar-candidatos" className={styles.limpiar}>
+            Limpiar filtros
+          </Link>
+        )}
       </form>
+
+      {rangoInvertido && (
+        <p className={styles.aviso} role="status">
+          La edad mínima era mayor que la máxima, así que se ignoró el rango.
+        </p>
+      )}
 
       <p className={styles.resultados}>
         {candidatos.length === 1 ? "1 candidato" : `${candidatos.length} candidatos`}
+        {candidatos.length === 50 && " (se muestran los primeros 50; acotá la búsqueda para ver menos)"}
       </p>
 
       {candidatos.length === 0 ? (
@@ -89,7 +136,6 @@ export default async function PaginaBuscarCandidatos({ searchParams }) {
             <li key={candidato.usuario_id}>
               <Link href={`/perfil-publico?id=${candidato.usuario_id}`} className={styles.tarjeta}>
                 {candidato.foto_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <ImagenAmpliable src={candidato.foto_url} alt="" className={styles.foto} />
                 ) : (
                   <div className={styles.fotoVacia}>
@@ -100,7 +146,9 @@ export default async function PaginaBuscarCandidatos({ searchParams }) {
                   <span className={styles.nombre}>{candidato.usuarios.nombre_completo}</span>
                   <span className={styles.puesto}>{descripcionDePuesto(candidato)}</span>
                   <span className={styles.detalle}>
-                    {[candidato.provincia, candidato.club_actual].filter(Boolean).join(" · ")}
+                    {[descripcionDeEdad(candidato, hoy), candidato.provincia, candidato.club_actual]
+                      .filter(Boolean)
+                      .join(" · ")}
                   </span>
                 </div>
               </Link>
@@ -110,6 +158,12 @@ export default async function PaginaBuscarCandidatos({ searchParams }) {
       )}
     </main>
   );
+}
+
+/** "24 años", o nada si el candidato no declaró su fecha de nacimiento. */
+function descripcionDeEdad(candidato, hoy) {
+  const edad = edadCandidato(candidato.fecha_nacimiento, hoy);
+  return edad === null ? null : `${edad} ${edad === 1 ? "año" : "años"}`;
 }
 
 /** "Jugador — Extremo" o "Director Técnico · 8 años de experiencia". */

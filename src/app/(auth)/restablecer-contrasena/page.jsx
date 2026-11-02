@@ -17,19 +17,16 @@ function ContenidoRestablecerContrasena() {
   const tokenHashUrl = parametros.get("token_hash");
   const tipoUrl = parametros.get("type");
 
-  const [estadoSesion, setEstadoSesion] = useState(
-    enlaceMarcadoInvalido ? "invalido" : "verificando"
-  );
+  const [estadoVerificacion, setEstadoVerificacion] = useState("verificando");
+  // Si la URL ya trae ?enlace_invalido=1 no hay nada que verificar: se deriva del parámetro.
+  const estadoSesion = enlaceMarcadoInvalido ? "invalido" : estadoVerificacion;
   const [estado, ejecutarActualizacion, estaEnviando] = useActionState(
     actualizarContrasenaRecuperada,
     ESTADO_INICIAL
   );
 
   useEffect(() => {
-    if (enlaceMarcadoInvalido) {
-      setEstadoSesion("invalido");
-      return;
-    }
+    if (enlaceMarcadoInvalido) return undefined;
 
     let cancelado = false;
     const supabase = crearClienteNavegador();
@@ -42,7 +39,7 @@ function ContenidoRestablecerContrasena() {
         (evento === "PASSWORD_RECOVERY" || evento === "SIGNED_IN") &&
         sesion?.user
       ) {
-        setEstadoSesion("listo");
+        setEstadoVerificacion("listo");
       }
     });
 
@@ -61,7 +58,7 @@ function ContenidoRestablecerContrasena() {
       } = await supabase.auth.getUser();
 
       if (cancelado) return;
-      setEstadoSesion(user ? "listo" : "invalido");
+      setEstadoVerificacion(user ? "listo" : "invalido");
     }
 
     verificarSesionRecuperacion();

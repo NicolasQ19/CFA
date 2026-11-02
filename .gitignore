@@ -35,6 +35,8 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 .env.local*
+# Plantilla sin secretos: debe viajar en el repo para que un clon sepa qué variables definir.
+!env.example
 # vercel
 .vercel
 

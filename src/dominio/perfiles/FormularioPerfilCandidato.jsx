@@ -31,7 +31,7 @@ export function FormularioPerfilCandidato({ perfilExistente, nombreCandidato }) 
 
   function leerBorrador() {
     const datos = new FormData(formularioRef.current);
-    const campos = { puesto: "puesto", provincia: "provincia", club_actual: "clubActual", trayectoria: "trayectoria", formacion_academica: "formacionAcademica", presentacion: "presentacion", disponibilidad: "disponibilidad", situacion_club: "situacionClub", incorporacion_desde: "incorporacionDesde", posicion_juego: "posicionJuego", pierna_habil: "piernaHabil", altura_cm: "alturaCm", peso_kg: "pesoKg", titulo_o_matricula: "tituloOMatricula", licencia: "licencia", anios_experiencia: "aniosExperiencia", especialidad: "especialidad" };
+    const campos = { puesto: "puesto", provincia: "provincia", club_actual: "clubActual", fecha_nacimiento: "fechaNacimiento", trayectoria: "trayectoria", formacion_academica: "formacionAcademica", presentacion: "presentacion", disponibilidad: "disponibilidad", situacion_club: "situacionClub", incorporacion_desde: "incorporacionDesde", posicion_juego: "posicionJuego", pierna_habil: "piernaHabil", altura_cm: "alturaCm", peso_kg: "pesoKg", titulo_o_matricula: "tituloOMatricula", licencia: "licencia", anios_experiencia: "aniosExperiencia", especialidad: "especialidad" };
     const perfil = { ...perfilExistente, experiencias };
     for (const [clave, campo] of Object.entries(campos)) perfil[clave] = String(datos.get(campo) ?? "").trim();
     perfil.dispuesto_mudarse = datos.get("dispuestoMudarse") === "" ? null : datos.get("dispuestoMudarse") === "si";
@@ -130,6 +130,13 @@ export function FormularioPerfilCandidato({ perfilExistente, nombreCandidato }) 
         id="clubActual"
         etiqueta="Club actual"
         valorInicial={perfilExistente?.club_actual ?? ""}
+      />
+      <CampoTexto
+        id="fechaNacimiento"
+        etiqueta="Fecha de nacimiento"
+        tipo="date"
+        valorInicial={perfilExistente?.fecha_nacimiento ?? ""}
+        ayuda="Opcional. Permite que los clubes te encuentren cuando buscan por rango de edad."
       />
       </fieldset>
 
@@ -316,6 +323,7 @@ function CampoTexto({
   valorInicial,
   tipo = "text",
   requerido = false,
+  ayuda,
 }) {
   return (
     <div className={styles.campo}>
@@ -329,7 +337,9 @@ function CampoTexto({
         defaultValue={valorInicial}
         required={requerido}
         className={styles.entrada}
+        aria-describedby={ayuda ? `${id}-ayuda` : undefined}
       />
+      {ayuda && <p id={`${id}-ayuda`} className={styles.ayuda}>{ayuda}</p>}
     </div>
   );
 }
@@ -362,7 +372,6 @@ function CampoFoto({ fotoActual }) {
   return (
     <div className={styles.campoFoto}>
       {vistaPrevia ? (
-        // eslint-disable-next-line @next/next/no-img-element
         <ImagenAmpliable src={vistaPrevia} alt="Foto de perfil" className={styles.foto} />
       ) : (
         <div className={styles.fotoVacia}>Sin foto</div>

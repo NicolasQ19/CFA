@@ -1,6 +1,6 @@
 /**
  * Forma de las tablas de Supabase, documentada a mano para reflejar
- * supabase/migrations/0001_esquema_inicial.sql.
+ * las migraciones de supabase/migrations/.
  * Si el esquema cambia, actualizar este archivo junto con la migración.
  *
  * Los valores posibles de rol, puesto, estado y tipo de contrato son las
@@ -26,6 +26,13 @@
  * @property {string} puesto - clave de ETIQUETAS_PUESTO_PROFESIONAL
  * @property {string} provincia
  * @property {string | null} club_actual
+ * @property {string | null} presentacion
+ * @property {"disponible" | "escucho_ofertas" | "no_disponible" | null} disponibilidad
+ * @property {"con_club" | "sin_club" | null} situacion_club
+ * @property {string | null} incorporacion_desde
+ * @property {boolean | null} dispuesto_mudarse
+ * @property {{club: string, categoria: string, temporada: string, descripcion: string}[]} experiencias
+ * @property {string | null} cv_ruta - ruta en el bucket privado de currículums
  * @property {string | null} foto_url
  * @property {string[]} enlaces_video
  * @property {string | null} trayectoria
@@ -51,6 +58,12 @@
  * @typedef {Object} PerfilClub
  * @property {string} usuario_id
  * @property {string} nombre_club
+ * @property {string | null} localidad
+ * @property {string | null} descripcion
+ * @property {string | null} instalaciones
+ * @property {string | null} sitio_web
+ * @property {string | null} instagram
+ * @property {string | null} facebook
  * @property {string | null} escudo_url
  * @property {string} provincia
  * @property {string} categoria
@@ -98,6 +111,15 @@
  * @property {string} estado - clave de ETIQUETAS_ESTADO_POSTULACION
  * @property {string} creada_en
  * @property {string} actualizada_en
+ */
+
+/**
+ * @typedef {Object} SeguimientoClub
+ * @property {string} postulacion_id
+ * @property {string} club_id
+ * @property {"recibido" | "evaluacion" | "contactado" | "seleccionado" | "descartado"} etapa
+ * @property {string} notas - notas privadas, visibles solo para el club dueño
+ * @property {string} actualizado_en
  */
 
 export {};

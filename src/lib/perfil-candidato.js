@@ -1,3 +1,5 @@
+import { edadCandidato } from "./edad.js";
+
 export const DISPONIBILIDADES = {
   disponible: "Disponible para recibir ofertas",
   escucho_ofertas: "Escucho propuestas",
@@ -8,11 +10,13 @@ export const SITUACIONES = { con_club: "Con club", sin_club: "Sin club" };
 export function validarMejorasPerfil(formulario) {
   const texto = (clave) => String(formulario.get(clave) ?? "").trim();
   const presentacion = texto("presentacion");
+  const fecha_nacimiento = texto("fechaNacimiento");
   const disponibilidad = texto("disponibilidad");
   const situacion_club = texto("situacionClub");
   const incorporacion_desde = texto("incorporacionDesde");
   const mudanza = texto("dispuestoMudarse");
   if (presentacion.length > 600) return { error: "La presentación admite hasta 600 caracteres." };
+  if (fecha_nacimiento && (edadCandidato(fecha_nacimiento) === null || edadCandidato(fecha_nacimiento) > 120)) return { error: "Ingresá una fecha de nacimiento válida, no futura y de hasta 120 años atrás." };
   if (disponibilidad && !Object.hasOwn(DISPONIBILIDADES, disponibilidad)) return { error: "Seleccioná una disponibilidad válida." };
   if (situacion_club && !Object.hasOwn(SITUACIONES, situacion_club)) return { error: "Seleccioná una situación de club válida." };
   if (!["", "si", "no"].includes(mudanza)) return { error: "Seleccioná una opción de mudanza válida." };
@@ -29,7 +33,7 @@ export function validarMejorasPerfil(formulario) {
     if (experiencia.club.length > 120 || experiencia.categoria.length > 100 || experiencia.temporada.length > 40 || experiencia.descripcion.length > 600) return { error: "Una experiencia supera la longitud permitida." };
     limpias.push(experiencia);
   }
-  return { datos: { presentacion: presentacion || null, disponibilidad: disponibilidad || null, situacion_club: situacion_club || null, incorporacion_desde: incorporacion_desde || null, dispuesto_mudarse: mudanza ? mudanza === "si" : null, experiencias: limpias } };
+  return { datos: { fecha_nacimiento: fecha_nacimiento || null, presentacion: presentacion || null, disponibilidad: disponibilidad || null, situacion_club: situacion_club || null, incorporacion_desde: incorporacion_desde || null, dispuesto_mudarse: mudanza ? mudanza === "si" : null, experiencias: limpias } };
 }
 
 export function completitudPerfil(perfil) {

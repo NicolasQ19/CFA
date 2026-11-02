@@ -24,6 +24,26 @@
   @apply inline-flex min-h-11 items-center justify-center gap-2 border border-emerald-400 bg-emerald-400 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300 disabled:opacity-55;
 }
 
+.rangoEdad {
+  @apply flex items-center gap-2 border border-emerald-800/70 px-3 py-1 text-sm text-slate-300;
+}
+
+.etiquetaRango {
+  @apply text-xs font-semibold uppercase tracking-wider text-slate-400;
+}
+
+.entradaEdad {
+  @apply w-16 bg-transparent py-1 text-sm text-slate-100 outline-none placeholder:text-slate-500;
+}
+
+.limpiar {
+  @apply inline-flex min-h-11 items-center px-2 text-xs font-semibold uppercase tracking-wider text-emerald-300 underline hover:text-emerald-200;
+}
+
+.aviso {
+  @apply mt-4 border border-amber-500/60 bg-amber-500/10 p-3 text-sm text-amber-200;
+}
+
 .resultados {
   @apply mt-6 text-sm font-medium text-slate-300;
 }

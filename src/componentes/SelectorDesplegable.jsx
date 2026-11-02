@@ -32,7 +32,9 @@ export function SelectorDesplegable({
     if (!esControlado) setValorInterno(nuevo);
     onCambio?.(nuevo);
   }
-  const [abierto, setAbierto] = useState(false);
+  const [desplegado, setAbierto] = useState(false);
+  // Un selector deshabilitado nunca está abierto: se deriva, no se corrige por efecto.
+  const abierto = desplegado && !deshabilitado;
   const [resaltado, setResaltado] = useState(0);
   const contenedorRef = useRef(null);
   const listaRef = useRef(null);
@@ -41,10 +43,6 @@ export function SelectorDesplegable({
 
   const indiceActual = Math.max(0, opciones.findIndex((opcion) => opcion.valor === valor));
   const seleccionada = opciones[indiceActual];
-
-  useEffect(() => {
-    if (deshabilitado) setAbierto(false);
-  }, [deshabilitado]);
 
   useEffect(() => {
     if (!abierto) return undefined;

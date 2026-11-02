@@ -13,7 +13,7 @@ export function FormularioPerfilRepresentante({ perfilActual = null, nombreActua
     guardarPerfilRepresentante,
     ESTADO_INICIAL
   );
-  const [mensajeExito, setMensajeExito] = useState(false);
+  const [exitoVencido, setExitoVencido] = useState(null);
   const [presentacion, setPresentacion] = useState(perfilActual?.presentacion ?? "");
   const [borrador, setBorrador] = useState(() => ({
     nombre_agencia: perfilActual?.nombre_agencia ?? nombreActual ?? "",
@@ -37,12 +37,13 @@ export function FormularioPerfilRepresentante({ perfilActual = null, nombreActua
     return (evento) => setBorrador((anterior) => ({ ...anterior, [campo]: evento.target.value }));
   }
 
+  // El aviso se deriva del resultado de la acción; el efecto solo programa cuándo ocultarlo.
+  const mensajeExito = Boolean(estado?.exito) && exitoVencido !== estado;
+
   useEffect(() => {
-    if (estado?.exito) {
-      setMensajeExito(true);
-      const timer = setTimeout(() => setMensajeExito(false), 3500);
-      return () => clearTimeout(timer);
-    }
+    if (!estado?.exito) return undefined;
+    const temporizador = setTimeout(() => setExitoVencido(estado), 3500);
+    return () => clearTimeout(temporizador);
   }, [estado]);
 
   function alElegirFoto(e) {

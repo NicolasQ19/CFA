@@ -4,72 +4,42 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { ETIQUETAS_PUESTO_PROFESIONAL } from "@/tipos/dominio";
-import { claveAlmacenLecturas, claveAlmacenEliminadas, eliminarAvisos, filtrarAvisosVigentes, interpretarLecturas, estaLeido, marcarAvisoLeido, contarSinLeer } from "@/lib/lectura-notificaciones";
+import { claveAlmacenLecturas, claveAlmacenEliminadas, eliminarAvisos, filtrarAvisosVigentes, estaLeido, marcarAvisoLeido, contarSinLeer } from "@/lib/lectura-notificaciones";
+import { useAvisosAlmacenados } from "./useAvisosAlmacenados";
 import styles from "./CampanaNotificaciones.module.css";
 
 export function CampanaNotificaciones({ rol = "administrador", usuarioId }) {
   const [abierta, setAbierta] = useState(false);
   const [datos, setDatos] = useState(null);
   const [error, setError] = useState(false);
-  const [lecturas, setLecturas] = useState([]);
-  const [eliminadas, setEliminadas] = useState([]);
-  const [errorEliminadas, setErrorEliminadas] = useState(false);
-  const [errorLecturas, setErrorLecturas] = useState(false);
   const claveAlmacen = claveAlmacenLecturas(usuarioId, rol);
   const claveEliminadas = claveAlmacenEliminadas(usuarioId, rol);
+  const [lecturas, guardarLecturas, errorLecturas] = useAvisosAlmacenados(claveAlmacen);
+  const [eliminadas, guardarEliminadas, errorEliminadas] = useAvisosAlmacenados(claveEliminadas);
   const contenedor = useRef(null);
   const boton = useRef(null);
   const pathname = usePathname();
   const parametros = useSearchParams();
 
-  useEffect(() => {
-    try { setLecturas(interpretarLecturas(localStorage.getItem(claveAlmacen))); }
-    catch { setErrorLecturas(true); }
-    function sincronizar(evento) {
-      if (evento.key === claveAlmacen || evento.key === null) {
-        setLecturas(interpretarLecturas(evento.key === null ? null : evento.newValue));
-      }
-    }
-    window.addEventListener("storage", sincronizar);
-    return () => window.removeEventListener("storage", sincronizar);
-  }, [claveAlmacen]);
-
-  useEffect(() => {
-    try { setEliminadas(interpretarLecturas(localStorage.getItem(claveEliminadas))); }
-    catch { setErrorEliminadas(true); }
-    function sincronizar(evento) {
-      if (evento.key === claveEliminadas || evento.key === null) {
-        setEliminadas(interpretarLecturas(evento.key === null ? null : evento.newValue));
-      }
-    }
-    window.addEventListener("storage", sincronizar);
-    return () => window.removeEventListener("storage", sincronizar);
-  }, [claveEliminadas]);
-
+  // `lecturas` y `eliminadas` ya son el contenido de localStorage, así que no hace
+  // falta releerlo para fusionar: basta guardar la lista nueva.
   function eliminarNotificaciones() {
-    let guardadas = [];
-    try { guardadas = interpretarLecturas(localStorage.getItem(claveEliminadas)); } catch { /* Conservar el borrado durante la sesión. */ }
-    const nuevas = eliminarAvisos(avisos, [...eliminadas, ...guardadas]);
-    setEliminadas(nuevas);
-    try {
-      localStorage.setItem(claveEliminadas, JSON.stringify(nuevas));
-      setErrorEliminadas(false);
-    } catch { setErrorEliminadas(true); }
+    guardarEliminadas(eliminarAvisos(avisos, eliminadas));
   }
 
   function abrirAviso(aviso) {
-    let guardadas = [];
-    try { guardadas = interpretarLecturas(localStorage.getItem(claveAlmacen)); } catch { /* Mantener la lectura durante la sesión. */ }
-    const nuevas = marcarAvisoLeido(aviso, [...lecturas, ...guardadas]);
-    setLecturas(nuevas);
-    try {
-      localStorage.setItem(claveAlmacen, JSON.stringify(nuevas));
-      setErrorLecturas(false);
-    } catch { setErrorLecturas(true); }
+    guardarLecturas(marcarAvisoLeido(aviso, lecturas));
     setAbierta(false);
   }
 
-  useEffect(() => { setAbierta(false); }, [pathname, parametros]);
+  // Al navegar, el panel se cierra. Se ajusta durante el render comparando con la
+  // ruta previa: un efecto dejaría un render con el panel abierto en la página nueva.
+  const ruta = `${pathname}?${parametros}`;
+  const [rutaPrevia, setRutaPrevia] = useState(ruta);
+  if (rutaPrevia !== ruta) {
+    setRutaPrevia(ruta);
+    setAbierta(false);
+  }
 
   useEffect(() => {
     const controlador = new AbortController();

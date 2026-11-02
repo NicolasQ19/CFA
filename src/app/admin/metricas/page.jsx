@@ -5,6 +5,9 @@ import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 import styles from "../page.module.css";
 
+/** Fecha ISO de hace `dias` días. Fuera del componente: no es puro y no debe correr en render. */
+const desde = (dias) => new Date(Date.now() - dias * 86400000).toISOString();
+
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Métricas | Administración CFA" };
 
@@ -14,7 +17,6 @@ export default async function PaginaMetricas() {
   if (usuario.rol !== "administrador") redirect("/");
 
   const supabase = await crearClienteServidor();
-  const desde = (dias) => new Date(Date.now() - dias * 86400000).toISOString();
   const roles = [["club", "Clubes"], ["candidato", "Candidatos"], ["representante", "Representantes"]];
   const filas = await Promise.all(roles.map(async ([rol, etiqueta]) => {
     const base = () => supabase.from("usuarios").select("id", { count: "exact", head: true }).eq("rol", rol);

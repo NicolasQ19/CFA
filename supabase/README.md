@@ -2,7 +2,7 @@
 
 ## Verificación manual de clubes
 
-Ejecutar una vez **`migrations/20261023_verificacion_clubes.sql`** en el SQL Editor del proyecto configurado en `.env.local`, después de las migraciones anteriores. No elimina clubes, perfiles, ofertas ni postulaciones. Tanto los clubes existentes como los nuevos quedan pendientes: ninguno se aprueba automáticamente. Hasta aplicar la migración, los accesos del club quedan bloqueados por defecto.
+Ejecutar una vez **`migrations/20261023_verificacion_de_clubes_y_permisos_derivados.sql`** en el SQL Editor del proyecto configurado en `.env.local`, después de las migraciones anteriores. No elimina clubes, perfiles, ofertas ni postulaciones. Tanto los clubes existentes como los nuevos quedan pendientes: ninguno se aprueba automáticamente. Hasta aplicar la migración, los accesos del club quedan bloqueados por defecto.
 
 El club completa nombre, provincia y localidad en Mi club, y envía la liga/asociación, solicitante, cargo, correo y teléfono institucionales y URL oficial. El administrador revisa en `/admin/clubes`, busca independientemente un contacto oficial, confirma la autorización de la persona y registra el canal utilizado y una observación. Puede verificar o rechazar, incluso revocar una aprobación previa. El club recibe el resultado en su campana y puede corregir y reenviar una solicitud rechazada.
 
@@ -16,7 +16,7 @@ Después de aplicar SQL, comprobar con sesiones de club y administrador: complet
 
 ## Notificaciones de postulaciones
 
-Ejecutar **`migrations/20261102_aviso_cambio_descripcion_oferta.sql`** para que candidatos y representantes reciban un aviso cuando el club edita la descripción de una oferta ya publicada o pausada. La migración agrega `ofertas_laborales.descripcion_actualizada_en` y un trigger que la completa solo en esos estados: la edición previa a la primera publicación no genera aviso porque todavía no hay postulantes. El aviso aparece si el cambio es posterior a la postulación y enlaza al detalle público de la oferta.
+Ejecutar **`migrations/20261102_trigger_de_aviso_por_cambio_de_descripcion.sql`** para que candidatos y representantes reciban un aviso cuando el club edita la descripción de una oferta ya publicada o pausada. La migración agrega `ofertas_laborales.descripcion_actualizada_en` y un trigger que la completa solo en esos estados: la edición previa a la primera publicación no genera aviso porque todavía no hay postulantes. El aviso aparece si el cambio es posterior a la postulación y enlaza al detalle público de la oferta.
 
 La campana del navbar está disponible para clubes, candidatos y representantes. El club recibe avisos de las postulaciones que siguen en estado `postulado`, con el nombre del candidato y un enlace a su ficha en Postulantes. También incluye las enviadas por representantes. Al cambiar el estado, la postulación sale de los avisos pendientes del club.
 
@@ -42,13 +42,13 @@ Verificar con una cuenta de candidato: enviar una postulación, cancelar la conf
 
 La edición del representante está en `/mi-perfil`; `/mi-cartera` conserva la gestión de candidatos y postulaciones. La navegación incluye Mi perfil, Mi perfil público y Mi cartera. El perfil público se comparte con `/perfil-publico-representante?id=<usuario_id>`.
 
-Después de las migraciones de contacto y presentación del representante, ejecutar `migrations/20261008_perfil_publico_representante.sql`. La función de lectura permite a visitantes y usuarios autenticados consultar solo nombre de agencia, foto, presentación, especialización, zona de trabajo, país y contacto profesional de representantes activos. No publica correo de acceso, cartera, CVs de representados ni postulaciones, y no amplía las políticas RLS de las tablas.
+Después de las migraciones de contacto y presentación del representante, ejecutar `migrations/20261008_funcion_de_perfil_publico_del_representante.sql`. La función de lectura permite a visitantes y usuarios autenticados consultar solo nombre de agencia, foto, presentación, especialización, zona de trabajo, país y contacto profesional de representantes activos. No publica correo de acceso, cartera, CVs de representados ni postulaciones, y no amplía las políticas RLS de las tablas.
 
 El dueño puede revisar su propia página con los permisos existentes; la lectura de otras cuentas y visitantes requiere aplicar la nueva migración. Comprobar: editar y guardar desde Mi perfil; abrir Mi perfil público; abrir la URL en una sesión anónima; verificar que una cuenta inactiva o un ID inexistente no se muestre. Un visitante no debe poder modificar el perfil por la API.
 
 ## Filtros de candidatos y cancelación de postulaciones
 
-Ejecutar `migrations/20261008_datos_personales_representados.sql` después de `20261003_perfil_representante_contacto.sql`. Agrega nombres, apellidos y fecha de nacimiento opcionales; las nuevas funciones guardan estos datos junto con la ficha en una transacción. Mantiene las funciones anteriores y los nombres completos existentes, sin inferir apellidos compuestos. En fichas antiguas, separar manualmente nombres y apellidos desde Editar datos.
+Ejecutar `migrations/20261008_nombres_y_fecha_nacimiento_de_representados.sql` después de `20261003_contacto_representante_y_politicas_de_fotos.sql`. Agrega nombres, apellidos y fecha de nacimiento opcionales; las nuevas funciones guardan estos datos junto con la ficha en una transacción. Mantiene las funciones anteriores y los nombres completos existentes, sin inferir apellidos compuestos. En fichas antiguas, separar manualmente nombres y apellidos desde Editar datos.
 
 En una oferta, comprobar búsqueda por nombre o apellido, orden A–Z/Z–A, edades de menor a mayor o mayor a menor, rango inclusivo y provincia. Quienes no tienen fecha de nacimiento quedan fuera del rango de edad y al final del orden por edad. Solo se ofrecen candidatos del puesto solicitado que todavía no están postulados.
 
@@ -56,13 +56,13 @@ La cancelación usa las políticas RLS existentes: solo un representante activo 
 
 ## Presentación profesional del representante
 
-Ejecutar `migrations/20261008_presentacion_representante.sql` en el SQL Editor del proyecto configurado en `.env.local`, después de las migraciones anteriores. Agrega presentación (2000 caracteres), especialización y zona de trabajo (300 caracteres cada una). Todos son opcionales; no modifica las políticas RLS ni los datos existentes.
+Ejecutar `migrations/20261008_campos_presentacion_del_representante.sql` en el SQL Editor del proyecto configurado en `.env.local`, después de las migraciones anteriores. Agrega presentación (2000 caracteres), especialización y zona de trabajo (300 caracteres cada una). Todos son opcionales; no modifica las políticas RLS ni los datos existentes.
 
 Desde Mi perfil, completar los tres campos, guardar y recargar para comprobar persistencia. Borrarlos y guardar debe dejarlos vacíos. Probar también un perfil anterior sin estos datos. El formulario valida los límites y el servidor los comprueba antes de subir archivos. La persistencia remota requiere aplicar esta migración y usar una cuenta de representante activa.
 
 Pruebas locales: `node --test tests/perfil-representante.test.js`.
 
-En el proyecto de Supabase que usa `.env.local`, abrir **SQL Editor**, pegar el contenido de `migrations/20260928_curriculum_candidato.sql` y ejecutarlo una vez.
+En el proyecto de Supabase que usa `.env.local`, abrir **SQL Editor**, pegar el contenido de `migrations/20260928_bucket_privado_de_curriculums.sql` y ejecutarlo una vez.
 
 La migración agrega `perfiles_candidato.cv_ruta`, crea el bucket privado `curriculums` (PDF, hasta 5 MB) y configura permisos: cada candidato activo puede subir su propio CV; su dueño, administradores activos y clubes activos con acceso al perfil pueden descargarlo. No requiere una clave de servicio en la aplicación.
 
@@ -81,7 +81,7 @@ Las pruebas locales de validación se ejecutan con `node --test tests/curriculum
 
 ## Mejoras del perfil del candidato
 
-Ejecutar una vez `migrations/20260929_mejoras_perfil_candidato.sql` en el SQL Editor del mismo proyecto. Agrega presentación, disponibilidad, situación de club, fecha de incorporación, disposición a mudarse y experiencias organizadas. No borra la trayectoria anterior ni cambia los permisos existentes del perfil.
+Ejecutar una vez `migrations/20260929_candidato_disponibilidad_y_experiencias.sql` en el SQL Editor del mismo proyecto. Agrega presentación, disponibilidad, situación de club, fecha de incorporación, disposición a mudarse y experiencias organizadas. No borra la trayectoria anterior ni cambia los permisos existentes del perfil.
 
 La migración de CV anterior se ejecuta solo si aún no fue aplicada. Las lecturas de perfiles antiguos siguen funcionando; para guardar los nuevos campos se necesita esta nueva migración.
 
@@ -93,7 +93,7 @@ Pruebas: `node --test tests/*.test.js`. La persistencia remota requiere aplicar 
 
 En Postulantes, la etapa interna, notas y estado informado al candidato comparten el botón **Guardar seguimiento**. Cambiar el desplegable o los botones rápidos solo modifica el borrador local. El estado público se actualiza al enviar el formulario, después de guardar el seguimiento privado; guardar sin cambiarlo no modifica su fecha ni genera otra novedad. Si falla el estado después de guardar las notas, se informa el guardado parcial para que el club revise y reintente. Las notas y la etapa interna siguen siendo privadas e independientes del estado seleccionado.
 
-Ejecutar una vez `migrations/20260930_mejoras_club.sql` en el SQL Editor del proyecto configurado. Agrega los campos institucionales, el bucket público de escudos y la tabla privada `seguimiento_club` con RLS. No modifica los estados existentes de las postulaciones: las cinco etapas son un seguimiento interno independiente. Las notas nunca se incorporan a las consultas de perfiles públicos ni a las postulaciones del candidato.
+Ejecutar una vez `migrations/20260930_club_datos_institucionales_y_seguimiento_privado.sql` en el SQL Editor del proyecto configurado. Agrega los campos institucionales, el bucket público de escudos y la tabla privada `seguimiento_club` con RLS. No modifica los estados existentes de las postulaciones: las cinco etapas son un seguimiento interno independiente. Las notas nunca se incorporan a las consultas de perfiles públicos ni a las postulaciones del candidato.
 
 Verificación luego de aplicar SQL:
 
@@ -107,22 +107,22 @@ Verificación luego de aplicar SQL:
 
 ## Gestión directa de representados por agencias
 
-Ejecutar una vez `migrations/20261001_representante_crea_candidatos.sql` en el SQL Editor del proyecto.
+Ejecutar una vez `migrations/20261001_funciones_alta_y_baja_de_representados.sql` en el SQL Editor del proyecto.
 Permite que los usuarios con rol `representante` carguen directamente la ficha deportiva o técnica de sus propios representados (sin necesidad de que el jugador se cree cuenta ni recuerde contraseñas), vinculándolos automáticamente a su cartera y habilitándolos para postularse a ofertas laborales.
 
 ## Edición de representados y lectura de nombres
-Ejecutar una vez `migrations/20261002_edicion_y_nombres_representados.sql` en el SQL Editor del proyecto.
+Ejecutar una vez `migrations/20261002_editar_representado_y_listar_cartera.sql` en el SQL Editor del proyecto.
 Habilita la edición de la ficha técnica y deportiva de los representados y garantiza la lectura de los nombres de candidatos en la cartera.
 
 ## Perfil de representante, datos de contacto, foto y CVs
-Ejecutar una vez `migrations/20261003_perfil_representante_contacto.sql` en el SQL Editor del proyecto.
+Ejecutar una vez `migrations/20261003_contacto_representante_y_politicas_de_fotos.sql` en el SQL Editor del proyecto.
 Agrega campos de contacto a la agencia (teléfono, email de contacto, nacionalidad, sitio web y foto/logo), actualiza la función RPC `listar_cartera_representante` y otorga permisos de Storage y RLS para subir fotos y currículums (PDF) tanto para la agencia como para los representados.
 
 
 
 ## Gestión de cuentas de usuarios por administración
 
-Ejecutar una vez **`migrations/20261029_gestion_usuarios_admin.sql`** en el SQL Editor del proyecto configurado en `.env.local` si no está configurada `SUPABASE_SERVICE_ROLE_KEY`. Agrega la política RLS `administradores_actualizan_estado_usuarios` sobre `public.usuarios` y refuerza el trigger `proteger_privilegios_usuario` para impedir que cualquier rol altere el rol asignado o que un administrador desactive su propia cuenta.
+Ejecutar una vez **`migrations/20261029_admin_activa_y_desactiva_cuentas.sql`** en el SQL Editor del proyecto configurado en `.env.local` si no está configurada `SUPABASE_SERVICE_ROLE_KEY`. Agrega la política RLS `administradores_actualizan_estado_usuarios` sobre `public.usuarios` y refuerza el trigger `proteger_privilegios_usuario` para impedir que cualquier rol altere el rol asignado o que un administrador desactive su propia cuenta.
 
 Desde `/admin/usuarios`, un administrador activo puede filtrar por rol (`club`, `candidato`, `representante`, `administrador`), estado (`activos`, `inactivos`) o búsqueda por nombre/correo, y activar o desactivar cuentas. Las fichas creadas por representantes (`@cfa.local`) se identifican como “Ficha de cartera” sin acceso de login propio.
 
@@ -134,27 +134,27 @@ No requiere migración SQL adicional: utiliza Supabase Auth (`/recuperar-contras
 
 ## Integridad de edición y cierre definitivo de ofertas
 
-Ejecutar una vez **`migrations/20261030_proteger_edicion_y_cierre_ofertas.sql`** en el SQL Editor del proyecto para reforzar en PostgreSQL las mismas reglas aplicadas por la interfaz y las Server Actions:
+Ejecutar una vez **`migrations/20261030_trigger_de_integridad_de_ofertas_del_club.sql`** en el SQL Editor del proyecto para reforzar en PostgreSQL las mismas reglas aplicadas por la interfaz y las Server Actions:
 
 - Cerrar una oferta es definitivo para el club (no puede reabrirse ni editarse).
 - El puesto, posición, categoría, tipo de contrato y provincia solo pueden modificarse mientras la oferta esté en `pendiente_moderacion` o `rechazada` y no registre postulantes.
 - Editar la descripción de una oferta publicada o pausada mantiene fijas sus condiciones principales.
 
-Ejecutar después **`migrations/20261101_editar_descripcion_sin_remoderacion.sql`**: la moderación previa queda limitada a la primera publicación. Una oferta `publicada` o `pausada` puede corregir su descripción sin salir del listado público ni volver a `pendiente_moderacion`; solo las ofertas `pendiente_moderacion` y `rechazada` siguen obligadas a pasar por administración antes de publicarse.
+Ejecutar después **`migrations/20261101_editar_descripcion_sin_volver_a_moderacion.sql`**: la moderación previa queda limitada a la primera publicación. Una oferta `publicada` o `pausada` puede corregir su descripción sin salir del listado público ni volver a `pendiente_moderacion`; solo las ofertas `pendiente_moderacion` y `rechazada` siguen obligadas a pasar por administración antes de publicarse.
 
 ## Planes de suscripción
 
-Ejecutar **`migrations/20261103_suscripciones.sql`**. Crea el enum `plan_suscripcion` (`gratuito` / `pago`), la tabla `suscripciones` (una fila por usuario, con `inicia_en`, `vence_en`, `activada_por` y `observaciones`) y la función `public.plan_vigente(uuid)`, que devuelve `gratuito` cuando no hay fila o cuando el plan pago venció.
+Ejecutar **`migrations/20261103_tabla_suscripciones_y_funcion_plan_vigente.sql`**. Crea el enum `plan_suscripcion` (`gratuito` / `pago`), la tabla `suscripciones` (una fila por usuario, con `inicia_en`, `vence_en`, `activada_por` y `observaciones`) y la función `public.plan_vigente(uuid)`, que devuelve `gratuito` cuando no hay fila o cuando el plan pago venció.
 
 El plan se guarda con un único valor por usuario: los cupos concretos se derivan de la combinación (rol, plan) en `src/lib/suscripciones.js`, de modo que no puede existir un candidato con plan de club. Cupos del plan gratuito: 3 ofertas activas para el club, 3 postulaciones mensuales para el candidato y 6 para el representante. El plan pago no tiene tope.
 
 La activación es manual: cada usuario solo lee su propia suscripción y únicamente un administrador activo (`public.es_administrador_activo()`) puede crearla, modificarla o darla de baja. Un plan vencido no borra nada: el club que quedó por encima del cupo conserva sus ofertas, pero no puede publicar nuevas hasta bajar del límite.
 
-Ejecutar después **`migrations/20261104_limite_ofertas_activas_plan.sql`**, que aplica el cupo en la base: `public.limite_ofertas_activas_del_plan(uuid)` devuelve 3 para el plan gratuito y `null` (sin tope) para el pago, y el trigger `controlar_cupo_ofertas_club` rechaza crear una oferta o reactivar una pausada por encima del límite. Solo cuentan los estados `pendiente_moderacion`, `publicada` y `pausada`: las cerradas y rechazadas liberan cupo. Un cambio de estado entre dos estados que ya ocupaban cupo no vuelve a validarse, para que la moderación del administrador no quede bloqueada.
+Ejecutar después **`migrations/20261104_cupo_de_ofertas_activas_por_plan.sql`**, que aplica el cupo en la base: `public.limite_ofertas_activas_del_plan(uuid)` devuelve 3 para el plan gratuito y `null` (sin tope) para el pago, y el trigger `controlar_cupo_ofertas_club` rechaza crear una oferta o reactivar una pausada por encima del límite. Solo cuentan los estados `pendiente_moderacion`, `publicada` y `pausada`: las cerradas y rechazadas liberan cupo. Un cambio de estado entre dos estados que ya ocupaban cupo no vuelve a validarse, para que la moderación del administrador no quede bloqueada.
 
 ## Eliminar ofertas del club
 
-Ejecutar **`migrations/20261105_eliminar_oferta_sin_postulantes.sql`**. El club puede eliminar definitivamente cualquier oferta propia desde Mis ofertas, en cualquier estado y tenga o no candidatos postulados. Como `postulaciones` depende de la oferta con `on delete cascade`, el borrado se lleva también las postulaciones recibidas.
+Ejecutar **`migrations/20261105_baja_de_oferta_con_aviso_a_postulantes.sql`**. El club puede eliminar definitivamente cualquier oferta propia desde Mis ofertas, en cualquier estado y tenga o no candidatos postulados. Como `postulaciones` depende de la oferta con `on delete cascade`, el borrado se lleva también las postulaciones recibidas.
 
 Para que los candidatos no pierdan el rastro en silencio, la migración crea `avisos_ofertas_eliminadas`: antes de borrar, la acción registra un aviso por postulante con el nombre del club y el título de la oferta, y ese aviso sobrevive a la oferta borrada. Si el aviso no puede registrarse, la oferta no se elimina. Cada destinatario lee solo sus avisos; el club únicamente puede insertarlos a su propio nombre y nadie puede editarlos ni borrarlos. Candidatos y representantes los ven en la campana de notificaciones.
 
@@ -162,7 +162,7 @@ Si la migración anterior de este archivo ya se había aplicado, el script elimi
 
 ## Alta y baja del plan Pro
 
-Ejecutar **`migrations/20261106_suscripcion_autogestionada.sql`**. Hace dos cosas:
+Ejecutar **`migrations/20261106_funciones_activar_y_cancelar_plan_pago.sql`**. Hace dos cosas:
 
 1. Corrige el mensaje del cupo de ofertas, que también lee el administrador al moderar: ahora dice «El club alcanzó el número máximo de ofertas publicadas según su plan (3)» en lugar de hablarle en segunda persona a quien modera.
 2. Agrega `public.activar_plan_pago(meses)` y `public.cancelar_plan_pago()`, funciones `security definer` que solo tocan la fila del usuario autenticado. Así la pantalla `/planes` puede dar de alta y de baja el plan sin abrir la escritura directa de `suscripciones`, que sigue reservada al administrador. La duración se limita a entre 1 y 12 meses y renovar un plan vigente suma al tiempo restante.
@@ -171,7 +171,7 @@ El cobro está simulado: no hay pasarela de pago. Dar de baja devuelve la cuenta
 
 ## Cupo mensual de postulaciones
 
-Ejecutar **`migrations/20261107_cupo_postulaciones_mensuales.sql`**. Agrega `public.limite_postulaciones_del_plan(uuid, text)` (3 para el candidato gratuito, 6 para el representante gratuito, `null` para el plan pago) y el trigger `controlar_cupo_postulaciones`, que valida cada alta.
+Ejecutar **`migrations/20261107_cupo_de_postulaciones_mensuales_por_plan.sql`**. Agrega `public.limite_postulaciones_del_plan(uuid, text)` (3 para el candidato gratuito, 6 para el representante gratuito, `null` para el plan pago) y el trigger `controlar_cupo_postulaciones`, que valida cada alta.
 
 El cupo lo consume quien envía la postulación: las que manda un representante descuentan de su plan y no del cupo del candidato representado. La ventana es el mes calendario en UTC (`date_trunc('month', now())`), así que se renueva el día 1. Se cuenta por envío: cancelar una postulación no devuelve el cupo del mes, para que el límite no se pueda reciclar.
 

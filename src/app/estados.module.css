@@ -1,0 +1,28 @@
+@reference "tailwindcss";
+
+/* Pantallas de error y de "no encontrado". Comparten un módulo porque son la
+   misma pieza con distinto texto, y conviene que no se desincronicen. */
+
+.main {
+  @apply mx-auto flex max-w-2xl flex-col items-start px-4 py-16;
+}
+
+.codigo {
+  @apply text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400;
+}
+
+.titulo {
+  @apply mt-3 text-3xl font-semibold;
+}
+
+.detalle {
+  @apply mt-4 text-sm text-slate-300;
+}
+
+.acciones {
+  @apply mt-8 flex flex-wrap items-center gap-3;
+}
+
+.referencia {
+  @apply mt-8 border border-emerald-900/60 bg-emerald-950/30 px-3 py-2 font-mono text-xs text-slate-400;
+}

@@ -24,7 +24,7 @@ La plataforma contempla jugadores, directores técnicos, preparadores físicos, 
 ### Perfiles profesionales
 
 - Datos específicos para jugadores y profesionales del cuerpo técnico o staff.
-- Foto, presentación, trayectoria, formación, experiencias en clubes y disponibilidad laboral del candidato.
+- Foto, presentación, fecha de nacimiento, trayectoria, formación, experiencias en clubes y disponibilidad laboral del candidato.
 - Currículum en PDF y enlaces de videos de YouTube.
 - Indicador de completitud y vista previa del perfil antes de guardar.
 - Control de visibilidad del candidato en las búsquedas de clubes.
@@ -35,6 +35,7 @@ La plataforma contempla jugadores, directores técnicos, preparadores físicos, 
 ### Ofertas y postulaciones
 
 - Listado de ofertas publicadas con filtros por puesto, provincia, categoría y tipo de contrato.
+- Búsqueda de candidatos para clubes con filtros por nombre, puesto, posición, provincia y rango de edad, ordenable por nombre, edad o última actualización.
 - Detalle de cada búsqueda y acceso al perfil institucional del club.
 - Creación, edición y gestión de estados de ofertas: publicación mediante moderación, pausa, cierre y reapertura.
 - Postulaciones de candidatos y representantes con validación de coincidencia de puesto profesional.

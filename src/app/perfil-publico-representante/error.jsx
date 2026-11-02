@@ -1,11 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import styles from "../estados.module.css";
 
-export default function ErrorPerfilRepresentante({ reset }) {
-  return <main className="mx-auto max-w-2xl px-4 py-12">
-    <h1 className="text-2xl font-semibold">No pudimos cargar el perfil</h1>
-    <p className="mt-3 text-sm text-slate-300">Volvé a intentar en unos minutos.</p>
-    <div className="mt-6 flex flex-wrap gap-4"><button onClick={reset} className="rounded-none bg-emerald-700 px-4 py-3 text-sm font-semibold">Reintentar</button><Link href="/" className="px-4 py-3 text-sm text-emerald-300">Ir al inicio</Link></div>
-  </main>;
+/** Error acotado al perfil público del representante; el resto usa /src/app/error.jsx. */
+export default function ErrorPerfilRepresentante({ error, reset }) {
+  return (
+    <main className={styles.main}>
+      <p className={styles.codigo}>Algo falló</p>
+      <h1 className={styles.titulo}>No pudimos cargar el perfil</h1>
+      <p className={styles.detalle}>Volvé a intentar en unos minutos.</p>
+      <div className={styles.acciones}>
+        <button type="button" onClick={reset} className="botonBase botonPrimarioApp">
+          Reintentar
+        </button>
+        <Link href="/" className="botonBase botonSecundarioApp">Ir al inicio</Link>
+      </div>
+      {error?.digest && (
+        <p className={styles.referencia}>Código de referencia: {error.digest}</p>
+      )}
+    </main>
+  );
 }

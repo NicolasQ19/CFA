@@ -11,7 +11,6 @@ export function PerfilCandidato({ perfil, nombreCandidato, idPerfil, editable = 
     <article className={styles.main}>
       <div className={styles.encabezado}>
         {perfil?.foto_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <ImagenAmpliable src={perfil.foto_url} alt={`Foto de ${nombreCandidato}`} className={styles.foto} />
         ) : <div className={styles.avatar} aria-hidden="true">{nombreCandidato?.trim().split(/\s+/).slice(0, 2).map(p => p[0]).join("") || "C"}</div>}
         <div className={styles.encabezadoTexto}>

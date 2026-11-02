@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useEffect, useId, useState } from "react";
+import { useActionState, useId, useState } from "react";
 import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import { guardarSeguimientoClub } from "./acciones-club";
 import { ETAPAS_CLUB } from "@/lib/club";
@@ -12,7 +12,17 @@ export function SeguimientoClub({ postulacionId, etapa, notas, estadoInicial, di
   const [etapaActual, setEtapaActual] = useState(etapa);
   const [notasActuales, setNotasActuales] = useState(notas ?? "");
   const [estadoActual, setEstadoActual] = useState(estadoInicial);
-  useEffect(() => { setEtapaActual(etapa); setNotasActuales(notas ?? ""); setEstadoActual(estadoInicial); }, [etapa, notas, estadoInicial, postulacionId]);
+  // Cuando el servidor devuelve otra postulación (o valores nuevos) el borrador se
+  // descarta. Se ajusta durante el render comparando con las props previas: con un
+  // efecto habría un render intermedio mostrando datos de la postulación anterior.
+  const [propsPrevias, setPropsPrevias] = useState({ postulacionId, etapa, notas, estadoInicial });
+  if (propsPrevias.postulacionId !== postulacionId || propsPrevias.etapa !== etapa
+      || propsPrevias.notas !== notas || propsPrevias.estadoInicial !== estadoInicial) {
+    setPropsPrevias({ postulacionId, etapa, notas, estadoInicial });
+    setEtapaActual(etapa);
+    setNotasActuales(notas ?? "");
+    setEstadoActual(estadoInicial);
+  }
   const hayCambios = etapaActual !== etapa || notasActuales !== (notas ?? "") || estadoActual !== estadoInicial;
   if (!disponible) return <p role="status">El seguimiento privado no está disponible en este momento.</p>;
   return <form action={guardar} className={styles.formulario}>

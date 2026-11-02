@@ -89,7 +89,7 @@ export default async function PaginaPostulantesDeOferta({ params, searchParams }
         </div>
       ) : postulantesVisibles.length === 0 ? (
         <div className={styles.vacio}>
-          <p>No hay postulantes en estado "{ETAPAS_CLUB[estadoFiltro]}".</p>
+          <p>No hay postulantes en estado &quot;{ETAPAS_CLUB[estadoFiltro]}&quot;.</p>
         </div>
       ) : (
         <div className={styles.tarjetas}>
