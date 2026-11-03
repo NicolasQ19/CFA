@@ -50,12 +50,21 @@ export async function actualizarSesion(peticion) {
       usuario = data;
     }
 
-    const { permitido, destino } = evaluarAcceso({ ruta, usuario });
+    const { permitido, motivo, destino } = evaluarAcceso({ ruta, usuario });
 
     if (!permitido) {
       const url = peticion.nextUrl.clone();
-      url.pathname = destino;
       url.search = "";
+
+      // La ruta existe pero es de otro rol: no se redirige. Se reescribe a la
+      // pantalla de 403 manteniendo la URL original en la barra, para que se
+      // vea qué se intentó abrir y por qué no está disponible.
+      if (motivo === "rol-no-habilitado") {
+        url.pathname = "/sin-permiso";
+        return NextResponse.rewrite(url);
+      }
+
+      url.pathname = destino;
       return NextResponse.redirect(url);
     }
   }

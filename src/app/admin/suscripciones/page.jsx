@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { GestionPlanUsuario } from "@/dominio/suscripciones/GestionPlanUsuario";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
@@ -23,7 +23,7 @@ function formatearVencimiento(fecha) {
 export default async function PaginaSuscripciones({ searchParams }) {
   const usuarioActual = await obtenerUsuarioActual();
   if (!usuarioActual) redirect("/iniciar-sesion");
-  if (usuarioActual.rol !== "administrador" || !usuarioActual.cuenta_activa) redirect("/");
+  if (usuarioActual.rol !== "administrador" || !usuarioActual.cuenta_activa) forbidden();
 
   const parametros = await searchParams;
   const rolCrudo = String(parametros?.rol ?? "todos");

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ETIQUETAS_ESTADO_OFERTA } from "@/tipos/dominio";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 import styles from "../page.module.css";
@@ -14,7 +14,7 @@ export const metadata = { title: "Métricas | Administración CFA" };
 export default async function PaginaMetricas() {
   const usuario = await obtenerUsuarioActual();
   if (!usuario) redirect("/iniciar-sesion");
-  if (usuario.rol !== "administrador") redirect("/");
+  if (usuario.rol !== "administrador") forbidden();
 
   const supabase = await crearClienteServidor();
   const roles = [["club", "Clubes"], ["candidato", "Candidatos"], ["representante", "Representantes"]];

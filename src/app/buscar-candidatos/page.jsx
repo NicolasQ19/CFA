@@ -1,7 +1,7 @@
 import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
 import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { buscarCandidatos } from "@/dominio/perfiles/consultas";
 import { clubEstaVerificado } from "@/lib/verificacion-club";
@@ -26,7 +26,7 @@ export default async function PaginaBuscarCandidatos({ searchParams }) {
   const usuario = await obtenerUsuarioActual();
 
   if (!usuario) redirect("/iniciar-sesion");
-  if (usuario.rol !== "club" && usuario.rol !== "administrador") redirect("/");
+  if (usuario.rol !== "club" && usuario.rol !== "administrador") forbidden();
   if (usuario.rol === "club" && !clubEstaVerificado(usuario)) redirect("/mi-club#verificacion");
 
   const { filtros, rangoInvertido } = normalizarFiltrosCandidatos(await searchParams);

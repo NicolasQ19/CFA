@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import Link from "next/link";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerPerfilCandidato } from "@/dominio/perfiles/consultas";
@@ -32,7 +32,7 @@ export default async function PaginaMiPerfil() {
     </main>;
   }
   if (usuario.rol !== "candidato") {
-    redirect("/");
+    forbidden();
   }
 
   const perfilExistente = await obtenerPerfilCandidato(usuario.id);

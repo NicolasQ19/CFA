@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { forbidden, notFound, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerCandidatoRepresentado } from "@/dominio/representantes/consultas";
 import { FormularioNuevoRepresentado } from "@/dominio/representantes/FormularioNuevoRepresentado";
@@ -14,7 +14,7 @@ export default async function PaginaEditarRepresentado({ params }) {
   }
 
   if (usuario.rol !== "representante") {
-    redirect("/");
+    forbidden();
   }
 
   const { candidatoId } = await params;

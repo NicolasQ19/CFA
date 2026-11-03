@@ -12,6 +12,10 @@ const nextConfig = {
       // CV (5 MB), foto (2 MB) y campos del formulario.
       bodySizeLimit: "8mb",
     },
+    // Habilita `forbidden()` y el archivo `app/forbidden.jsx`: entrar a una
+    // ruta de otro rol responde 403 con su propia pantalla, en vez de
+    // redirigir al inicio sin explicar nada.
+    authInterrupts: true,
   },
 };
 

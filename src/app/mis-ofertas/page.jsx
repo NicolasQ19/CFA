@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerOfertasConConteoPostulantes, obtenerResumenClub } from "@/dominio/postulaciones/consultas-club";
 import { BotonesEstadoOferta } from "@/dominio/ofertas/BotonesEstadoOferta";
@@ -17,7 +17,7 @@ export default async function PaginaMisOfertas() {
   const usuario = await obtenerUsuarioActual();
 
   if (!usuario) redirect("/iniciar-sesion");
-  if (usuario.rol !== "club") redirect("/");
+  if (usuario.rol !== "club") forbidden();
   if (!clubEstaVerificado(usuario)) return <main className={styles.main}><h1 className={styles.titulo}>Mis ofertas</h1><EstadoVerificacionClub verificacion={usuario.verificacion_club} /></main>;
 
   const supabase = await crearClienteServidor();

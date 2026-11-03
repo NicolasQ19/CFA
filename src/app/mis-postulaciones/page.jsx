@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerPostulacionesCandidato } from "@/dominio/postulaciones/consultas";
 import { CancelarMiPostulacion } from "@/dominio/postulaciones/CancelarMiPostulacion";
@@ -43,7 +43,7 @@ export default async function PaginaMisPostulaciones() {
   }
 
   if (usuario.rol !== "candidato") {
-    redirect("/");
+    forbidden();
   }
 
   const supabase = await crearClienteServidor();

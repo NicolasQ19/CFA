@@ -1,7 +1,7 @@
 import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
 import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import {
   listarCarteraCandidatos,
@@ -38,7 +38,7 @@ export default async function PaginaMiCartera({ searchParams }) {
   }
 
   if (usuario.rol !== "representante") {
-    redirect("/");
+    forbidden();
   }
 
   const supabase = await crearClienteServidor();

@@ -1,6 +1,6 @@
 import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
 import Link from "next/link";
-import { redirect } from "next/navigation";//comentario
+import { forbidden, redirect } from "next/navigation";//comentario
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { listarOfertasParaAdministracion } from "@/dominio/ofertas/consultas";
 import { BotonesModeracion } from "@/dominio/ofertas/BotonesModeracion";
@@ -35,7 +35,7 @@ export default async function PaginaAdministracion({ searchParams }) {
   const usuario = await obtenerUsuarioActual();
 
   if (!usuario) redirect("/iniciar-sesion");
-  if (usuario.rol !== "administrador") redirect("/");
+  if (usuario.rol !== "administrador") forbidden();
 
   const parametros = await searchParams;
   const estado = Object.hasOwn(ETIQUETAS_ESTADO_OFERTA, parametros?.estado ?? "") ? parametros.estado : "";

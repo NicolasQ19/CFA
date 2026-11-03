@@ -1,6 +1,6 @@
 @reference "tailwindcss";
 
-.main { @apply mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10; }
+.main { @apply w-full py-8 sm:py-10; max-width: var(--ancho-contenido); margin-inline: auto; padding-inline: var(--margen-lateral); }
 .navegacion { @apply mb-6 flex flex-wrap items-center gap-3 text-xs text-slate-500; }
 .navegacion a { @apply text-slate-300 hover:text-emerald-300; }
 .hero { @apply rounded-none border border-emerald-800/40 p-6 sm:p-8; background: radial-gradient(ellipse at right top, #1c624344, transparent 65%), #111e17; }

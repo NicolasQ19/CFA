@@ -1,7 +1,26 @@
 @reference "tailwindcss";
 
+/* Ancho completo: una columna en celular, dos desde 900px y tres en
+   pantallas grandes. Los avisos, la ficha bloqueada y la barra de acciones
+   ocupan la fila entera. */
 .formulario {
-  @apply flex flex-col gap-4;
+  @apply grid grid-cols-1 items-start gap-4;
+}
+
+@media (min-width: 900px) {
+  .formulario { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1500px) {
+  .formulario { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.formulario > .avisoModeracion,
+.formulario > .fichaBloqueada,
+.formulario > .error,
+.formulario > .acciones,
+.formulario > .campo:has(textarea) {
+  grid-column: 1 / -1;
 }
 
 .avisoModeracion {

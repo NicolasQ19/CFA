@@ -1,14 +1,21 @@
 @reference "tailwindcss";
 
+/* `backdrop-filter` crea un stacking context propio: sin un z-index aquí, el
+   z-index del panel de la campana solo compite dentro del header y las barras
+   sticky del contenido terminan tapándolo. Elevar el header entero es lo que
+   garantiza que la campana se despliegue por encima de todo. */
 .header {
-  @apply border-b border-emerald-900/60;
+  @apply relative border-b border-emerald-900/60;
+  z-index: var(--capa-navegacion);
   background: #050806ee;
   backdrop-filter: blur(16px);
 }
 
 .nav {
-  @apply mx-auto flex items-center justify-between px-4 py-4;
-  max-width: 1152px;
+  @apply flex w-full items-center justify-between py-4;
+  max-width: var(--ancho-contenido);
+  margin-inline: auto;
+  padding-inline: var(--margen-lateral);
   gap: 20px;
   flex-wrap: wrap;
 }

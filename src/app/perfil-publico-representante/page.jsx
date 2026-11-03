@@ -1,6 +1,6 @@
 import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { forbidden, notFound, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerPerfilRepresentante, obtenerPerfilPublicoRepresentante } from "@/dominio/representantes/consultas";
 import { urlPublica } from "@/lib/club";
@@ -12,7 +12,7 @@ export default async function PaginaPerfilPublicoRepresentante({ searchParams })
   const parametros = await searchParams;
   const usuario = await obtenerUsuarioActual();
   if (!parametros?.id && !usuario) redirect("/iniciar-sesion");
-  if (!parametros?.id && usuario?.rol !== "representante") redirect("/");
+  if (!parametros?.id && usuario?.rol !== "representante") forbidden();
   if (!parametros?.id) redirect(`/perfil-publico-representante?id=${usuario.id}`);
   const id = parametros?.id ?? usuario.id;
   if (typeof id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) notFound();

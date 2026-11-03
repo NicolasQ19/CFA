@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { BotonEstadoCuenta } from "@/dominio/usuarios/BotonEstadoCuenta";
 import { BotonEliminarUsuario } from "@/dominio/usuarios/BotonEliminarUsuario";
@@ -45,7 +45,7 @@ function obtenerRutaPerfilPublico(usuarioFila) {
 export default async function PaginaGestionUsuarios({ searchParams }) {
   const usuarioActual = await obtenerUsuarioActual();
   if (!usuarioActual) redirect("/iniciar-sesion");
-  if (usuarioActual.rol !== "administrador" || !usuarioActual.cuenta_activa) redirect("/");
+  if (usuarioActual.rol !== "administrador" || !usuarioActual.cuenta_activa) forbidden();
 
   const filtros = normalizarFiltrosUsuarios(await searchParams);
   const { rol, estado, busqueda, pagina } = filtros;

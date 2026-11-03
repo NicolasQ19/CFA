@@ -1,7 +1,7 @@
 import { ImagenAmpliable } from "@/componentes/ImagenAmpliable";
 import { urlPublica } from "@/lib/club";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { forbidden, notFound, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerPerfilClub } from "@/dominio/perfiles/consultas";
 import { listarOfertasPublicadasDelClub } from "@/dominio/ofertas/consultas";
@@ -21,7 +21,7 @@ export default async function PaginaPerfilPublicoClub({ searchParams }) {
 
   if (esVistaPropia) {
     if (!usuario) redirect("/iniciar-sesion");
-    if (usuario.rol !== "club") redirect("/");
+    if (usuario.rol !== "club") forbidden();
   }
 
   const clubId = esVistaPropia ? usuario.id : clubIdParam;

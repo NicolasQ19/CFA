@@ -1,6 +1,6 @@
 ﻿@reference "tailwindcss";
 
-.main { @apply mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10; }
+.main { @apply w-full py-8 sm:py-10; max-width: var(--ancho-contenido); margin-inline: auto; padding-inline: var(--margen-lateral); }
 .cabecera { @apply flex flex-wrap items-end justify-between gap-6 rounded-none border border-emerald-800/40 p-6 sm:p-8; background: radial-gradient(ellipse at right top, #226c4544, transparent 65%), #111e17; }
 .volanta { @apply mb-3 text-xs font-semibold tracking-widest text-emerald-300; }
 .titulo { @apply text-3xl font-semibold text-white sm:text-4xl; }

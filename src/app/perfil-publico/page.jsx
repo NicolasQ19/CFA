@@ -1,5 +1,5 @@
 import { PerfilCandidato } from "@/dominio/perfiles/PerfilCandidato";
-import { notFound, redirect } from "next/navigation";
+import { forbidden, notFound, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerPerfilCandidato } from "@/dominio/perfiles/consultas";
 import { candidatoSePostuloAlClub } from "@/dominio/postulaciones/consultas-club";
@@ -20,11 +20,11 @@ export default async function PaginaPerfilPublico({ searchParams }) {
   if (usuario.rol === "club" && !clubEstaVerificado(usuario)) redirect("/mi-club#verificacion");
 
   if (esVistaAjena && usuario.rol !== "club" && usuario.rol !== "administrador" && usuario.rol !== "representante") {
-    redirect("/");
+    forbidden();
   }
 
   if (!esVistaAjena && usuario.rol !== "candidato") {
-    redirect("/");
+    forbidden();
   }
 
   const idPerfil = esVistaAjena ? candidatoId : usuario.id;

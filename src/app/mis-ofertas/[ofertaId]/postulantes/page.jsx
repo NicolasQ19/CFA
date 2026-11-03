@@ -3,7 +3,7 @@ import { ETAPAS_CLUB } from "@/lib/club";
 import { DISPONIBILIDADES } from "@/lib/perfil-candidato";
 import { SeguimientoClub } from "@/dominio/postulaciones/SeguimientoClub";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { forbidden, notFound, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerPostulantesDeOferta } from "@/dominio/postulaciones/consultas-club";
 import { ETIQUETAS_PUESTO_PROFESIONAL } from "@/tipos/dominio";
@@ -24,7 +24,7 @@ export default async function PaginaPostulantesDeOferta({ params, searchParams }
   const usuario = await obtenerUsuarioActual();
 
   if (!usuario) redirect("/iniciar-sesion");
-  if (usuario.rol !== "club") redirect("/");
+  if (usuario.rol !== "club") forbidden();
   if (!clubEstaVerificado(usuario)) redirect("/mi-club#verificacion");
 
   const resultado = await obtenerPostulantesDeOferta(ofertaId, usuario.id);

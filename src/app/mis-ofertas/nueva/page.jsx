@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { FormularioNuevaOferta } from "@/dominio/ofertas/FormularioNuevaOferta";
 import styles from "./page.module.css";
@@ -9,7 +9,7 @@ export default async function PaginaNuevaOferta() {
   const usuario = await obtenerUsuarioActual();
 
   if (!usuario) redirect("/iniciar-sesion");
-  if (usuario.rol !== "club") redirect("/");
+  if (usuario.rol !== "club") forbidden();
   if (!clubEstaVerificado(usuario)) redirect("/mi-club#verificacion");
 
   return (

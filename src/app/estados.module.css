@@ -4,7 +4,7 @@
    misma pieza con distinto texto, y conviene que no se desincronicen. */
 
 .main {
-  @apply mx-auto flex max-w-2xl flex-col items-start px-4 py-16;
+ @apply w-full flex flex-col items-start py-16; max-width: var(--ancho-contenido); margin-inline: auto; padding-inline: var(--margen-lateral);
 }
 
 .codigo {

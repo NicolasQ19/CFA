@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { FormularioNuevoRepresentado } from "@/dominio/representantes/FormularioNuevoRepresentado";
 import styles from "./page.module.css";
@@ -13,7 +13,7 @@ export default async function PaginaNuevoRepresentado() {
   }
 
   if (usuario.rol !== "representante") {
-    redirect("/");
+    forbidden();
   }
 
   return (

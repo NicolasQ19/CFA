@@ -12,8 +12,24 @@
   @apply text-sm font-bold uppercase tracking-wider text-emerald-400;
 }
 
+/* Las secciones apiladas ya ocupan todo el ancho; es la grilla interna la
+   que debe aprovecharlo. Sube a tres y cuatro columnas en pantallas grandes
+   en lugar de estirar cada campo. */
 .grilla {
   @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
+}
+
+@media (min-width: 1100px) {
+  .grilla { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1700px) {
+  .grilla { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Los campos con texto largo no se parten en una columna angosta. */
+.grilla > .campo:has(textarea) {
+  grid-column: 1 / -1;
 }
 
 .campo {

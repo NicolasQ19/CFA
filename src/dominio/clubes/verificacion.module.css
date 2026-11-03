@@ -6,7 +6,14 @@
 .aviso p { @apply mt-2; }
 .aviso a { @apply mt-3 inline-block text-emerald-300 underline; }
 .formulario { @apply mt-5 text-sm leading-relaxed text-slate-300; }
-.campos { @apply mt-4 grid gap-4; }
+.campos { @apply mt-4 grid grid-cols-1 items-start gap-4; }
+@media (min-width: 900px) { .campos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1500px) { .campos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* Confirmación, botón y textos largos ocupan la fila entera. */
+.campos > .confirmacion,
+.campos > button,
+.campos > p,
+.campos > label:has(textarea) { grid-column: 1 / -1; }
 .campos label { @apply grid gap-2 font-medium; }
 .campos input:not([type="checkbox"]), .campos select, .campos textarea { @apply w-full rounded-none border border-emerald-900 bg-slate-950 px-3 py-2 text-white; }
 .campos button { @apply justify-self-start inline-flex min-h-11 items-center justify-center gap-2 border border-emerald-400 bg-emerald-400 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-emerald-950 hover:bg-emerald-300 disabled:opacity-55; }

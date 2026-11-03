@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { forbidden, notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerOfertaDelClubPorId } from "@/dominio/ofertas/consultas";
@@ -17,7 +17,7 @@ export default async function PaginaEditarOferta({ params }) {
   const usuario = await obtenerUsuarioActual();
 
   if (!usuario) redirect("/iniciar-sesion");
-  if (usuario.rol !== "club") redirect("/");
+  if (usuario.rol !== "club") forbidden();
   if (!clubEstaVerificado(usuario)) redirect("/mi-club#verificacion");
 
   const oferta = await obtenerOfertaDelClubPorId(ofertaId, usuario.id);

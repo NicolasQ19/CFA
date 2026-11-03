@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { obtenerPerfilClub } from "@/dominio/perfiles/consultas";
 import { FormularioPerfilClub } from "@/dominio/perfiles/FormularioPerfilClub";
@@ -11,7 +11,7 @@ export default async function PaginaMiClub() {
   const usuario = await obtenerUsuarioActual();
 
   if (!usuario) redirect("/iniciar-sesion");
-  if (usuario.rol !== "club") redirect("/");
+  if (usuario.rol !== "club") forbidden();
 
   const perfilExistente = await obtenerPerfilClub(usuario.id);
 

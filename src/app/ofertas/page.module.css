@@ -1,6 +1,6 @@
 ﻿@reference "tailwindcss";
 
-.main { @apply mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12; }
+.main { @apply w-full py-8 sm:py-12; max-width: var(--ancho-contenido); margin-inline: auto; padding-inline: var(--margen-lateral); }
 .distribucion { @apply grid items-start gap-6 lg:grid-cols-[270px_minmax(0,1fr)]; }
 .panelFiltros { @apply rounded-none border border-emerald-900/60 p-5; background: var(--surface); }
 .encabezadoFiltros h2 { @apply text-base font-semibold text-white; }

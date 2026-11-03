@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import { obtenerUsuarioActual } from "@/dominio/autenticacion/sesion";
 import { crearClienteServidor } from "@/lib/supabase/cliente-servidor";
 import { ESTADOS_VERIFICACION_CLUB } from "@/lib/verificacion-club";
@@ -13,7 +13,7 @@ export const metadata = { title: "Verificación de clubes | CFA" };
 export default async function PaginaVerificacionClubes({ searchParams }) {
   const usuario = await obtenerUsuarioActual();
   if (!usuario) redirect("/iniciar-sesion");
-  if (usuario.rol !== "administrador" || !usuario.cuenta_activa) redirect("/");
+  if (usuario.rol !== "administrador" || !usuario.cuenta_activa) forbidden();
   const parametros = await searchParams;
   const estado = Object.hasOwn(ESTADOS_VERIFICACION_CLUB, parametros?.estado ?? "") ? parametros.estado : parametros?.estado === "todos" ? "todos" : "pendiente";
   const pagina = Math.max(1, Math.min(100000, Number.parseInt(parametros?.pagina, 10) || 1));

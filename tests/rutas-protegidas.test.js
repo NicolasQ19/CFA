@@ -26,6 +26,7 @@ test("sin sesión, toda ruta restringida manda a iniciar sesión", () => {
   for (const ruta of ["/admin", "/admin/usuarios", "/mi-cartera", "/mis-ofertas/nueva"]) {
     assert.deepEqual(evaluarAcceso({ ruta, usuario: null }), {
       permitido: false,
+      motivo: "sin-sesion",
       destino: "/iniciar-sesion",
     });
   }
@@ -59,8 +60,33 @@ test("una cuenta desactivada no entra a ninguna ruta restringida", () => {
   const suspendido = { rol: "club", cuenta_activa: false };
   assert.deepEqual(evaluarAcceso({ ruta: "/mis-ofertas", usuario: suspendido }), {
     permitido: false,
+    motivo: "cuenta-inactiva",
     destino: "/",
   });
+});
+
+test("entrar a la ruta de otro rol da 403, no una redirección", () => {
+  // El motivo es lo que hace que el middleware reescriba a /sin-permiso en vez
+  // de mandar al inicio: la ruta existe, pero no es de este rol.
+  for (const [ruta, usuario] of [
+    ["/mis-ofertas", CANDIDATO],
+    ["/mi-cartera", CLUB],
+    ["/mis-postulaciones", REPRESENTANTE],
+    ["/admin/usuarios", CLUB],
+    ["/mi-perfil", CLUB],
+  ]) {
+    assert.deepEqual(evaluarAcceso({ ruta, usuario }), {
+      permitido: false,
+      motivo: "rol-no-habilitado",
+      destino: null,
+    }, ruta);
+  }
+});
+
+test("sin sesión gana sobre el rol: primero se pide iniciar sesión", () => {
+  // Una ruta de otro rol sin sesión no debe dar 403, porque todavía no se sabe
+  // quién es: tiene que poder iniciar sesión y volver.
+  assert.equal(evaluarAcceso({ ruta: "/mis-ofertas", usuario: null }).motivo, "sin-sesion");
 });
 
 test("un prefijo no se confunde con otra ruta que empiece igual", () => {

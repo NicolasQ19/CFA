@@ -2,6 +2,28 @@
 
 :root {
   color-scheme: dark;
+
+  /* ---------------------------------------------------------------------
+     Ancho de las pantallas.
+     Las páginas ocupan todo el viewport. Si alguna vez conviene recortarlas
+     en monitores muy anchos, se cambia SOLO este valor (por ejemplo a
+     1800px) y todas las pantallas se ajustan a la vez.
+     --------------------------------------------------------------------- */
+  --ancho-contenido: 100%;
+
+  /* Margen lateral único: crece con la pantalla y nunca deja el contenido
+     pegado al borde. 16px en celular, hasta 56px en escritorio. */
+  --margen-lateral: clamp(1rem, 3vw, 3.5rem);
+
+  /* ---------------------------------------------------------------------
+     Orden de apilado.
+     Las barras sticky de los formularios y los desplegables usan z-index
+     bajos (10 a 30) dentro del contenido. La barra de navegación va por
+     encima de todos ellos para que la campana de notificaciones se
+     despliegue sobre cualquier cosa que haya en pantalla.
+     --------------------------------------------------------------------- */
+  --capa-navegacion: 100;
+
   --background: #080d0b;
   --foreground: #f4faf6;
   --surface: #101c16;
