@@ -285,7 +285,9 @@ export default async function PaginaMiCartera({ searchParams }) {
                     <span className={`${styles.estadoBadge} ${styles[`estado_${p.estado}`] ?? ""}`}>
                       {ETIQUETAS_ESTADO_POSTULACION[p.estado] ?? p.estado}
                     </span>
-                    <CancelarPostulacion postulacionId={p.id} nombreCandidato={nombreCandidato} />
+                    {p.estado !== "oferta_cerrada" && (
+                      <CancelarPostulacion postulacionId={p.id} nombreCandidato={nombreCandidato} />
+                    )}
                     {oferta?.id && oferta.estado === "publicada" ? (
                       <Link
                         href={`/ofertas/${oferta.id}`}

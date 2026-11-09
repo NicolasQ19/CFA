@@ -41,8 +41,9 @@ export function SelectorDesplegable({
   const botonRef = useRef(null);
   const busquedaRef = useRef({ texto: "", momento: 0 });
 
-  const indiceActual = Math.max(0, opciones.findIndex((opcion) => opcion.valor === valor));
-  const seleccionada = opciones[indiceActual];
+  const indiceElegido = opciones.findIndex((opcion) => opcion.valor === valor);
+  const indiceActual = Math.max(0, indiceElegido);
+  const seleccionada = opciones[indiceElegido];
 
   useEffect(() => {
     if (!abierto) return undefined;

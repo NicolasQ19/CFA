@@ -1,10 +1,8 @@
 "use client";
 
-import { ETIQUETAS_ESTADO_POSTULACION } from "@/tipos/dominio";
+import { ETIQUETAS_ESTADO_POSTULACION, TRANSICIONES_POSTULACION_DEL_CLUB } from "@/tipos/dominio";
 import { SelectorDesplegable } from "@/componentes/SelectorDesplegable";
 import styles from "./SelectorEstadoPostulacion.module.css";
-
-const ESTADOS_ACCION = ["postulado", "visto", "preseleccionado", "rechazado"];
 
 const CLASE_SELECT = {
   postulado: styles.selectPostulado,
@@ -13,7 +11,9 @@ const CLASE_SELECT = {
   rechazado: styles.selectRechazado,
 };
 
-export function SelectorEstadoPostulacion({ estado, onChange, disabled }) {
+export function SelectorEstadoPostulacion({ estado, estadoGuardado, onChange, disabled }) {
+  const siguientes = TRANSICIONES_POSTULACION_DEL_CLUB[estadoGuardado] ?? [];
+
   return (
     <div className={styles.contenedor}>
       <span id="etiquetaEstadoPostulacion" className={styles.etiquetaOculta}>
@@ -23,24 +23,17 @@ export function SelectorEstadoPostulacion({ estado, onChange, disabled }) {
         nombre="estado"
         etiquetaId="etiquetaEstadoPostulacion"
         valor={estado}
-        deshabilitado={disabled}
+        deshabilitado={disabled || siguientes.length === 0}
         onCambio={onChange}
         className={CLASE_SELECT[estado] ?? ""}
-        opciones={[
-          // Un estado fuera de las acciones habituales (por ejemplo "contratado")
-          // se muestra igual para no perder el valor guardado.
-          ...(ESTADOS_ACCION.includes(estado)
-            ? []
-            : [{ valor: estado, texto: ETIQUETAS_ESTADO_POSTULACION[estado] ?? estado }]),
-          ...ESTADOS_ACCION.map((valor) => ({
-            valor,
-            texto: ETIQUETAS_ESTADO_POSTULACION[valor],
-          })),
-        ]}
+        opciones={[estadoGuardado, ...siguientes].map((valor) => ({
+          valor,
+          texto: ETIQUETAS_ESTADO_POSTULACION[valor] ?? valor,
+        }))}
       />
 
       <div className={styles.accionesRapidas}>
-        {["visto", "preseleccionado", "rechazado"].map((clave) => (
+        {siguientes.map((clave) => (
           <button
             key={clave}
             type="button"
@@ -53,7 +46,7 @@ export function SelectorEstadoPostulacion({ estado, onChange, disabled }) {
         ))}
       </div>
 
-      <p className={styles.feedback}>Se aplicará al guardar seguimiento.</p>
+      <p className={styles.feedback}>{siguientes.length ? "Se aplicará al guardar seguimiento." : "Este estado es final."}</p>
     </div>
   );
 }

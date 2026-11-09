@@ -1,3 +1,5 @@
+const BUSQUEDA_CERRADA = "La búsqueda ya cerró: esta postulación queda en el historial y no se puede cancelar.";
+
 /** Retira una postulación del candidato autenticado, con permisos RLS. */
 export async function retirarPostulacionPropia(supabase, postulacionId) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -8,8 +10,9 @@ export async function retirarPostulacionPropia(supabase, postulacionId) {
     return { error: "Solo un candidato con cuenta activa puede cancelar sus propias postulaciones." };
   }
   const { data: postulacion } = await supabase.from("postulaciones")
-    .select("id, oferta_id").eq("id", postulacionId).eq("candidato_id", user.id).maybeSingle();
+    .select("id, oferta_id, estado").eq("id", postulacionId).eq("candidato_id", user.id).maybeSingle();
   if (!postulacion) return { error: "La postulación no existe o no pertenece a tu cuenta." };
+  if (postulacion.estado === "oferta_cerrada") return { error: BUSQUEDA_CERRADA };
 
   const { data: eliminadas, error } = await supabase.from("postulaciones").delete()
     .eq("id", postulacionId).eq("candidato_id", user.id).select("id");
@@ -29,9 +32,10 @@ export async function retirarPostulacionDeCartera(supabase, postulacionId) {
   }
 
   const { data: postulacion } = await supabase.from("postulaciones")
-    .select("id, candidato_id, oferta_id")
+    .select("id, candidato_id, oferta_id, estado")
     .eq("id", postulacionId).eq("postulado_por_representante_id", user.id).maybeSingle();
   if (!postulacion) return { error: "La postulación no existe o no fue enviada por vos." };
+  if (postulacion.estado === "oferta_cerrada") return { error: BUSQUEDA_CERRADA };
 
   const { data: vinculo } = await supabase.from("candidatos_representados")
     .select("candidato_id").eq("representante_id", user.id)

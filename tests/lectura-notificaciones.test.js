@@ -1,8 +1,20 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { claveAviso, claveAlmacenLecturas, claveAlmacenEliminadas, eliminarAvisos, filtrarAvisosVigentes, interpretarLecturas, estaLeido, marcarAvisoLeido, contarSinLeer, listarFilasNotificaciones } from "../src/lib/lectura-notificaciones.js";
+import { combinarAvisosAdmin } from "../src/lib/notificaciones-admin.js";
 
 const aviso = { id: "oferta-1", fecha: "2026-10-23T13:00:00Z", mensaje: "Fue publicada" };
+
+test("la campana del administrador combina ofertas y solicitudes de verificación por fecha", () => {
+  const avisos = combinarAvisosAdmin({
+    ofertas: [{ id: "o1", puesto_buscado: "jugador", creada_en: "2026-11-01T10:00:00Z", perfiles_club: { nombre_club: "Club A" } }],
+    verificaciones: [{ club_id: "c1", solicitada_en: "2026-11-02T10:00:00Z", club: { nombre_completo: "Club B", perfiles_club: null } }],
+  });
+  assert.deepEqual(avisos.map(a => a.origen), ["Club B", "Club A"]);
+  assert.equal(avisos[0].href, "/admin/clubes");
+  assert.match(avisos[0].mensaje, /verificación/);
+  assert.equal(avisos[1].id, "o1");
+});
 
 test("eliminar limpia todos los avisos, incluidos los leídos y los que superan ocho, y persiste al recargar", () => {
   const avisos = Array.from({ length: 12 }, (_, i) => ({ ...aviso, id: String(i) }));

@@ -7,7 +7,6 @@ export async function middleware(peticion) {
 
 export const config = {
   matcher: [
-    // Todo excepto archivos estáticos e imágenes.
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

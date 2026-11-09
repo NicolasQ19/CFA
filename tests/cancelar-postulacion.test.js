@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { retirarPostulacionDeCartera, retirarPostulacionPropia } from "../src/lib/cancelar-postulacion.js";
 
-function cliente({ sesion = true, userId = "rep", rol = "representante", activa = true, propia = true, cartera = true, borrado = { data: [{ id: "p" }] } } = {}) {
+function cliente({ sesion = true, userId = "rep", rol = "representante", activa = true, propia = true, cartera = true, estado = "postulado", borrado = { data: [{ id: "p" }] } } = {}) {
   const consultas = [];
   const supabase = {
     auth: { getUser: async () => ({ data: { user: sesion ? { id: userId } : null } }) },
@@ -14,7 +14,7 @@ function cliente({ sesion = true, userId = "rep", rol = "representante", activa 
         delete() { consulta.borrar = true; return cadena; },
         select() { return consulta.borrar ? Promise.resolve(borrado) : cadena; },
         async maybeSingle() {
-          return { data: tabla === "usuarios" ? { rol, cuenta_activa: activa } : tabla === "candidatos_representados" ? (cartera ? { candidato_id: "c" } : null) : (propia ? { id: "p", candidato_id: "c", oferta_id: "o" } : null) };
+          return { data: tabla === "usuarios" ? { rol, cuenta_activa: activa } : tabla === "candidatos_representados" ? (cartera ? { candidato_id: "c" } : null) : (propia ? { id: "p", candidato_id: "c", oferta_id: "o", estado } : null) };
         },
       };
       return cadena;
@@ -59,6 +59,14 @@ test("la lectura y el borrado de la postulación del candidato están restringid
     assert.deepEqual(consulta.filtros, [["id", "p"], ["candidato_id", "c"]]);
   }
   assert.equal(consultas.some(c => c.tabla === "candidatos_representados"), false);
+});
+
+test("una postulación de una búsqueda cerrada no se puede retirar", async () => {
+  for (const [retirar, valores] of [[retirarPostulacionPropia, { rol: "candidato", userId: "c" }], [retirarPostulacionDeCartera, {}]]) {
+    const { supabase, consultas } = cliente({ ...valores, estado: "oferta_cerrada" });
+    assert.match((await retirar(supabase, "p")).error, /ya cerró/);
+    assert.equal(consultas.some(c => c.borrar), false);
+  }
 });
 
 test("la cancelación propia no informa éxito cuando el borrado no se realiza", async () => {

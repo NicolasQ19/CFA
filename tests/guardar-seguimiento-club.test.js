@@ -92,6 +92,14 @@ test("un fallo o cambio concurrente del estado informa el guardado parcial", asy
   assert.match(resultado.error, /no se pudo cambiar/);
 });
 
+test("los estados finales no se reabren y el proceso no retrocede", async () => {
+  for (const [actual, nuevo] of [["rechazado", "postulado"], ["rechazado", "preseleccionado"], ["oferta_cerrada", "visto"], ["preseleccionado", "visto"], ["visto", "postulado"]]) {
+    const cliente = clienteFalso({ postulacion: { oferta_id: "o1", estado: actual } });
+    assert.match((await guardarGestionPostulante(cliente, formulario({ estado: nuevo }))).error, /no está permitido/, `${actual} a ${nuevo}`);
+    assert.equal(cliente.escrituras.length, 0);
+  }
+});
+
 test("permite conservar oferta_cerrada pero no asignarlo como un nuevo estado", async () => {
   const cliente = clienteFalso({ postulacion: { oferta_id: "o1", estado: "oferta_cerrada" } });
   assert.equal((await guardarGestionPostulante(cliente, formulario({ estado: "oferta_cerrada" }))).exito, true);

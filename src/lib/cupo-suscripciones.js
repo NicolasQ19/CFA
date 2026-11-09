@@ -51,24 +51,17 @@ export async function obtenerCupoOfertasDelClub(supabase, clubId) {
  * Postulaciones que el usuario envió en el mes corriente.
  *
  * El cupo lo consume quien envía: las postulaciones que manda un representante
- * descuentan de su plan y nunca del cupo del candidato representado, aunque éste
- * tenga cuenta propia. Por eso el conteo del candidato excluye las enviadas por
- * un representante (`postulado_por_representante_id is null`).
+ * descuentan de su plan y nunca del cupo del candidato representado.
  *
- * Se cuenta por envío: cancelar una postulación no devuelve el cupo del mes.
+ * Se cuenta en `envios_postulacion` y no en `postulaciones`: cancelar borra la
+ * postulación, y el envío tiene que seguir contando en el mes.
  */
-export async function contarPostulacionesDelMes(supabase, usuarioId, rol, ahora = new Date()) {
-  const esRepresentante = rol === "representante";
-
-  let consulta = supabase
-    .from("postulaciones")
+export async function contarPostulacionesDelMes(supabase, usuarioId, ahora = new Date()) {
+  const { count, error } = await supabase
+    .from("envios_postulacion")
     .select("id", { count: "exact", head: true })
-    .eq(esRepresentante ? "postulado_por_representante_id" : "candidato_id", usuarioId)
-    .gte("creada_en", inicioDelMes(ahora));
-
-  if (!esRepresentante) consulta = consulta.is("postulado_por_representante_id", null);
-
-  const { count, error } = await consulta;
+    .eq("responsable_id", usuarioId)
+    .gte("enviada_en", inicioDelMes(ahora));
 
   if (error || count === null) return { fallo: "No se pudo verificar cuántas postulaciones enviaste este mes. Intentá nuevamente." };
 
@@ -79,7 +72,7 @@ export async function contarPostulacionesDelMes(supabase, usuarioId, rol, ahora 
 export async function obtenerCupoPostulaciones(supabase, usuarioId, rol, ahora = new Date()) {
   const [plan, conteo] = await Promise.all([
     obtenerPlanDelUsuario(supabase, usuarioId),
-    contarPostulacionesDelMes(supabase, usuarioId, rol, ahora),
+    contarPostulacionesDelMes(supabase, usuarioId, ahora),
   ]);
 
   if (conteo.fallo) return { fallo: conteo.fallo };

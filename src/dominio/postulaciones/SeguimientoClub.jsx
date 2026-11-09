@@ -44,7 +44,7 @@ export function SeguimientoClub({ postulacionId, etapa, notas, estadoInicial, di
     </section>
     <section className={styles.seccion}>
       <h3>Estado informado al candidato</h3>
-      <SelectorEstadoPostulacion estado={estadoActual} onChange={setEstadoActual} disabled={pendiente} />
+      <SelectorEstadoPostulacion estado={estadoActual} estadoGuardado={estadoInicial} onChange={setEstadoActual} disabled={pendiente} />
     </section>
     <div className={styles.acciones}>
     <button disabled={pendiente}>{pendiente ? "Guardando…" : "Guardar seguimiento"}</button>

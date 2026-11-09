@@ -2,11 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import { evaluarAcceso, obtenerReglaDeRuta } from "@/lib/rutas-protegidas";
 
-/**
- * Refresca la sesión de Supabase en cada request, la propaga en las cookies y
- * aplica el control de acceso de `rutas-protegidas` antes de renderizar la página.
- * Se ejecuta desde src/middleware.js.
- */
+
 export async function actualizarSesion(peticion) {
   let respuesta = NextResponse.next({ request: peticion });
 
@@ -37,7 +33,6 @@ export async function actualizarSesion(peticion) {
 
   const ruta = peticion.nextUrl.pathname;
 
-  // Solo se consulta el rol en las rutas restringidas: las públicas no pagan la consulta.
   if (obtenerReglaDeRuta(ruta)) {
     let usuario = null;
 
@@ -56,9 +51,7 @@ export async function actualizarSesion(peticion) {
       const url = peticion.nextUrl.clone();
       url.search = "";
 
-      // La ruta existe pero es de otro rol: no se redirige. Se reescribe a la
-      // pantalla de 403 manteniendo la URL original en la barra, para que se
-      // vea qué se intentó abrir y por qué no está disponible.
+
       if (motivo === "rol-no-habilitado") {
         url.pathname = "/sin-permiso";
         return NextResponse.rewrite(url);

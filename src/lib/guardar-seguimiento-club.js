@@ -1,5 +1,6 @@
 import { validarSeguimiento } from "./club.js";
 import { comprobarClubVerificado } from "./verificacion-club.js";
+import { TRANSICIONES_POSTULACION_DEL_CLUB } from "../tipos/dominio.js";
 
 const ESTADOS = ["postulado", "visto", "preseleccionado", "rechazado", "oferta_cerrada"];
 
@@ -21,8 +22,8 @@ export async function guardarGestionPostulante(supabase, formulario) {
     .select("oferta_id, estado, ofertas_laborales!inner(club_id)")
     .eq("id", postulacionId).eq("ofertas_laborales.club_id", user.id).maybeSingle();
   if (!postulacion) return { error: "No encontramos una postulación de tu club." };
-  if (nuevoEstado === "oferta_cerrada" && postulacion.estado !== nuevoEstado) {
-    return { error: "Seleccioná un estado válido para el candidato." };
+  if (postulacion.estado !== nuevoEstado && !TRANSICIONES_POSTULACION_DEL_CLUB[postulacion.estado]?.includes(nuevoEstado)) {
+    return { error: "Ese cambio de estado no está permitido para esta postulación." };
   }
 
   const { error } = await supabase.from("seguimiento_club").upsert({

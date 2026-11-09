@@ -37,6 +37,15 @@ export const ETIQUETAS_ESTADO_POSTULACION = {
   oferta_cerrada: "Oferta cerrada",
 };
 
+/** Cambios de estado que el club puede hacer; Oferta cerrada solo lo asigna el cierre de la búsqueda. */
+export const TRANSICIONES_POSTULACION_DEL_CLUB = {
+  postulado: ["visto", "preseleccionado", "rechazado"],
+  visto: ["preseleccionado", "rechazado"],
+  preseleccionado: ["rechazado"],
+  rechazado: [],
+  oferta_cerrada: [],
+};
+
 export const ETIQUETAS_ESTADO_OFERTA = {
   pendiente_moderacion: "Pendiente de moderación",
   publicada: "Publicada",

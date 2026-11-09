@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ETIQUETAS_PUESTO_PROFESIONAL } from "@/tipos/dominio";
 import { claveAlmacenLecturas, claveAlmacenEliminadas, eliminarAvisos, filtrarAvisosVigentes, estaLeido, marcarAvisoLeido, contarSinLeer } from "@/lib/lectura-notificaciones";
 import { useAvisosAlmacenados } from "./useAvisosAlmacenados";
 import styles from "./CampanaNotificaciones.module.css";
@@ -53,16 +52,6 @@ export function CampanaNotificaciones({ rol = "administrador", usuarioId }) {
         });
         if (!respuesta.ok) throw new Error("No se pudieron cargar los avisos");
         const resultado = await respuesta.json();
-        if (rol === "administrador") {
-          resultado.notificaciones = resultado.notificaciones.map(oferta => ({
-            id: oferta.id,
-            origen: oferta.perfiles_club?.nombre_club ?? "Club sin nombre",
-            mensaje: "creó una nueva oferta.",
-            detalle: ETIQUETAS_PUESTO_PROFESIONAL[oferta.puesto_buscado] ?? oferta.puesto_buscado,
-            fecha: oferta.creada_en,
-            href: `/admin?oferta=${oferta.id}#oferta-${oferta.id}`,
-          }));
-        }
         if (!controlador.signal.aborted) { setDatos(resultado); setError(false); }
       } catch (e) {
         if (!controlador.signal.aborted) setError(true);
@@ -100,7 +89,7 @@ export function CampanaNotificaciones({ rol = "administrador", usuarioId }) {
   const total = contarSinLeer(avisos, lecturas);
   const ordenados = [...avisos].sort((a, b) => Number(estaLeido(a, lecturas)) - Number(estaLeido(b, lecturas)));
   const textos = {
-    administrador: { contador: "ofertas pendientes", ayuda: "Nuevas ofertas para revisar.", vacio: "No hay ofertas pendientes de revisión.", href: "/admin?estado=pendiente_moderacion", enlace: "Ver todas las ofertas pendientes" },
+    administrador: { contador: "avisos pendientes", ayuda: "Ofertas y solicitudes de verificación para revisar.", vacio: "No hay ofertas ni solicitudes pendientes de revisión.", href: "/admin?estado=pendiente_moderacion", enlace: "Ver todas las ofertas pendientes" },
     club: { contador: "avisos del club", ayuda: "Verificación del club, novedades de ofertas y postulaciones pendientes de revisión.", vacio: "No hay novedades del club.", href: "/mi-club", enlace: "Ver mi club" },
     candidato: { contador: "novedades de tus postulaciones", ayuda: "Último estado informado por el club y cambios en la descripción de las ofertas a las que te postulaste.", vacio: "Todavía no hay novedades en tus postulaciones.", href: "/mis-postulaciones", enlace: "Ver mis postulaciones" },
     representante: { contador: "novedades de las postulaciones de tus representados", ayuda: "Último estado informado por el club y cambios en la descripción de las ofertas en las que postulaste a tus representados.", vacio: "Todavía no hay novedades en las postulaciones que enviaste.", href: "/mi-cartera#postulaciones", enlace: "Ver postulaciones de mi cartera" },

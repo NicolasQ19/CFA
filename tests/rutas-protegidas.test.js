@@ -22,6 +22,11 @@ test("los perfiles públicos con id siguen siendo públicos", () => {
   assert.ok(obtenerReglaDeRuta("/perfil-publico"));
 });
 
+test("el alta de administrador no exige sesión, pero el resto de /admin sí", () => {
+  assert.equal(evaluarAcceso({ ruta: "/admin/registrarse", usuario: null }).permitido, true);
+  assert.equal(evaluarAcceso({ ruta: "/admin/usuarios", usuario: null }).permitido, false);
+});
+
 test("sin sesión, toda ruta restringida manda a iniciar sesión", () => {
   for (const ruta of ["/admin", "/admin/usuarios", "/mi-cartera", "/mis-ofertas/nueva"]) {
     assert.deepEqual(evaluarAcceso({ ruta, usuario: null }), {

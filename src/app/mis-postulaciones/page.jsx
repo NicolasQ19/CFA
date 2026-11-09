@@ -22,6 +22,7 @@ const TEXTOS_ESTADO = {
   visto: "Visto por el club",
   preseleccionado: "Preseleccionado",
   rechazado: "No seleccionado",
+  oferta_cerrada: "Búsqueda finalizada",
 };
 
 /** Avisos según el estado de la oferta; las publicadas no llevan aviso. */
@@ -114,7 +115,9 @@ export default async function PaginaMisPostulaciones() {
                           Ver oferta
                         </Link>
                       )}
-                      <CancelarMiPostulacion postulacionId={postulacion.id} nombreOferta={oferta ? tituloDeOferta(oferta) : undefined} />
+                      {postulacion.estado !== "oferta_cerrada" && (
+                        <CancelarMiPostulacion postulacionId={postulacion.id} nombreOferta={oferta ? tituloDeOferta(oferta) : undefined} />
+                      )}
                       </div>
                     </td>
                   </tr>

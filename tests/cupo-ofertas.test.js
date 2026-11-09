@@ -80,48 +80,43 @@ test("un conteo fallido no deja publicar en lugar de asumir cupo disponible", as
 const AHORA = new Date("2026-11-20T12:00:00Z");
 
 test("contarPostulacionesDelMes cuenta por quien envía y desde el día 1 del mes", async () => {
-  const candidato = clienteFalso({ postulaciones: { count: 2 } });
-  assert.deepEqual(await contarPostulacionesDelMes(candidato, "candidato-1", "candidato", AHORA), { total: 2 });
-  const pasosCandidato = JSON.stringify(candidato.consultas[0]);
-  assert.ok(pasosCandidato.includes(JSON.stringify(["eq", "candidato_id", "candidato-1"])));
-  assert.ok(pasosCandidato.includes(JSON.stringify(["gte", "creada_en", "2026-11-01T00:00:00.000Z"])));
-  // Las postulaciones enviadas por un representante no consumen el cupo del candidato.
-  assert.ok(pasosCandidato.includes(JSON.stringify(["is", "postulado_por_representante_id", null])));
+  const candidato = clienteFalso({ envios_postulacion: { count: 2 } });
+  assert.deepEqual(await contarPostulacionesDelMes(candidato, "candidato-1", AHORA), { total: 2 });
+  const pasos = JSON.stringify(candidato.consultas[0]);
+  // Se cuenta el registro de envíos: una postulación cancelada sigue consumiendo cupo.
+  assert.ok(pasos.includes(JSON.stringify(["from", "envios_postulacion"])));
+  assert.ok(pasos.includes(JSON.stringify(["eq", "responsable_id", "candidato-1"])));
+  assert.ok(pasos.includes(JSON.stringify(["gte", "enviada_en", "2026-11-01T00:00:00.000Z"])));
 
-  const representante = clienteFalso({ postulaciones: { count: 5 } });
-  await contarPostulacionesDelMes(representante, "rep-1", "representante", AHORA);
-  assert.ok(JSON.stringify(representante.consultas[0]).includes(JSON.stringify(["eq", "postulado_por_representante_id", "rep-1"])));
-  assert.ok(!JSON.stringify(representante.consultas[0]).includes('"is"'));
-
-  const sinConteo = await contarPostulacionesDelMes(clienteFalso({ postulaciones: { count: null } }), "c1", "candidato", AHORA);
+  const sinConteo = await contarPostulacionesDelMes(clienteFalso({ envios_postulacion: { count: null } }), "c1", AHORA);
   assert.match(sinConteo.fallo, /No se pudo verificar/);
 });
 
 test("obtenerCupoPostulaciones corta al candidato en 3 y al representante en 6, y libera al plan pago", async () => {
   const candidatoEnLimite = await obtenerCupoPostulaciones(
-    clienteFalso({ suscripciones: sinSuscripcion, postulaciones: { count: 3 } }), "c1", "candidato", AHORA);
+    clienteFalso({ suscripciones: sinSuscripcion, envios_postulacion: { count: 3 } }), "c1", "candidato", AHORA);
   assert.equal(candidatoEnLimite.permitido, false);
   assert.equal(candidatoEnLimite.limitePlan, true);
   assert.match(candidatoEnLimite.error, /Candidato Base permite 3 postulaciones por mes/);
 
   const representanteConCupo = await obtenerCupoPostulaciones(
-    clienteFalso({ suscripciones: sinSuscripcion, postulaciones: { count: 3 } }), "r1", "representante", AHORA);
+    clienteFalso({ suscripciones: sinSuscripcion, envios_postulacion: { count: 3 } }), "r1", "representante", AHORA);
   assert.equal(representanteConCupo.permitido, true);
   assert.equal(representanteConCupo.restantes, 3);
 
   const representanteEnLimite = await obtenerCupoPostulaciones(
-    clienteFalso({ suscripciones: sinSuscripcion, postulaciones: { count: 6 } }), "r1", "representante", AHORA);
+    clienteFalso({ suscripciones: sinSuscripcion, envios_postulacion: { count: 6 } }), "r1", "representante", AHORA);
   assert.equal(representanteEnLimite.permitido, false);
 
   const pago = await obtenerCupoPostulaciones(
-    clienteFalso({ suscripciones: vigente, postulaciones: { count: 80 } }), "c1", "candidato", AHORA);
+    clienteFalso({ suscripciones: vigente, envios_postulacion: { count: 80 } }), "c1", "candidato", AHORA);
   assert.equal(pago.permitido, true);
   assert.equal(pago.limite, null);
 });
 
 test("un conteo mensual fallido no deja postularse", async () => {
   const resultado = await obtenerCupoPostulaciones(
-    clienteFalso({ suscripciones: sinSuscripcion, postulaciones: { count: null } }), "c1", "candidato", AHORA);
+    clienteFalso({ suscripciones: sinSuscripcion, envios_postulacion: { count: null } }), "c1", "candidato", AHORA);
   assert.match(resultado.fallo, /No se pudo verificar/);
   assert.equal(resultado.permitido, undefined);
 });
