@@ -15,6 +15,10 @@
      pegado al borde. 16px en celular, hasta 56px en escritorio. */
   --margen-lateral: clamp(1rem, 3vw, 3.5rem);
 
+  /* Alto de la barra de navegación fija: los paneles sticky del contenido
+     y los saltos a anclas se corren esta medida para no quedar tapados. */
+  --alto-navegacion: 72px;
+
   /* ---------------------------------------------------------------------
      Orden de apilado.
      Las barras sticky de los formularios y los desplegables usan z-index
@@ -50,6 +54,7 @@
     font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   }
 
+  html { scroll-padding-top: var(--alto-navegacion); }
   main { width: 100%; }
   h1, h2, h3 { letter-spacing: -0.035em; text-wrap: balance; }
   h1 { line-height: 1.2; }

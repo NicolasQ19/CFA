@@ -1,0 +1,62 @@
+/* Panel de métricas: superficies y textos sobre el tema oscuro del sitio. */
+
+.cabeceraAcciones { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.actualizado { font-size: 12px; color: #8b9e93; }
+
+/* Avisos de trabajo pendiente para el administrador. */
+.pendientes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 20px;
+  margin-top: 24px;
+  padding: 14px 18px;
+  border: 1px solid #b4530940;
+  border-left: 3px solid #f59e0b;
+  background: #451a030f;
+}
+.pendientesTitulo { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #fcd34d; }
+.pendienteEnlace { font-size: 14px; color: #f1f5f9; text-decoration: underline; text-decoration-color: #ffffff40; text-underline-offset: 4px; }
+.pendienteEnlace:hover { color: #fcd34d; text-decoration-color: currentColor; }
+
+/* Indicadores principales. */
+.indicadores { display: grid; gap: 16px; margin-top: 24px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+.indicador {
+  display: block;
+  padding: 20px 22px;
+  border: 1px solid #10b98126;
+  background: #0b1510;
+  transition: border-color 0.15s, background 0.15s;
+}
+a.indicador:hover { border-color: #10b98166; background: #0e1b14; }
+a.indicador:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; }
+.indicadorEtiqueta { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #8b9e93; }
+.indicadorValor { margin-top: 10px; font-size: 2.5rem; font-weight: 700; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: #fff; }
+.indicadorDetalle { margin-top: 10px; font-size: 13px; color: #94a3b8; }
+.indicadorDetalle b { font-weight: 600; color: #6ee7b7; }
+
+/* Tarjetas de sección. */
+.dosColumnas { display: grid; gap: 16px; margin-top: 16px; }
+@media (min-width: 1024px) { .dosColumnas { grid-template-columns: 1fr 1fr; } }
+.dosColumnas > .tarjeta { margin-top: 0; }
+
+.tarjeta { margin-top: 16px; padding: 22px 24px 24px; border: 1px solid #10b98126; background: #0b1510; min-width: 0; }
+.tarjetaCabecera { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.tarjetaTitulo { font-size: 1rem; font-weight: 700; color: #fff; }
+.tarjetaDescripcion { margin-top: 4px; font-size: 13px; line-height: 1.5; color: #94a3b8; }
+
+.tablaNumerica td { text-align: right; font-variant-numeric: tabular-nums; }
+.tablaNumerica thead th:not(:first-child) { text-align: right; }
+.tablaNumerica tfoot th, .tablaNumerica tfoot td { border-bottom: 0; font-weight: 700; color: #fff; }
+.tablaNumerica tfoot tr { background: #ffffff08; }
+
+.nota { font-size: 12px; line-height: 1.5; color: #8b9e93; }
+.sinDatos { padding: 24px; border: 1px dashed #1f4a35; font-size: 14px; color: #cbd5e1; }
+
+@media (max-width: 639px) {
+  .tarjeta { padding: 18px 16px 20px; }
+  .indicadores { gap: 10px; }
+  .indicador { padding: 16px; }
+  .indicadorValor { font-size: 2rem; }
+  .indicadorEtiqueta { letter-spacing: 0.08em; }
+}

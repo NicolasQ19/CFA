@@ -43,4 +43,4 @@
 .iconoVacio { @apply mb-4 flex h-14 w-14 items-center justify-center rounded-none bg-emerald-900/30 text-3xl text-emerald-300; }
 .itemVacio h3 { @apply text-lg font-semibold text-white; }
 .itemVacio p { @apply mt-2 max-w-md text-sm text-slate-400; }
-@media (min-width: 1024px) { .panelFiltros { position: sticky; top: 1.5rem; } }
+@media (min-width: 1024px) { .panelFiltros { position: sticky; top: calc(var(--alto-navegacion) + 1.5rem); } }

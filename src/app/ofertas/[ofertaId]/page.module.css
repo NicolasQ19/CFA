@@ -37,5 +37,5 @@
 .accion:empty { display: none; }
 .estadoTitulo { @apply text-base font-semibold text-emerald-300; }
 .avisoIngreso { @apply text-sm text-slate-300; }
-@media (min-width: 1024px) { .resumen { position: sticky; top: 1.5rem; } }
+@media (min-width: 1024px) { .resumen { position: sticky; top: calc(var(--alto-navegacion) + 1.5rem); } }
 @media (max-width: 639px) { .resumen { padding: 1.25rem; } }

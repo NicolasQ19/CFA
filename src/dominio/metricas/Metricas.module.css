@@ -1,0 +1,111 @@
+/* Gráficos del panel de métricas. Tema oscuro único, como el resto del sitio.
+   Los colores de serie llegan por props (validados para la superficie #101c16):
+   el texto nunca usa el color de la serie, solo las muestras y las barras. */
+
+/* ---------- Gráfico semanal ---------- */
+.grafico { margin: 0; }
+
+.leyenda { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-bottom: 16px; font-size: 13px; color: #cbd5e1; }
+.leyenda li { display: inline-flex; align-items: center; gap: 8px; }
+.muestra { display: inline-block; width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+.lienzo { position: relative; height: 220px; margin-left: 36px; }
+
+/* Líneas guía recesivas con su valor a la izquierda. */
+.guias span { position: absolute; left: 0; right: 0; border-top: 1px solid #ffffff12; }
+.guias span:first-child { border-top-color: #ffffff30; }
+.guias em {
+  position: absolute;
+  right: calc(100% + 10px);
+  transform: translateY(-50%);
+  font-size: 11px;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  color: #8b9e93;
+}
+
+.columnas { position: absolute; inset: 0; display: flex; gap: 6px; }
+.columna {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  outline: none;
+}
+/* Banda de fondo al pasar el mouse: toda la columna es el área sensible. */
+.columna::before { content: ""; position: absolute; inset: 0 -3px; background: #ffffff00; transition: background 0.15s; }
+.columna:hover::before, .columna:focus-visible::before { background: #ffffff0d; }
+.columna:focus-visible { box-shadow: inset 0 0 0 2px #34d399; }
+
+/* Barra apilada: extremo superior redondeado, 2px de separación entre segmentos. */
+.pila {
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+  width: 100%;
+  max-width: 34px;
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+}
+.pila span { min-height: 2px; flex-basis: 0; }
+
+/* El detalle aparece al costado de la columna, arriba del gráfico, sin tapar la barra señalada. */
+.detalle {
+  position: absolute;
+  top: 0;
+  z-index: 5;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 190px;
+  padding: 12px 14px;
+  border: 1px solid #1f4a35;
+  background: #050806f2;
+  box-shadow: 0 12px 28px #0009;
+  font-size: 12px;
+  color: #cbd5e1;
+  pointer-events: none;
+}
+.columna[data-lado="derecha"] .detalle { left: calc(100% + 8px); }
+.columna[data-lado="izquierda"] .detalle { right: calc(100% + 8px); }
+.columna:hover .detalle, .columna:focus-visible .detalle { display: flex; }
+.detalle strong { font-size: 12px; color: #fff; }
+.detalleFila { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.detalleFila > span { display: inline-flex; align-items: center; gap: 8px; }
+.detalleFila b { font-variant-numeric: tabular-nums; color: #fff; }
+.detalleTotal { padding-top: 6px; border-top: 1px solid #1f4a35; }
+
+.ejeX { display: flex; gap: 6px; margin: 8px 0 0 36px; }
+.ejeX li { flex: 1; text-align: center; font-size: 11px; font-variant-numeric: tabular-nums; color: #8b9e93; white-space: nowrap; }
+
+.pieGrafico { margin-top: 14px; font-size: 12px; color: #8b9e93; }
+
+.verTabla { margin-top: 10px; font-size: 13px; color: #cbd5e1; }
+.verTabla summary { cursor: pointer; width: fit-content; color: #6ee7b7; }
+.verTabla summary:focus-visible { outline: 2px solid #34d399; outline-offset: 2px; }
+.verTabla table { width: 100%; margin-top: 10px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.verTabla th, .verTabla td { padding: 6px 8px; border-bottom: 1px solid #ffffff12; text-align: right; font-weight: 400; }
+.verTabla th[scope="row"], .verTabla thead th:first-child { text-align: left; }
+.verTabla thead th { font-size: 11px; color: #8b9e93; }
+
+/* ---------- Barras por estado ---------- */
+.barras { display: flex; flex-direction: column; gap: 4px; }
+.barraFila {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 10px 12px;
+  margin-inline: -12px;
+  transition: background 0.15s;
+}
+a.barraFila:hover { background: #ffffff0a; }
+a.barraFila:focus-visible { outline: 2px solid #34d399; outline-offset: -2px; }
+.barraLinea { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; grid-column: 1 / -1; }
+.barraEtiqueta { font-size: 14px; color: #e2e8f0; }
+.barraValor { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; color: #fff; }
+.barraPista { height: 8px; border-radius: 4px; background: #ffffff0f; overflow: hidden; }
+.barraPista span { display: block; height: 100%; min-width: 0; border-radius: 4px; background: #34d399; }
+.barraPorcentaje { width: 3.5ch; text-align: right; font-size: 12px; font-variant-numeric: tabular-nums; color: #8b9e93; }
